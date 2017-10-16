@@ -3,17 +3,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.ComponentModel;
 using System.Threading;
+using Frends.Community.AWS.Helpers;
 using Frends.Tasks.Attributes;
 using Amazon.S3;
 using Amazon.S3.Transfer;
+using System.Threading.Tasks;
 
-namespace FRENDS.Common.AWS
+namespace Frends.Community.AWS
 {
     /// <summary>        
     /// Amazon AWS S3 File Download task
     /// </summary>
     public class Download
     {
+        /// <summary>
+        /// Input class, you can download whole directories or single files.
+        /// </summary>
         public class Input
         {
             /// <summary>
@@ -60,7 +65,7 @@ namespace FRENDS.Common.AWS
         }
 
         /// <summary>
-        /// Parameter class.
+        /// Parameter class with username and keys.
         /// </summary>
         public class Parameters
         {
@@ -94,47 +99,96 @@ namespace FRENDS.Common.AWS
             public Regions Region { get; set; }
         }
 
-        public class Options
-        {
-
-        }
-
-
         /// <summary>
-        /// Amazon AWS S3 Single File Download
+        /// Amazon AWS S3 Download task
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>
-        /// <param name="options"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static List<string> DownloadFiles(Input input, Parameters parameters, Options options, CancellationToken cancellationToken)
+        /// <returns>List&lt;string&gt;</returns>
+        public static List<string> DownloadFiles(Input input, Parameters parameters, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            List<string> resultList = new List<string>();
 
-            TransferUtility fileTransferUtility = new TransferUtility(
-                new AmazonS3Client(
-                    parameters.AWSAccessKeyID, parameters.AWSSecretAccessKey, Region.RegionSelection(parameters.Region)));
-
+            // Errors to throw if parameters are entered incorrectly.
+            // TODO: Change this so user doesnt have to CARE about trailing slash. Add it if DownloadWholeDirectory is true.
             if (input.DownloadWholeDirectory && !input.SourceDirectory.Trim().EndsWith(@"/"))
                 throw new ArgumentException(@"Use trailing slash ( / ) to indicate directory. ", nameof(input.SourceDirectory));
 
+            // TODO: Trim trailing slashes away.
             if (!input.DownloadWholeDirectory && input.SourcePrefixAndFilename.Trim().EndsWith(@"/"))
                 throw new ArgumentException(@"Filename cannot end with trailing slash ( / ). ", nameof(input.SourcePrefixAndFilename));
 
             if (!input.DownloadWholeDirectory && input.DestinationPathAndFilename.Trim().EndsWith(@"\"))
                 throw new ArgumentException(@"No filename supplied. ", nameof(input.DestinationPathAndFilename));
 
+            var tcs = new TaskCompletionSource<List<string>>();
+            var dl = tcs.Task;
+
+            Task.Factory.StartNew(async () => { await DownloadStuff(input, parameters, cancellationToken, tcs); });
+
+            return dl.Result;
+        }
+
+        private static async Task DownloadStuff(Input input, Parameters parameters, CancellationToken cancellationToken, TaskCompletionSource<List<string>> tcs)
+        {
             try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (input.DownloadWholeDirectory) {
-                    fileTransferUtility.DownloadDirectory(parameters.BucketName, input.SourceDirectory, input.DestinationPath);
-                    resultList = new List<string>(Directory.GetFiles(input.DestinationPath, "*.*", SearchOption.AllDirectories));
-                } else {
-                    fileTransferUtility.Download(input.DestinationPathAndFilename, parameters.BucketName, input.SourcePrefixAndFilename);
-                    resultList.Add(input.DestinationPathAndFilename);
+                cancellationToken.ThrowIfCancellationRequested(); // Obligatory cancellation.
+
+                using (var fileTransferUtility = new TransferUtility(
+                    new AmazonS3Client(
+                        parameters.AWSAccessKeyID,
+                        parameters.AWSSecretAccessKey,
+                        Region.RegionSelection(parameters.Region))))
+                {
+                    if (input.DownloadWholeDirectory)
+                    {
+
+                        // Create the request for directory download
+                        var request = new TransferUtilityDownloadDirectoryRequest()
+                        {
+                            BucketName = parameters.BucketName,
+                            DownloadFilesConcurrently = false,
+                            LocalDirectory = input.DestinationPath,
+                            S3Directory = input.SourceDirectory,
+                            //ModifiedSinceDate = "", // TODO: How does this work?
+                            //UnmodifiedSinceDate = "", // TODO: How does this work?
+                        };
+                        var list = new List<string>();
+
+                        request.DownloadedDirectoryProgressEvent += (sender, e) => 
+                        {
+                            list.Add(e.CurrentFile);
+                        };
+
+                        await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
+                        tcs.SetResult(list);
+                    }
+                    else
+                    {
+                        // Create the request for single download
+                        var request = new TransferUtilityDownloadRequest()
+                        {
+                            BucketName = parameters.BucketName,
+                            FilePath = input.DestinationPathAndFilename,
+                            Key = input.SourcePrefixAndFilename,
+                            //ModifiedSinceDate = "", // TODO: How does this work? 
+                            //ServerSideEncryptionCustomerMethod = "", // TODO: How does this work?
+                            //ServerSideEncryptionCustomerProvidedKey = "", // TODO: How does this work?
+                            //ServerSideEncryptionCustomerProvidedKeyMD5 = "", // TODO: How does this work?
+                            //UnmodifiedSinceDate = "", // TODO: How does this work?
+                            //VersionId = "" // TODO: How does this work?
+                        };
+                        await fileTransferUtility.DownloadAsync(
+                            input.DestinationPathAndFilename,
+                            parameters.BucketName,
+                            input.SourcePrefixAndFilename,
+                            cancellationToken);
+
+                        //request.WriteObjectProgressEvent += ReturnProgress;
+                        //resultList.Add(input.DestinationPathAndFilename);
+                    }
                 }
             }
             catch (AmazonS3Exception s3Exception)
@@ -142,7 +196,10 @@ namespace FRENDS.Common.AWS
                 throw new Exception(s3Exception.Message,
                                   s3Exception.InnerException);
             }
-            return resultList;
-        }
+            finally
+            {
+                
+            }
+        }        
     }
 }

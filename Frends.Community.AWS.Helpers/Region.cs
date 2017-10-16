@@ -1,6 +1,6 @@
 ﻿using Amazon;
 
-namespace FRENDS.Common.AWS
+namespace Frends.Community.AWS.Helpers
 {
 #pragma warning disable 1591
     public enum Regions
@@ -15,7 +15,7 @@ namespace FRENDS.Common.AWS
     /// <summary>
     /// Class containing regions for dropdown.
     /// </summary>
-    internal class Region
+    public class Region
     {
         
         /// <summary>
@@ -23,7 +23,7 @@ namespace FRENDS.Common.AWS
         /// </summary>
         /// <param name="region">Region from enum list.</param>
         /// <returns>Amazon.RegionEndpoint static resource.</returns>
-        internal static RegionEndpoint RegionSelection(Regions region)
+        public static RegionEndpoint RegionSelection(Regions region)
         {
             switch (region)
             {

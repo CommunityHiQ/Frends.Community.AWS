@@ -4,10 +4,11 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using Frends.Tasks.Attributes;
+using Frends.Community.AWS.Helpers;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 
-namespace FRENDS.Common.AWS
+namespace Frends.Community.AWS
 {
 
 #pragma warning disable 1591
@@ -142,7 +143,9 @@ namespace FRENDS.Common.AWS
                 throw new ArgumentException(@"Source path not found.", nameof(input.FilePath));
             }
 
-            var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask) ? Directory.GetFiles(input.FilePath) : Directory.GetFiles(input.FilePath, input.FileMask);
+            var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask) ? 
+                Directory.GetFiles(input.FilePath) : 
+                Directory.GetFiles(input.FilePath, input.FileMask);
             var returnList = new List<string>();
 
             if (filesToCopy.Length < 1 && options.ThrowErrorIfNoMatch)
@@ -152,7 +155,10 @@ namespace FRENDS.Common.AWS
 
             TransferUtility fileTransferUtility =
                 new TransferUtility(
-                    new AmazonS3Client(parameters.AWSAccessKeyID, parameters.AWSSecretAccessKey, Region.RegionSelection(parameters.Region))
+                    new AmazonS3Client(
+                        parameters.AWSAccessKeyID,
+                        parameters.AWSSecretAccessKey, 
+                        Region.RegionSelection(parameters.Region))
                         );
 
             foreach (var file in filesToCopy)
@@ -166,7 +172,9 @@ namespace FRENDS.Common.AWS
                     FilePath = file,
                     StorageClass = StorageClassSelection(options.StorageClass),
                     //PartSize = 6291456, // 6 MB.
-                    Key = String.IsNullOrWhiteSpace(parameters.Prefix) ? Path.GetFileName(file) : String.Join("/", parameters.Prefix, Path.GetFileName(file))
+                    Key = String.IsNullOrWhiteSpace(parameters.Prefix) ? 
+                        Path.GetFileName(file) : 
+                        String.Join("/", parameters.Prefix, Path.GetFileName(file))
                 };
 
                 try
@@ -176,7 +184,11 @@ namespace FRENDS.Common.AWS
                 }
                 catch (AmazonS3Exception s3Exception)
                 {
-                    throw new Exception(@"Successful transfers: " + String.Join(",", returnList) + " Exception: " + s3Exception.Message, s3Exception.InnerException);
+                    throw new Exception(@"Successful transfers: " + 
+                        String.Join(",", returnList) + 
+                        " Exception: " + 
+                        s3Exception.Message,
+                        s3Exception.InnerException);
                 }
 
                 if (options.ReturnListOfObjectKeys)
