@@ -127,6 +127,12 @@ namespace Frends.Community.AWS
 
             Task.Factory.StartNew(async () => { await DownloadStuff(input, parameters, cancellationToken, tcs); });
 
+            var resultList = new List<string>();
+
+            //if(dl.IsCompleted)
+
+            //var asdf = new Task(() => resultList.Add()
+
             return dl.Result;
         }
 
