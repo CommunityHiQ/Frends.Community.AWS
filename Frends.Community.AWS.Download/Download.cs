@@ -168,6 +168,7 @@ namespace Frends.Community.AWS
                             list.Add(e.CurrentFile);
                         };
 
+                        
                         await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
                         tcs.SetResult(list);
                     }
