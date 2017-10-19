@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.ComponentModel;
 using System.Threading;
 using Frends.Community.AWS.Helpers;
 using Frends.Tasks.Attributes;
 using Amazon.S3;
+using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using System.Threading.Tasks;
 
@@ -100,7 +100,7 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        /// Amazon AWS S3 Download task
+        /// Amazon AWS S3 Transfer files.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>
@@ -122,17 +122,14 @@ namespace Frends.Community.AWS
             if (!input.DownloadWholeDirectory && input.DestinationPathAndFilename.Trim().EndsWith(@"\"))
                 throw new ArgumentException(@"No filename supplied. ", nameof(input.DestinationPathAndFilename));
 
+            // For returning data from events
             var tcs = new TaskCompletionSource<List<string>>();
             var dl = tcs.Task;
 
-            Task.Factory.StartNew(async () => { await DownloadStuff(input, parameters, cancellationToken, tcs); });
-
-            var resultList = new List<string>();
-
-            //if(dl.IsCompleted)
-
-            //var asdf = new Task(() => resultList.Add()
-
+            // Threaded method.
+            Task.Factory.StartNew(
+                async () => { await DownloadStuff(input, parameters, cancellationToken, tcs); });
+            
             return dl.Result;
         }
 
@@ -148,9 +145,10 @@ namespace Frends.Community.AWS
                         parameters.AWSSecretAccessKey,
                         Region.RegionSelection(parameters.Region))))
                 {
+                    var list = new List<string>();
+
                     if (input.DownloadWholeDirectory)
                     {
-
                         // Create the request for directory download
                         var request = new TransferUtilityDownloadDirectoryRequest()
                         {
@@ -161,16 +159,19 @@ namespace Frends.Community.AWS
                             //ModifiedSinceDate = "", // TODO: How does this work?
                             //UnmodifiedSinceDate = "", // TODO: How does this work?
                         };
-                        var list = new List<string>();
 
-                        request.DownloadedDirectoryProgressEvent += (sender, e) => 
-                        {
-                            list.Add(e.CurrentFile);
+                        //
+                        EventHandler<DownloadDirectoryProgressArgs> eh = (sender, e) =>
+                        {                
+                            if(e.TransferredBytesForCurrentFile >= e.TotalNumberOfBytesForCurrentFile)
+                                list.Add(String.Join(@"\", request.LocalDirectory + e.CurrentFile.Replace(@"/", @"\")));
                         };
 
-                        
+                        request.DownloadedDirectoryProgressEvent += eh;                        
                         await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
+
                         tcs.SetResult(list);
+                        request.DownloadedDirectoryProgressEvent -= eh;
                     }
                     else
                     {
@@ -187,14 +188,18 @@ namespace Frends.Community.AWS
                             //UnmodifiedSinceDate = "", // TODO: How does this work?
                             //VersionId = "" // TODO: How does this work?
                         };
-                        await fileTransferUtility.DownloadAsync(
-                            input.DestinationPathAndFilename,
-                            parameters.BucketName,
-                            input.SourcePrefixAndFilename,
-                            cancellationToken);
 
-                        //request.WriteObjectProgressEvent += ReturnProgress;
-                        //resultList.Add(input.DestinationPathAndFilename);
+                        EventHandler<WriteObjectProgressArgs> eh = (sender, e) =>
+                        {
+                            if(e.IsCompleted)
+                                list.Add(e.FilePath);
+                        };
+
+                        request.WriteObjectProgressEvent += eh;
+                        await fileTransferUtility.DownloadAsync(request, cancellationToken);
+
+                        tcs.SetResult(list);
+                        request.WriteObjectProgressEvent -= eh;
                     }
                 }
             }
@@ -203,10 +208,7 @@ namespace Frends.Community.AWS
                 throw new Exception(s3Exception.Message,
                                   s3Exception.InnerException);
             }
-            finally
-            {
-                
-            }
-        }        
+
+        }
     }
 }
