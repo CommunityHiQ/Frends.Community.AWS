@@ -133,7 +133,7 @@ namespace Frends.Community.AWS
         /// <param name="cancellationToken"/>
         /// </summary>
         /// <returns>List&lt;string&gt; of filenames transferred. Optionally, return List&lt;string&gt; of object keys in S3.</returns>
-        public static List<string> UploadFiles(Input input, Parameters parameters, Options options, CancellationToken cancellationToken)
+        public static List<string> UploadAsync(Input input, Parameters parameters, Options options, CancellationToken cancellationToken)
         {
             // First check to see if this task gets performed at all.
             cancellationToken.ThrowIfCancellationRequested();
@@ -180,7 +180,7 @@ namespace Frends.Community.AWS
                 try
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    fileTransferUtility.Upload(fileTransferUtilityRequest);
+                    fileTransferUtility.UploadAsync(fileTransferUtilityRequest, cancellationToken);
                 }
                 catch (AmazonS3Exception s3Exception)
                 {

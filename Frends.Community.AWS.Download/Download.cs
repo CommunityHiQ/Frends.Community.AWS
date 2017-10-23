@@ -106,7 +106,7 @@ namespace Frends.Community.AWS
         /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>List&lt;string&gt;</returns>
-        public static List<string> DownloadFiles(Input input, Parameters parameters, CancellationToken cancellationToken)
+        public static List<string> DownloadAsync(Input input, Parameters parameters, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
