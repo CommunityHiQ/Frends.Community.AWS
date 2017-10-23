@@ -153,7 +153,7 @@ namespace Frends.Community.AWS
                 throw new ArgumentException(@"No files match the filemask and path supplied. ", nameof(input.FileMask));
             }
 
-            TransferUtility fileTransferUtility =
+            var fileTransferUtility =
                 new TransferUtility(
                     new AmazonS3Client(
                         parameters.AWSAccessKeyID,
@@ -165,7 +165,7 @@ namespace Frends.Community.AWS
             {
                 // Added check so with each file cancel is checked.
                 cancellationToken.ThrowIfCancellationRequested();
-                TransferUtilityUploadRequest fileTransferUtilityRequest = new TransferUtilityUploadRequest
+                var fileTransferUtilityRequest = new TransferUtilityUploadRequest
                 {
                     AutoCloseStream = true,
                     BucketName = parameters.Bucketname,

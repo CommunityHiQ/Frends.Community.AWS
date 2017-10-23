@@ -124,16 +124,15 @@ namespace Frends.Community.AWS
 
             // For returning data from events
             var tcs = new TaskCompletionSource<List<string>>();
-            var dl = tcs.Task;
 
-            // Threaded method.
+            // Threaded method, tcs gets our data and fills up when .Result is called.
             Task.Factory.StartNew(
-                async () => { await DownloadStuff(input, parameters, cancellationToken, tcs); });
+                async () => { await DownloadUtility(input, parameters, cancellationToken, tcs); });
             
-            return dl.Result;
+            return tcs.Task.Result;
         }
 
-        private static async Task DownloadStuff(Input input, Parameters parameters, CancellationToken cancellationToken, TaskCompletionSource<List<string>> tcs)
+        private static async Task DownloadUtility(Input input, Parameters parameters, CancellationToken cancellationToken, TaskCompletionSource<List<string>> tcs)
         {
             try
             {
@@ -145,70 +144,79 @@ namespace Frends.Community.AWS
                         parameters.AWSSecretAccessKey,
                         Region.RegionSelection(parameters.Region))))
                 {
-                    var list = new List<string>();
-
                     if (input.DownloadWholeDirectory)
-                    {
-                        // Create the request for directory download
-                        var request = new TransferUtilityDownloadDirectoryRequest()
-                        {
-                            BucketName = parameters.BucketName,
-                            DownloadFilesConcurrently = false,
-                            LocalDirectory = input.DestinationPath,
-                            S3Directory = input.SourceDirectory,
-                            //ModifiedSinceDate = "", // TODO: How does this work?
-                            //UnmodifiedSinceDate = "", // TODO: How does this work?
-                        };
-
-                        //
-                        EventHandler<DownloadDirectoryProgressArgs> eh = (sender, e) =>
-                        {                
-                            if(e.TransferredBytesForCurrentFile >= e.TotalNumberOfBytesForCurrentFile)
-                                list.Add(String.Join(@"\", request.LocalDirectory + e.CurrentFile.Replace(@"/", @"\")));
-                        };
-
-                        request.DownloadedDirectoryProgressEvent += eh;                        
-                        await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
-
-                        tcs.SetResult(list);
-                        request.DownloadedDirectoryProgressEvent -= eh;
-                    }
+                        await DownloadDirectory(
+                            input, parameters, cancellationToken, tcs, fileTransferUtility);
                     else
-                    {
-                        // Create the request for single download
-                        var request = new TransferUtilityDownloadRequest()
-                        {
-                            BucketName = parameters.BucketName,
-                            FilePath = input.DestinationPathAndFilename,
-                            Key = input.SourcePrefixAndFilename,
-                            //ModifiedSinceDate = "", // TODO: How does this work? 
-                            //ServerSideEncryptionCustomerMethod = "", // TODO: How does this work?
-                            //ServerSideEncryptionCustomerProvidedKey = "", // TODO: How does this work?
-                            //ServerSideEncryptionCustomerProvidedKeyMD5 = "", // TODO: How does this work?
-                            //UnmodifiedSinceDate = "", // TODO: How does this work?
-                            //VersionId = "" // TODO: How does this work?
-                        };
-
-                        EventHandler<WriteObjectProgressArgs> eh = (sender, e) =>
-                        {
-                            if(e.IsCompleted)
-                                list.Add(e.FilePath);
-                        };
-
-                        request.WriteObjectProgressEvent += eh;
-                        await fileTransferUtility.DownloadAsync(request, cancellationToken);
-
-                        tcs.SetResult(list);
-                        request.WriteObjectProgressEvent -= eh;
-                    }
+                        await DownloadFile(
+                            input, parameters, cancellationToken, tcs, fileTransferUtility);
                 }
             }
             catch (AmazonS3Exception s3Exception)
             {
-                throw new Exception(s3Exception.Message,
-                                  s3Exception.InnerException);
+                throw new Exception(s3Exception.Message, s3Exception.InnerException);
             }
 
+        }
+
+        private static async Task DownloadDirectory(Input input, Parameters parameters, CancellationToken cancellationToken, TaskCompletionSource<List<string>> tcs, TransferUtility fileTransferUtility)
+        {
+            var list = new List<string>();
+
+            // Create the request for directory download
+            var request = new TransferUtilityDownloadDirectoryRequest()
+            {
+                BucketName = parameters.BucketName,
+                DownloadFilesConcurrently = false,
+                LocalDirectory = input.DestinationPath,
+                S3Directory = input.SourceDirectory,
+                //ModifiedSinceDate = "", // TODO: How does this work?
+                //UnmodifiedSinceDate = "", // TODO: How does this work?
+            };
+
+            // anon function lets us to have list in same scope
+            EventHandler<DownloadDirectoryProgressArgs> eh = (sender, e) =>
+            {
+                if (e.TransferredBytesForCurrentFile >= e.TotalNumberOfBytesForCurrentFile)
+                    list.Add(String.Join(@"\", request.LocalDirectory + e.CurrentFile.Replace(@"/", @"\")));
+            };
+
+            request.DownloadedDirectoryProgressEvent += eh;
+            await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
+
+            // set the produced list as task completion source result when async method has finished.
+            tcs.SetResult(list);
+            request.DownloadedDirectoryProgressEvent -= eh;
+        }
+
+        private static async Task DownloadFile(Input input, Parameters parameters, CancellationToken cancellationToken, TaskCompletionSource<List<string>> tcs, TransferUtility fileTransferUtility)
+        {
+            var list = new List<string>();
+            // Create the request for single download
+            var request = new TransferUtilityDownloadRequest()
+            {
+                BucketName = parameters.BucketName,
+                FilePath = input.DestinationPathAndFilename,
+                Key = input.SourcePrefixAndFilename,
+                //ModifiedSinceDate = "", // TODO: How does this work? 
+                //ServerSideEncryptionCustomerMethod = "", // TODO: How does this work?
+                //ServerSideEncryptionCustomerProvidedKey = "", // TODO: How does this work?
+                //ServerSideEncryptionCustomerProvidedKeyMD5 = "", // TODO: How does this work?
+                //UnmodifiedSinceDate = "", // TODO: How does this work?
+                //VersionId = "" // TODO: How does this work?
+            };
+
+            EventHandler<WriteObjectProgressArgs> eh = (sender, e) =>
+            {
+                if (e.IsCompleted)
+                    list.Add(e.FilePath);
+            };
+
+            request.WriteObjectProgressEvent += eh;
+            await fileTransferUtility.DownloadAsync(request, cancellationToken);
+
+            tcs.SetResult(list);
+            request.WriteObjectProgressEvent -= eh;
         }
     }
 }

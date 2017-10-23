@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frends.Community.AWS.Downlo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aws_tester", "aws_tester\aws_tester.csproj", "{73A5D2D7-E434-4FB4-B495-450D7083D483}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frends.Community.AWS.DownloadTests", "Frends.Community.AWS.DownloadTests\Frends.Community.AWS.DownloadTests.csproj", "{560454EC-D3CF-489D-9EB7-9659EEE2735A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frends.Community.AWS.UploadTests", "Frends.Community.AWS.UploadTests\Frends.Community.AWS.UploadTests.csproj", "{9CB60485-0C03-4FF2-B680-04106445BB78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{73A5D2D7-E434-4FB4-B495-450D7083D483}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73A5D2D7-E434-4FB4-B495-450D7083D483}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73A5D2D7-E434-4FB4-B495-450D7083D483}.Release|Any CPU.Build.0 = Release|Any CPU
+		{560454EC-D3CF-489D-9EB7-9659EEE2735A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{560454EC-D3CF-489D-9EB7-9659EEE2735A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{560454EC-D3CF-489D-9EB7-9659EEE2735A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{560454EC-D3CF-489D-9EB7-9659EEE2735A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CB60485-0C03-4FF2-B680-04106445BB78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CB60485-0C03-4FF2-B680-04106445BB78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CB60485-0C03-4FF2-B680-04106445BB78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CB60485-0C03-4FF2-B680-04106445BB78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
