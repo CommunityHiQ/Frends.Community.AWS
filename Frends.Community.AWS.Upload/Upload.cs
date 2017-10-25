@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Frends.Tasks.Attributes;
 using Frends.Community.AWS.Helpers;
 using Amazon.S3;
 using Amazon.S3.Transfer;
+using System.Net;
 
 namespace Frends.Community.AWS
 {
@@ -53,7 +55,7 @@ namespace Frends.Community.AWS
         /// </summary>
         [DefaultValue("*REQUIRED*")]
         [DefaultDisplayType(DisplayType.Expression)]
-        public string Bucketname { get; set; }
+        public string BucketName { get; set; }
 
         /// <summary>
         /// Object prefix ( folder path ).
@@ -133,75 +135,66 @@ namespace Frends.Community.AWS
         /// <param name="cancellationToken"/>
         /// </summary>
         /// <returns>List&lt;string&gt; of filenames transferred. Optionally, return List&lt;string&gt; of object keys in S3.</returns>
-        public static List<string> UploadAsync(Input input, Parameters parameters, Options options, CancellationToken cancellationToken)
+        public static async Task<List<string>> UploadAsync(Input input, Parameters parameters, Options options, CancellationToken cancellationToken)
         {
             // First check to see if this task gets performed at all.
             cancellationToken.ThrowIfCancellationRequested();
 
+            #region Error checks
             if (!Directory.Exists(input.FilePath))
-            {
-                throw new ArgumentException(@"Source path not found.", nameof(input.FilePath));
-            }
+                throw new ArgumentException($@"Source path not found. {nameof(input.FilePath)}");
 
-            var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask) ? 
-                Directory.GetFiles(input.FilePath) : 
+            // remove trailing slash to avoid empty folders
+            if (parameters.Prefix.EndsWith("/"))
+                parameters.Prefix = parameters.Prefix.TrimEnd('/');
+
+            var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask) ?
+                Directory.GetFiles(input.FilePath) :
                 Directory.GetFiles(input.FilePath, input.FileMask);
-            var returnList = new List<string>();
 
             if (filesToCopy.Length < 1 && options.ThrowErrorIfNoMatch)
-            {
-                throw new ArgumentException(@"No files match the filemask and path supplied. ", nameof(input.FileMask));
-            }
-
+                throw new ArgumentException($@"No files match the filemask within supplied path. {nameof(input.FileMask)}");
+            #endregion
+            
             var fileTransferUtility =
-                new TransferUtility(
-                    new AmazonS3Client(
-                        parameters.AWSAccessKeyID,
-                        parameters.AWSSecretAccessKey, 
-                        Region.RegionSelection(parameters.Region))
-                        );
+               new TransferUtility(
+                   new AmazonS3Client(
+                       parameters.AWSAccessKeyID,
+                       parameters.AWSSecretAccessKey,
+                       Region.RegionSelection(parameters.Region)));
+            
+            var result = new List<string>();
 
             foreach (var file in filesToCopy)
             {
-                // Added check so with each file cancel is checked.
-                cancellationToken.ThrowIfCancellationRequested();
-                var fileTransferUtilityRequest = new TransferUtilityUploadRequest
+                var request = new TransferUtilityUploadRequest
                 {
                     AutoCloseStream = true,
-                    BucketName = parameters.Bucketname,
+                    BucketName = parameters.BucketName,
                     FilePath = file,
-                    StorageClass = StorageClassSelection(options.StorageClass),
+                    //StorageClass = StorageClassSelection(options.StorageClass),
                     //PartSize = 6291456, // 6 MB.
-                    Key = String.IsNullOrWhiteSpace(parameters.Prefix) ? 
-                        Path.GetFileName(file) : 
+                    Key = String.IsNullOrWhiteSpace(parameters.Prefix) ?
+                        Path.GetFileName(file) :
                         String.Join("/", parameters.Prefix, Path.GetFileName(file))
+                };
+                
+                request.UploadProgressEvent += (o, e) =>
+                {
+                    if (e.PercentDone == 100)
+                        if (options.ReturnListOfObjectKeys)
+                            result.Add(request.Key);
+                        else
+                            result.Add(e.FilePath);
                 };
 
                 try
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    fileTransferUtility.UploadAsync(fileTransferUtilityRequest, cancellationToken);
+                    await fileTransferUtility.UploadAsync(request, cancellationToken);
                 }
-                catch (AmazonS3Exception s3Exception)
-                {
-                    throw new Exception(@"Successful transfers: " + 
-                        String.Join(",", returnList) + 
-                        " Exception: " + 
-                        s3Exception.Message,
-                        s3Exception.InnerException);
-                }
-
-                if (options.ReturnListOfObjectKeys)
-                {
-                    returnList.Add(String.Join("/", fileTransferUtilityRequest.BucketName, fileTransferUtilityRequest.Key));
-                }
-                else
-                {
-                    returnList.Add(fileTransferUtilityRequest.FilePath);
-                }
-                cancellationToken.ThrowIfCancellationRequested();
+                catch (Exception ex) { throw new Exception($"AWS UploadAsync: Error occured while uploading file: {ex.Message}");}
             }
-            return returnList;
+            return result;
         }
 
         /// <summary>

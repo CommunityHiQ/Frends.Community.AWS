@@ -110,14 +110,11 @@ namespace Frends.Community.AWS
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Errors to throw if parameters are entered incorrectly.
-            // TODO: Change this so user doesnt have to CARE about trailing slash. Add it if DownloadWholeDirectory is true.
             if (input.DownloadWholeDirectory && !input.SourceDirectory.Trim().EndsWith(@"/"))
-                throw new ArgumentException(@"Use trailing slash ( / ) to indicate directory. ", nameof(input.SourceDirectory));
+                input.SourceDirectory += "/";
 
-            // TODO: Trim trailing slashes away.
             if (!input.DownloadWholeDirectory && input.SourcePrefixAndFilename.Trim().EndsWith(@"/"))
-                throw new ArgumentException(@"Filename cannot end with trailing slash ( / ). ", nameof(input.SourcePrefixAndFilename));
+                input.SourcePrefixAndFilename.TrimEnd('/');
 
             if (!input.DownloadWholeDirectory && input.DestinationPathAndFilename.Trim().EndsWith(@"\"))
                 throw new ArgumentException(@"No filename supplied. ", nameof(input.DestinationPathAndFilename));
