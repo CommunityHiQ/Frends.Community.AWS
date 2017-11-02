@@ -1,4 +1,6 @@
 ﻿using Amazon;
+using Amazon.S3;
+using Amazon.S3.Transfer;
 
 namespace Frends.Community.AWS.Helpers
 {
@@ -10,14 +12,17 @@ namespace Frends.Community.AWS.Helpers
         CACentral1, CNNorth1, SAEast1,
         USEast1, USEast2, USGovCloudWest1, USWest1, USWest2
     }
+    public enum StorageClasses
+    {
+        Standard, StandardInfrequent, Reduced, Glacier
+    }
 #pragma warning restore 1591
 
     /// <summary>
     /// Class containing regions for dropdown.
     /// </summary>
-    public class Region
-    {
-        
+    public class Helpers
+    {        
         /// <summary>
         /// To create dropdown box for task with enum through RegionEndpoint static list from SDK.
         /// </summary>
@@ -61,6 +66,30 @@ namespace Frends.Community.AWS.Helpers
                     return RegionEndpoint.USWest2;
                 default:
                     return RegionEndpoint.EUWest1;
+            }
+        }
+
+        /// <summary>
+        /// You can select different type of storage redundancy option.
+        /// Standard being the default with high redundancy and accessed often, but is the most expensive.
+        /// Defaults to Standard.
+        /// </summary>
+        /// <param name="s3StorageClass"></param>
+        /// <returns>S3StorageClass-object for UploadRequest-parameter.</returns>
+        public static S3StorageClass StorageClassSelection(StorageClasses s3StorageClass)
+        {
+            switch (s3StorageClass)
+            {
+                case StorageClasses.Standard:
+                    return S3StorageClass.Standard;
+                case StorageClasses.StandardInfrequent:
+                    return S3StorageClass.StandardInfrequentAccess;
+                case StorageClasses.Reduced:
+                    return S3StorageClass.ReducedRedundancy;
+                case StorageClasses.Glacier:
+                    return S3StorageClass.Glacier;
+                default:
+                    return S3StorageClass.Standard;
             }
         }
     }

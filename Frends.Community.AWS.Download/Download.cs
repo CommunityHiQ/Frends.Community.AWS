@@ -16,6 +16,7 @@ namespace Frends.Community.AWS
     /// </summary>
     public class Download
     {
+        #region Input, Options and Param
         /// <summary>
         /// Input class, you can download whole directories or single files.
         /// </summary>
@@ -98,6 +99,7 @@ namespace Frends.Community.AWS
             [DisplayName("Region")]
             public Regions Region { get; set; }
         }
+        #endregion
 
         /// <summary>
         /// Amazon AWS S3 Transfer files.
@@ -106,54 +108,65 @@ namespace Frends.Community.AWS
         /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>List&lt;string&gt;</returns>
-        public static List<string> DownloadAsync(Input input, Parameters parameters, CancellationToken cancellationToken)
+        public static async Task<List<string>> DownloadAsync(Input input, Parameters parameters, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (input.DownloadWholeDirectory && !input.SourceDirectory.Trim().EndsWith(@"/"))
-                input.SourceDirectory += "/";
-
-            if (!input.DownloadWholeDirectory && input.SourcePrefixAndFilename.Trim().EndsWith(@"/"))
-                input.SourcePrefixAndFilename.TrimEnd('/');
-
-            if (!input.DownloadWholeDirectory && input.DestinationPathAndFilename.Trim().EndsWith(@"\"))
-                throw new ArgumentException(@"No filename supplied. ", nameof(input.DestinationPathAndFilename));
-
+            #region Error checks and helps
+            if (input.DownloadWholeDirectory) {
+                if (String.IsNullOrWhiteSpace(input.SourceDirectory))
+                    throw new ArgumentNullException(nameof(input.SourceDirectory), "Cannot be empty. ");
+                if (String.IsNullOrWhiteSpace(input.DestinationPath))
+                    throw new ArgumentNullException(nameof(input.DestinationPath), "Cannot be empty. ");
+                // Just to help developers out to fix empty folders.
+                if (!input.SourceDirectory.Trim().EndsWith(@"/"))
+                    input.SourceDirectory += "/";
+            }
+            else
+            {
+                if (String.IsNullOrWhiteSpace(input.SourcePrefixAndFilename))
+                    throw new ArgumentNullException(nameof(input.SourcePrefixAndFilename), "Cannot be empty. ");
+                if (String.IsNullOrWhiteSpace(input.DestinationPathAndFilename))
+                    throw new ArgumentNullException(nameof(input.DestinationPathAndFilename), "Cannot be empty. ");
+                // Just to help developers out to fix empty folders.
+                if (input.SourcePrefixAndFilename.Trim().EndsWith(@"/"))
+                    input.SourcePrefixAndFilename.TrimEnd('/');
+                if (input.DestinationPathAndFilename.Trim().EndsWith(@"\"))
+                    throw new ArgumentException(@"No filename supplied. ", nameof(input.DestinationPathAndFilename));
+            }
+            #endregion
             // For returning data from events
             var tcs = new TaskCompletionSource<List<string>>();
 
-            // Threaded method, tcs gets our data and fills up when .Result is called.
-            Task.Factory.StartNew(
-                async () => { await DownloadUtility(input, parameters, cancellationToken, tcs); });
-            
+            // awaited method, tcs gets our data and fills up when .Result is called.
+            try
+            {
+                await DownloadUtility(input, parameters, cancellationToken, tcs);;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error in AWS Download: {ex.Message} : {ex.InnerException.Message}");
+            }
+
             return tcs.Task.Result;
         }
 
         private static async Task DownloadUtility(Input input, Parameters parameters, CancellationToken cancellationToken, TaskCompletionSource<List<string>> tcs)
         {
-            try
+            using (var fileTransferUtility =
+                 new TransferUtility(
+                     new AmazonS3Client(
+                         parameters.AWSAccessKeyID,
+                         parameters.AWSSecretAccessKey,
+                         Helpers.Helpers.RegionSelection(parameters.Region))))
             {
-                cancellationToken.ThrowIfCancellationRequested(); // Obligatory cancellation.
-
-                using (var fileTransferUtility = new TransferUtility(
-                    new AmazonS3Client(
-                        parameters.AWSAccessKeyID,
-                        parameters.AWSSecretAccessKey,
-                        Region.RegionSelection(parameters.Region))))
-                {
-                    if (input.DownloadWholeDirectory)
-                        await DownloadDirectory(
-                            input, parameters, cancellationToken, tcs, fileTransferUtility);
-                    else
-                        await DownloadFile(
-                            input, parameters, cancellationToken, tcs, fileTransferUtility);
-                }
+                if (input.DownloadWholeDirectory)
+                    await DownloadDirectory(
+                        input, parameters, cancellationToken, tcs, fileTransferUtility);
+                else
+                    await DownloadFile(
+                        input, parameters, cancellationToken, tcs, fileTransferUtility);                
             }
-            catch (AmazonS3Exception s3Exception)
-            {
-                throw new Exception(s3Exception.Message, s3Exception.InnerException);
-            }
-
         }
 
         private static async Task DownloadDirectory(Input input, Parameters parameters, CancellationToken cancellationToken, TaskCompletionSource<List<string>> tcs, TransferUtility fileTransferUtility)
@@ -172,18 +185,16 @@ namespace Frends.Community.AWS
             };
 
             // anon function lets us to have list in same scope
-            EventHandler<DownloadDirectoryProgressArgs> eh = (sender, e) =>
+            request.DownloadedDirectoryProgressEvent += (sender, e) =>
             {
                 if (e.TransferredBytesForCurrentFile >= e.TotalNumberOfBytesForCurrentFile)
                     list.Add(String.Join(@"\", request.LocalDirectory + e.CurrentFile.Replace(@"/", @"\")));
             };
 
-            request.DownloadedDirectoryProgressEvent += eh;
             await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
 
             // set the produced list as task completion source result when async method has finished.
             tcs.SetResult(list);
-            request.DownloadedDirectoryProgressEvent -= eh;
         }
 
         private static async Task DownloadFile(Input input, Parameters parameters, CancellationToken cancellationToken, TaskCompletionSource<List<string>> tcs, TransferUtility fileTransferUtility)
@@ -203,17 +214,15 @@ namespace Frends.Community.AWS
                 //VersionId = "" // TODO: How does this work?
             };
 
-            EventHandler<WriteObjectProgressArgs> eh = (sender, e) =>
+            request.WriteObjectProgressEvent += (sender, e) =>
             {
                 if (e.IsCompleted)
                     list.Add(e.FilePath);
             };
-
-            request.WriteObjectProgressEvent += eh;
+            
             await fileTransferUtility.DownloadAsync(request, cancellationToken);
 
             tcs.SetResult(list);
-            request.WriteObjectProgressEvent -= eh;
         }
     }
 }

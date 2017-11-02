@@ -8,17 +8,9 @@ using Frends.Tasks.Attributes;
 using Frends.Community.AWS.Helpers;
 using Amazon.S3;
 using Amazon.S3.Transfer;
-using System.Net;
 
 namespace Frends.Community.AWS
 {
-
-#pragma warning disable 1591
-    public enum StorageClasses
-    {
-        Standard, StandardInfrequent, Reduced, Glacier
-    }
-#pragma warning restore 1591
 
     /// <summary>
     /// Input filepath and filemask.
@@ -142,7 +134,7 @@ namespace Frends.Community.AWS
 
             #region Error checks
             if (!Directory.Exists(input.FilePath))
-                throw new ArgumentException($@"Source path not found. {nameof(input.FilePath)}");
+                throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
 
             // remove trailing slash to avoid empty folders
             if (parameters.Prefix.EndsWith("/"))
@@ -152,74 +144,54 @@ namespace Frends.Community.AWS
                 Directory.GetFiles(input.FilePath) :
                 Directory.GetFiles(input.FilePath, input.FileMask);
 
-            if (filesToCopy.Length < 1 && options.ThrowErrorIfNoMatch)
-                throw new ArgumentException($@"No files match the filemask within supplied path. {nameof(input.FileMask)}");
+            if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
+                throw new ArgumentException(@"No files match the filemask within supplied path. {nameof(input.FileMask)}");
             #endregion
-            
-            var fileTransferUtility =
+
+            var result = new List<string>();
+
+            using (var fileTransferUtility =
                new TransferUtility(
                    new AmazonS3Client(
                        parameters.AWSAccessKeyID,
                        parameters.AWSSecretAccessKey,
-                       Region.RegionSelection(parameters.Region)));
-            
-            var result = new List<string>();
-
-            foreach (var file in filesToCopy)
+                       Helpers.Helpers.RegionSelection(parameters.Region))))
             {
-                var request = new TransferUtilityUploadRequest
+                foreach (var file in filesToCopy)
                 {
-                    AutoCloseStream = true,
-                    BucketName = parameters.BucketName,
-                    FilePath = file,
-                    //StorageClass = StorageClassSelection(options.StorageClass),
-                    //PartSize = 6291456, // 6 MB.
-                    Key = String.IsNullOrWhiteSpace(parameters.Prefix) ?
-                        Path.GetFileName(file) :
-                        String.Join("/", parameters.Prefix, Path.GetFileName(file))
-                };
-                
-                request.UploadProgressEvent += (o, e) =>
-                {
-                    if (e.PercentDone == 100)
-                        if (options.ReturnListOfObjectKeys)
-                            result.Add(request.Key);
-                        else
-                            result.Add(e.FilePath);
-                };
+                    var request = new TransferUtilityUploadRequest
+                    {
+                        AutoCloseStream = true,
+                        BucketName = parameters.BucketName,
+                        FilePath = file,
+                        //StorageClass = StorageClassSelection(options.StorageClass),
+                        //PartSize = 6291456, // 6 MB.
+                        Key = string.IsNullOrWhiteSpace(parameters.Prefix) ?
+                            Path.GetFileName(file) :
+                            string.Join("/", parameters.Prefix, Path.GetFileName(file))
+                    };
 
-                try
-                {
-                    await fileTransferUtility.UploadAsync(request, cancellationToken);
+                    //register to event, when done, add to result list
+                    request.UploadProgressEvent += (o, e) =>
+                    {
+                        if (e.PercentDone == 100)
+                            if (options.ReturnListOfObjectKeys)
+                                result.Add(request.Key);
+                            else
+                                result.Add(e.FilePath);
+                    };
+
+                    try
+                    {
+                        await fileTransferUtility.UploadAsync(request, cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"AWS UploadAsync - Error occured while uploading file: {ex.Message}");
+                    }
                 }
-                catch (Exception ex) { throw new Exception($"AWS UploadAsync: Error occured while uploading file: {ex.Message}");}
             }
             return result;
-        }
-
-        /// <summary>
-        /// You can select different type of storage redundancy option.
-        /// Standard being the default with high redundancy and accessed often, but is the most expensive.
-        /// Defaults to Standard.
-        /// </summary>
-        /// <param name="s3StorageClass"></param>
-        /// <returns>S3StorageClass-object for UploadRequest-parameter.</returns>
-        private static S3StorageClass StorageClassSelection(StorageClasses s3StorageClass)
-        {
-            switch (s3StorageClass)
-            {
-                case StorageClasses.Standard:
-                    return S3StorageClass.Standard;
-                case StorageClasses.StandardInfrequent:
-                    return S3StorageClass.StandardInfrequentAccess;
-                case StorageClasses.Reduced:
-                    return S3StorageClass.ReducedRedundancy;
-                case StorageClasses.Glacier:
-                    return S3StorageClass.Glacier;
-                default:
-                    return S3StorageClass.Standard;
-            }
-
         }
     }
 }
