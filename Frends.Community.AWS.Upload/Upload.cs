@@ -122,29 +122,36 @@ namespace Frends.Community.AWS.UL
         /// Filemask is Windows-style, eg. *.*, *file?.txt
         /// Bucketname without s3://-prefix.
         /// <param name="input"/>
-        /// <param name="parameters"/>
-        /// <param name="options"/>
+        /// <param name="param"/>
+        /// <param name="opt"/>
         /// <param name="cancellationToken"/>
         /// </summary>
         /// <returns>List&lt;string&gt; of filenames transferred. Optionally, return List&lt;string&gt; of object keys in S3.</returns>
-        public static async Task<List<string>> UploadAsync(Input input, Parameters parameters, Options options, CancellationToken cancellationToken)
+        public static async Task<List<string>> UploadAsync(Input input, Parameters param, Options opt, CancellationToken cancellationToken)
         {
             // First check to see if this task gets performed at all.
             cancellationToken.ThrowIfCancellationRequested();
 
             #region Error checks
+            if (string.IsNullOrWhiteSpace(param.AWSAccessKeyID))
+                throw new ArgumentNullException(nameof(param.AWSAccessKeyID), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(param.AWSSecretAccessKey))
+                throw new ArgumentNullException(nameof(param.AWSSecretAccessKey), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(param.BucketName))
+                throw new ArgumentNullException(nameof(param.BucketName), "Cannot be empty. ");
+
             if (!Directory.Exists(input.FilePath))
                 throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
 
             // remove trailing slash to avoid empty folders
-            if (parameters.Prefix.EndsWith("/"))
-                parameters.Prefix = parameters.Prefix.TrimEnd('/');
+            if (param.Prefix.EndsWith("/"))
+                param.Prefix = param.Prefix.TrimEnd('/');
 
             var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask) ?
                 Directory.GetFiles(input.FilePath) :
                 Directory.GetFiles(input.FilePath, input.FileMask);
 
-            if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
+            if (opt.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
                 throw new ArgumentException(@"No files match the filemask within supplied path. {nameof(input.FileMask)}");
             #endregion
 
@@ -153,29 +160,29 @@ namespace Frends.Community.AWS.UL
             using (var fileTransferUtility =
                new TransferUtility(
                    new AmazonS3Client(
-                       parameters.AWSAccessKeyID,
-                       parameters.AWSSecretAccessKey,
-                       Helpers.Helpers.RegionSelection(parameters.Region))))
+                       param.AWSAccessKeyID,
+                       param.AWSSecretAccessKey,
+                       Helpers.Helpers.RegionSelection(param.Region))))
             {
                 foreach (var file in filesToCopy)
                 {
                     var request = new TransferUtilityUploadRequest
                     {
                         AutoCloseStream = true,
-                        BucketName = parameters.BucketName,
+                        BucketName = param.BucketName,
                         FilePath = file,
                         //StorageClass = StorageClassSelection(options.StorageClass),
                         //PartSize = 6291456, // 6 MB.
-                        Key = string.IsNullOrWhiteSpace(parameters.Prefix) ?
+                        Key = string.IsNullOrWhiteSpace(param.Prefix) ?
                             Path.GetFileName(file) :
-                            string.Join("/", parameters.Prefix, Path.GetFileName(file))
+                            string.Join("/", param.Prefix, Path.GetFileName(file))
                     };
 
                     //register to event, when done, add to result list
                     request.UploadProgressEvent += (o, e) =>
                     {
                         if (e.PercentDone == 100)
-                            if (options.ReturnListOfObjectKeys)
+                            if (opt.ReturnListOfObjectKeys)
                                 result.Add(request.Key);
                             else
                                 result.Add(e.FilePath);

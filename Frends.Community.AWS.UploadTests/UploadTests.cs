@@ -6,7 +6,7 @@ using Frends.Community.AWS.Helpers;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
-namespace Frends.Community.AWS.UploadTests
+namespace Frends.Community.AWS.UL.UploadTests
 {
     [TestFixture]
     public class Upload_ErrorTests
@@ -20,7 +20,12 @@ namespace Frends.Community.AWS.UploadTests
                 FileMask = @"*.test",
                 FilePath = @"c:\there_is_no_folder_like_this\"
             };
-            var param = new Parameters() { };
+            var param = new Parameters()
+            {
+                AWSAccessKeyID = "foo",
+                AWSSecretAccessKey = "bar",
+                BucketName = "baz"
+            };
             var options = new Options()
             {
                 ReturnListOfObjectKeys = true,
@@ -45,7 +50,13 @@ namespace Frends.Community.AWS.UploadTests
                 FileMask = "there_is_no_spoon.text",
                 FilePath = Path.GetTempPath()
             };
-            var param = new Parameters() {Prefix = @"\" };
+            var param = new Parameters()
+            {
+                AWSAccessKeyID = "foo",
+                AWSSecretAccessKey = "bar",
+                BucketName = "baz",
+                Prefix = @"\"
+            };
             var options = new Options()
             {
                 ReturnListOfObjectKeys = true,

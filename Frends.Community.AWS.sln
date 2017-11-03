@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frends.Community.AWS.Upload
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frends.Community.AWS.Listing", "Frends.Community.AWS.Listing\Frends.Community.AWS.Listing.csproj", "{858F258A-0B61-4EAE-BA59-B6E80F03AE16}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frends.Community.AWS.ListingTests", "Frends.Community.AWS.ListingTests\Frends.Community.AWS.ListingTests.csproj", "{35E632A4-6ED2-4FB8-8817-A9F8405ADFED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{858F258A-0B61-4EAE-BA59-B6E80F03AE16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{858F258A-0B61-4EAE-BA59-B6E80F03AE16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{858F258A-0B61-4EAE-BA59-B6E80F03AE16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35E632A4-6ED2-4FB8-8817-A9F8405ADFED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35E632A4-6ED2-4FB8-8817-A9F8405ADFED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35E632A4-6ED2-4FB8-8817-A9F8405ADFED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35E632A4-6ED2-4FB8-8817-A9F8405ADFED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

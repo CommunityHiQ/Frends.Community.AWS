@@ -53,13 +53,14 @@ namespace Frends.Community.AWS.LI
 
         /// <summary>
         /// Region selection, choose nearest.
-        /// Default is EUWest1.
+        /// Default: EUWest1.
         /// </summary>
         public Regions Region { get; set; }
 
         /// <summary>
         /// Object prefix ( folder path ).
         /// Use this to set prefix for each file.
+        /// Default: null
         /// </summary>
         [DefaultValue(null)]
         [DefaultDisplayType(DisplayType.Text)]
@@ -83,15 +84,17 @@ namespace Frends.Community.AWS.LI
 
         /// <summary>
         /// A key to start the listing from.
+        /// Default: null
         /// </summary>
-        [DefaultValue("")]
+        [DefaultValue(null)]
         [DefaultDisplayType(DisplayType.Text)]
         public string StartAfter { get; set; }
         
         /// <summary>
         /// If previous response is truncated, use the ContinuationToken from that response here, to continue listing.
+        /// Default: null
         /// </summary>
-        [DefaultValue("")]
+        [DefaultValue(null)]
         [DefaultDisplayType(DisplayType.Text)]
         public string ContinuationToken { get; set; }
     }
@@ -112,7 +115,17 @@ namespace Frends.Community.AWS.LI
     {
         public static async Task<JObject> ListObjectsAsync(Parameters param, Options opt, CancellationToken cToken)
         {
+            #region Error tests
+            if (string.IsNullOrWhiteSpace(param.AWSAccessKeyID))
+                throw new ArgumentNullException(nameof(param.AWSAccessKeyID), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(param.AWSSecretAccessKey))
+                throw new ArgumentNullException(nameof(param.AWSSecretAccessKey), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(param.BucketName))
+                throw new ArgumentNullException(nameof(param.BucketName), "Cannot be empty. ");
+            #endregion
+
             var response = new ListObjectsV2Response();
+
             using (var client = new AmazonS3Client(
                 param.AWSAccessKeyID, 
                 param.AWSSecretAccessKey, 
@@ -134,7 +147,10 @@ namespace Frends.Community.AWS.LI
                 response = await client.ListObjectsV2Async(request, cToken);
             }
 
-            var resp = opt.FullResponse ? JObject.FromObject(response) : new JObject(new JProperty("S3Objects", JObject.FromObject(response)["S3Objects"]));
+            var resp = opt.FullResponse ? 
+                JObject.FromObject(response) : 
+                new JObject(
+                    new JProperty("S3Objects", JObject.FromObject(response)["S3Objects"]));
 
             return resp;
         }

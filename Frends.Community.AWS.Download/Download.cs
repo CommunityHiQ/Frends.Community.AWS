@@ -103,14 +103,20 @@ namespace Frends.Community.AWS.DL
         /// Amazon AWS S3 Transfer files.
         /// </summary>
         /// <param name="input"></param>
-        /// <param name="parameters"></param>
+        /// <param name="param"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>List&lt;string&gt;</returns>
-        public static async Task<List<string>> DownloadAsync(Input input, Parameters parameters, CancellationToken cancellationToken)
+        public static async Task<List<string>> DownloadAsync(Input input, Parameters param, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             #region Error checks and helps
+            if (string.IsNullOrWhiteSpace(param.AWSAccessKeyID))
+                throw new ArgumentNullException(nameof(param.AWSAccessKeyID), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(param.AWSSecretAccessKey))
+                throw new ArgumentNullException(nameof(param.AWSSecretAccessKey), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(param.BucketName))
+                throw new ArgumentNullException(nameof(param.BucketName), "Cannot be empty. ");
             if (input.DownloadWholeDirectory) {
                 if (String.IsNullOrWhiteSpace(input.SourceDirectory))
                     throw new ArgumentNullException(nameof(input.SourceDirectory), "Cannot be empty. ");
@@ -139,7 +145,7 @@ namespace Frends.Community.AWS.DL
             // awaited method, tcs gets our data and fills up when .Result is called.
             try
             {
-                await DownloadUtility(input, parameters, cancellationToken, tcs);;
+                await DownloadUtility(input, param, cancellationToken, tcs);;
             }
             catch (Exception ex)
             {

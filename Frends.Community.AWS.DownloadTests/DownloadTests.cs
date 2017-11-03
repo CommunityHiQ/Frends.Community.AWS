@@ -4,7 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-namespace Frends.Community.AWS.DownloadTests
+
+namespace Frends.Community.AWS.DL.DownloadTests
 {
     /// <summary>
     /// Testing this task more requires a service with credentials or
@@ -15,8 +16,13 @@ namespace Frends.Community.AWS.DownloadTests
         [Test]
         public void Error_IfDestinationIsDirectory()
         {
-            var param = new Download.Parameters();
-            var input = new Download.Input()
+            var param = new Parameters()
+            {
+                AWSAccessKeyID = "foo",
+                AWSSecretAccessKey = "bar",
+                BucketName = "baz"
+            };
+            var input = new Input()
             {
                 DownloadWholeDirectory = false,
                 SourcePrefixAndFilename = @"folder/file",
@@ -36,8 +42,13 @@ namespace Frends.Community.AWS.DownloadTests
         public void Error_IfSourceIsEmpty()
         {
 
-            var param = new Download.Parameters();
-            var input = new Download.Input()
+            var param = new Parameters()
+            {
+                AWSAccessKeyID = "foo",
+                AWSSecretAccessKey = "bar",
+                BucketName = "baz"
+            };
+            var input = new Input()
             {
                 DownloadWholeDirectory = false,
                 SourcePrefixAndFilename = @" ",
@@ -57,8 +68,13 @@ namespace Frends.Community.AWS.DownloadTests
         public void Error_IfDestinationIsEmpty()
         {
 
-            var param = new Download.Parameters();
-            var input = new Download.Input()
+            var param = new Parameters()
+            {
+                AWSAccessKeyID = "foo",
+                AWSSecretAccessKey = "bar",
+                BucketName = "baz"
+            };
+            var input = new Input()
             {
                 DownloadWholeDirectory = false,
                 SourcePrefixAndFilename = @"foo/bar",
@@ -81,8 +97,13 @@ namespace Frends.Community.AWS.DownloadTests
         [Test]
         public void Error_IfSourceDirIsEmpty()
         {
-            var param = new Download.Parameters();
-            var input = new Download.Input()
+            var param = new Parameters()
+            {
+                AWSAccessKeyID = "foo",
+                AWSSecretAccessKey = "bar",
+                BucketName = "baz"
+            };
+            var input = new Input()
             {
                 DownloadWholeDirectory = true,
                 DestinationPath = "foo/bar",
@@ -101,8 +122,13 @@ namespace Frends.Community.AWS.DownloadTests
         [Test]
         public void Error_IfDestinationPathIsEmpty()
         {
-            var param = new Download.Parameters();
-            var input = new Download.Input()
+            var param = new Parameters()
+            {
+                AWSAccessKeyID = "foo",
+                AWSSecretAccessKey = "bar",
+                BucketName = "baz"
+            };
+            var input = new Input()
             {
                 DownloadWholeDirectory = true,
                 DestinationPath = " ",
