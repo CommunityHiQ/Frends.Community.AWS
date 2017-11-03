@@ -5,102 +5,100 @@ using System.Threading;
 using Frends.Community.AWS.Helpers;
 using Frends.Tasks.Attributes;
 using Amazon.S3;
-using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using System.Threading.Tasks;
 
-namespace Frends.Community.AWS
+namespace Frends.Community.AWS.DL
 {
+    #region Input, Options and Param
+    /// <summary>
+    /// Input class, you can download whole directories or single files.
+    /// </summary>
+    public class Input
+    {
+        /// <summary>
+        /// Uses different method to download. Whole directory gets all objects recursively.
+        /// </summary>
+        [DefaultValue(false)]
+        public Boolean DownloadWholeDirectory { get; set; }
+
+        /// <summary>
+        /// Downloads ALL objects with this prefix. Creates folder structure.
+        /// Examples: folder/, this/is/prefix/
+        /// </summary>
+        [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
+        [DefaultDisplayType(DisplayType.Text)]
+        [DefaultValue(null)]
+        public string SourceDirectory { get; set; }
+
+        /// <summary>
+        /// Downloads single object (file).
+        /// Example: folder/file.txt, this/is/prefix/file
+        /// </summary>
+        [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
+        [DefaultDisplayType(DisplayType.Text)]
+        [DefaultValue(null)]
+        public string SourcePrefixAndFilename { get; set; }
+
+        /// <summary>
+        /// Directory to create folders and files to.
+        /// Use trailing backlash ( \ ).
+        /// </summary>
+        [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
+        [DefaultDisplayType(DisplayType.Text)]
+        [DefaultValue(null)]
+        public string DestinationPath { get; set; }
+
+        /// <summary>
+        /// Folder to write file.
+        /// You can use different filename.
+        /// </summary>
+        [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
+        [DefaultDisplayType(DisplayType.Text)]
+        [DefaultValue(null)]
+        public string DestinationPathAndFilename { get; set; }
+    }
+
+    /// <summary>
+    /// Parameter class with username and keys.
+    /// </summary>
+    public class Parameters
+    {
+        /// <summary>
+        /// AWS Bucket name with Path
+        /// Example: bucketname/path/to/directory or #env.variable.
+        /// </summary>
+        [DefaultValue("")]
+        public string BucketName { get; set; }
+
+        /// <summary>
+        /// Key name for Amazon s3 File transfer aws_access_key_id
+        /// Use #env.variable.
+        /// </summary>
+        [DefaultValue("")]
+        [PasswordPropertyText(true)]
+        public string AWSAccessKeyID { get; set; }
+
+        /// <summary>
+        /// Secret  key name for Amazon s3 File transfer aws_secret_access_key
+        /// Use #env.variable.
+        /// </summary>
+        [DefaultValue("")]
+        [PasswordPropertyText(true)]
+        public string AWSSecretAccessKey { get; set; }
+
+        /// <summary>
+        /// Region selection, default EUWest1.
+        /// </summary>
+        [DisplayName("Region")]
+        public Regions Region { get; set; }
+    }
+    #endregion
     /// <summary>        
     /// Amazon AWS S3 File Download task
     /// </summary>
     public class Download
     {
-        #region Input, Options and Param
-        /// <summary>
-        /// Input class, you can download whole directories or single files.
-        /// </summary>
-        public class Input
-        {
-            /// <summary>
-            /// Uses different method to download. Whole directory gets all objects recursively.
-            /// </summary>
-            [DefaultValue(false)]
-            public Boolean DownloadWholeDirectory { get; set; }
-
-            /// <summary>
-            /// Downloads ALL objects with this prefix. Creates folder structure.
-            /// Examples: folder/, this/is/prefix/
-            /// </summary>
-            [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
-            [DefaultDisplayType(DisplayType.Text)]
-            [DefaultValue(null)]
-            public string SourceDirectory { get; set; }
-
-            /// <summary>
-            /// Downloads single object (file).
-            /// Example: folder/file.txt, this/is/prefix/file
-            /// </summary>
-            [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
-            [DefaultDisplayType(DisplayType.Text)]
-            [DefaultValue(null)]
-            public string SourcePrefixAndFilename { get; set; }
-
-            /// <summary>
-            /// Directory to create folders and files to.
-            /// Use trailing backlash ( \ ).
-            /// </summary>
-            [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
-            [DefaultDisplayType(DisplayType.Text)]
-            [DefaultValue(null)]
-            public string DestinationPath { get; set; }
-
-            /// <summary>
-            /// Folder to write file.
-            /// You can use different filename.
-            /// </summary>
-            [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
-            [DefaultDisplayType(DisplayType.Text)]
-            [DefaultValue(null)]
-            public string DestinationPathAndFilename { get; set; }
-        }
-
-        /// <summary>
-        /// Parameter class with username and keys.
-        /// </summary>
-        public class Parameters
-        {
-            /// <summary>
-            /// AWS Bucket name with Path
-            /// Example: bucketname/path/to/directory or #env.variable.
-            /// </summary>
-            [DefaultValue("")]
-            public string BucketName { get; set; }
-
-            /// <summary>
-            /// Key name for Amazon s3 File transfer aws_access_key_id
-            /// Use #env.variable.
-            /// </summary>
-            [DefaultValue("")]
-            [PasswordPropertyText(true)]
-            public string AWSAccessKeyID { get; set; }
-
-            /// <summary>
-            /// Secret  key name for Amazon s3 File transfer aws_secret_access_key
-            /// Use #env.variable.
-            /// </summary>
-            [DefaultValue("")]
-            [PasswordPropertyText(true)]
-            public string AWSSecretAccessKey { get; set; }
-
-            /// <summary>
-            /// Region selection, default EUWest1.
-            /// </summary>
-            [DisplayName("Region")]
-            public Regions Region { get; set; }
-        }
-        #endregion
-
         /// <summary>
         /// Amazon AWS S3 Transfer files.
         /// </summary>

@@ -9,7 +9,7 @@ using Frends.Community.AWS.Helpers;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 
-namespace Frends.Community.AWS
+namespace Frends.Community.AWS.UL
 {
 
     /// <summary>
@@ -50,14 +50,6 @@ namespace Frends.Community.AWS
         public string BucketName { get; set; }
 
         /// <summary>
-        /// Object prefix ( folder path ).
-        /// Use this to set prefix for each file.
-        /// </summary>
-        [DefaultValue(null)]
-        [DefaultDisplayType(DisplayType.Text)]
-        public string Prefix { get; set; }
-
-        /// <summary>
         /// Access Key.
         /// Use #env-variable with secret field for security.
         /// </summary>
@@ -80,6 +72,14 @@ namespace Frends.Community.AWS
         /// Default is EUWest1.
         /// </summary>
         public Regions Region { get; set; }
+
+        /// <summary>
+        /// Object prefix ( folder path ).
+        /// Use this to set prefix for each file.
+        /// </summary>
+        [DefaultValue(null)]
+        [DefaultDisplayType(DisplayType.Text)]
+        public string Prefix { get; set; }
     }
 
     /// <summary>
