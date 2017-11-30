@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>FRENDS AWS</title>
+    <authors>HiQ Finland</authors>
+    <owners>HiQ Finland</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>FRENDS task for AWS integrations</description>
+    <copyright>Copyright 2017</copyright>
+  </metadata>
+</package>

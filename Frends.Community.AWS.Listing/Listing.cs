@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Frends.Tasks.Attributes;
 using Frends.Community.AWS.Helpers;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Serialization;
-using Amazon.S3.Transfer;
 
 namespace Frends.Community.AWS.LI
 {
