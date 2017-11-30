@@ -11,15 +11,6 @@ namespace Frends.Community.AWS.LI.ListingTests
     [TestFixture]
     public class Listing_ErrorTests
     {
-        /*
-         * 
-         *             if (string.IsNullOrWhiteSpace(param.AWSAccessKeyID))
-                throw new ArgumentNullException(nameof(param.AWSAccessKeyID), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(param.AWSSecretAccessKey))
-                throw new ArgumentNullException(nameof(param.AWSSecretAccessKey), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(param.BucketName))
-                throw new ArgumentNullException(nameof(param.BucketName), "Cannot be empty. ");
-                */
         [Test]
         public void Error_IfAccessKeyIsEmpty()
         {
