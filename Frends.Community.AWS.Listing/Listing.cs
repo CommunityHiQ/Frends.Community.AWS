@@ -73,7 +73,7 @@ namespace Frends.Community.AWS.LI
         /// Use in conjuction with prefix to limit results to specific level of the flat namespace hierarchy.
         /// See: http://docs.aws.amazon.com/AmazonS3/latest/dev/ListingKeysHierarchy.html
         /// </summary>
-        [DefaultValue("/")]
+        [DefaultValue(null)]
         [DefaultDisplayType(DisplayType.Text)]
         public string Delimiter { get; set; }
 
@@ -135,15 +135,16 @@ namespace Frends.Community.AWS.LI
             {
                 var request = new ListObjectsV2Request()
                 {
+                    //RequestPayer = "",            
                     BucketName = param.BucketName,
-                    ContinuationToken = param.ContinuationToken,
                     Delimiter = param.Delimiter,
                     Encoding = EncodingType.Url,
                     FetchOwner = false,
                     MaxKeys = param.MaxKeys,
-                    Prefix = param.Prefix,
-                    //RequestPayer = "",
-                    StartAfter = param.StartAfter                    
+                    // added ternary to account for frends not including null as parameter by default...
+                    Prefix = string.IsNullOrWhiteSpace(param.Prefix) ? null : param.Prefix,
+                    ContinuationToken = string.IsNullOrWhiteSpace(param.ContinuationToken) ? null : param.ContinuationToken,
+                    StartAfter = string.IsNullOrWhiteSpace(param.StartAfter) ? null : param.StartAfter
                 };
 
                 response = await client.ListObjectsV2Async(request, cToken);
