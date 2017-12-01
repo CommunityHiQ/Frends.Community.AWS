@@ -60,12 +60,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Frends.Community.AWS.Helpers\Frends.Community.AWS.Helpers.csproj">
-      <Project>{dbbf284e-e8c0-40c4-ae02-1d64ed00e984}</Project>
-      <Name>Frends.Community.AWS.Helpers</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.15\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

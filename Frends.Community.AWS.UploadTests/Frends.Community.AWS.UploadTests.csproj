@@ -49,10 +49,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Frends.Community.AWS.Helpers\Frends.Community.AWS.Helpers.csproj">
-      <Project>{dbbf284e-e8c0-40c4-ae02-1d64ed00e984}</Project>
-      <Name>Frends.Community.AWS.Helpers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Frends.Community.AWS.Upload\Frends.Community.AWS.Upload.csproj">
       <Project>{f1e9a4f4-9a5a-41ed-bf69-c50d6f443673}</Project>
       <Name>Frends.Community.AWS.Upload</Name>

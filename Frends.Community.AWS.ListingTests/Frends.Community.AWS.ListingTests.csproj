@@ -55,10 +55,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Frends.Community.AWS.Helpers\Frends.Community.AWS.Helpers.csproj">
-      <Project>{dbbf284e-e8c0-40c4-ae02-1d64ed00e984}</Project>
-      <Name>Frends.Community.AWS.Helpers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Frends.Community.AWS.Listing\Frends.Community.AWS.Listing.csproj">
       <Project>{858f258a-0b61-4eae-ba59-b6e80f03ae16}</Project>
       <Name>Frends.Community.AWS.Listing</Name>

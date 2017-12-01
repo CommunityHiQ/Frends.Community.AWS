@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Frends.Community.AWS.Helpers;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 

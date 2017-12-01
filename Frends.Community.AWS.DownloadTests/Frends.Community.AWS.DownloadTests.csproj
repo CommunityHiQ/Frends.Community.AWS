@@ -58,10 +58,6 @@
       <Project>{dd893081-f509-4dc1-a720-9704791387c5}</Project>
       <Name>Frends.Community.AWS.Download</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Frends.Community.AWS.Helpers\Frends.Community.AWS.Helpers.csproj">
-      <Project>{dbbf284e-e8c0-40c4-ae02-1d64ed00e984}</Project>
-      <Name>Frends.Community.AWS.Helpers</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
