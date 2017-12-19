@@ -22,19 +22,19 @@ namespace Frends.Community.AWS.DL
 
     #region Input, Options and Param
     /// <summary>
-    /// Input class, you can download whole directories or single files.
+    ///     Input class, you can download whole directories or single files.
     /// </summary>
     public class Input
     {
         /// <summary>
-        /// Uses different method to download. Whole directory gets all objects recursively.
+        ///     Uses different method to download. Whole directory gets all objects recursively.
         /// </summary>
         [DefaultValue(false)]
         public Boolean DownloadWholeDirectory { get; set; }
 
         /// <summary>
-        /// Downloads ALL objects with this prefix. Creates folder structure.
-        /// Examples: folder/, this/is/prefix/
+        ///     Downloads ALL objects with this prefix. Creates folder structure.
+        ///     Examples: folder/, this/is/prefix/
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
         [DefaultDisplayType(DisplayType.Text)]
@@ -42,8 +42,8 @@ namespace Frends.Community.AWS.DL
         public string SourceDirectory { get; set; }
 
         /// <summary>
-        /// Downloads single object (file).
-        /// Example: folder/file.txt, this/is/prefix/file
+        ///     Downloads single object (file).
+        ///     Example: folder/file.txt, this/is/prefix/file
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
         [DefaultDisplayType(DisplayType.Text)]
@@ -51,8 +51,8 @@ namespace Frends.Community.AWS.DL
         public string SourcePrefixAndFilename { get; set; }
 
         /// <summary>
-        /// Directory to create folders and files to.
-        /// Use trailing backlash ( \ ).
+        ///     Directory to create folders and files to.
+        ///     Use trailing backlash ( \ ).
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
         [DefaultDisplayType(DisplayType.Text)]
@@ -60,8 +60,8 @@ namespace Frends.Community.AWS.DL
         public string DestinationPath { get; set; }
 
         /// <summary>
-        /// Folder to write file.
-        /// You can use different filename.
+        ///     Folder to write file.
+        ///     You can use different filename.
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
         [DefaultDisplayType(DisplayType.Text)]
@@ -70,63 +70,63 @@ namespace Frends.Community.AWS.DL
     }
 
     /// <summary>
-    /// Parameter class with username and keys.
+    ///     Parameter class with username and keys.
     /// </summary>
     public class Parameters
     {
         /// <summary>
-        /// AWS Bucket name with Path
-        /// Example: bucketname/path/to/directory or #env.variable.
+        ///     AWS Bucket name with Path
+        ///     Example: bucketname/path/to/directory or #env.variable.
         /// </summary>
-        [DefaultValue("")]
+        [DefaultDisplayType(DisplayType.Expression)]
         public string BucketName { get; set; }
 
         /// <summary>
-        /// Key name for Amazon s3 File transfer aws_access_key_id
-        /// Use #env.variable.
+        ///     Key name for Amazon s3 File transfer aws_access_key_id
+        ///     Use #env.variable.
         /// </summary>
-        [DefaultValue("")]
         [PasswordPropertyText(true)]
+        [DefaultDisplayType(DisplayType.Expression)]
         public string AWSAccessKeyID { get; set; }
 
         /// <summary>
-        /// Secret  key name for Amazon s3 File transfer aws_secret_access_key
-        /// Use #env.variable.
+        ///     Secret  key name for Amazon s3 File transfer aws_secret_access_key
+        ///     Use #env.variable.
         /// </summary>
-        [DefaultValue("")]
         [PasswordPropertyText(true)]
+        [DefaultDisplayType(DisplayType.Expression)]
         public string AWSSecretAccessKey { get; set; }
 
         /// <summary>
-        /// Region selection, default EUWest1.
+        ///     Region selection, default EUWest1.
         /// </summary>
         [DisplayName("Region")]
         public Regions Region { get; set; }
     }
     #endregion
     /// <summary>        
-    /// Amazon AWS S3 File Download task
+    ///     Amazon AWS S3 File Download task
     /// </summary>
     public class Download
     {
         /// <summary>
-        /// Amazon AWS S3 Transfer files.
+        ///     Amazon AWS S3 Transfer files.
         /// </summary>
         /// <param name="input"></param>
-        /// <param name="param"></param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>List&lt;string&gt;</returns>
-        public static async Task<List<string>> DownloadAsync(Input input, Parameters param, CancellationToken cancellationToken)
+        public static async Task<List<string>> DownloadAsync(Input input, Parameters parameters, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             #region Error checks and helps
-            if (string.IsNullOrWhiteSpace(param.AWSAccessKeyID))
-                throw new ArgumentNullException(nameof(param.AWSAccessKeyID), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(param.AWSSecretAccessKey))
-                throw new ArgumentNullException(nameof(param.AWSSecretAccessKey), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(param.BucketName))
-                throw new ArgumentNullException(nameof(param.BucketName), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(parameters.AWSAccessKeyID))
+                throw new ArgumentNullException(nameof(parameters.AWSAccessKeyID), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(parameters.AWSSecretAccessKey))
+                throw new ArgumentNullException(nameof(parameters.AWSSecretAccessKey), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(parameters.BucketName))
+                throw new ArgumentNullException(nameof(parameters.BucketName), "Cannot be empty. ");
             if (input.DownloadWholeDirectory) {
                 if (String.IsNullOrWhiteSpace(input.SourceDirectory))
                     throw new ArgumentNullException(nameof(input.SourceDirectory), "Cannot be empty. ");
@@ -155,7 +155,7 @@ namespace Frends.Community.AWS.DL
             // awaited method, tcs gets our data and fills up when .Result is called.
             try
             {
-                await DownloadUtility(input, param, cancellationToken, tcs);;
+                await DownloadUtility(input, parameters, cancellationToken, tcs);;
             }
             catch (Exception ex)
             {
@@ -243,7 +243,7 @@ namespace Frends.Community.AWS.DL
 
 
         /// <summary>
-        /// To create dropdown box for task with enum through RegionEndpoint static list from SDK.
+        ///     To create dropdown box for task with enum through RegionEndpoint static list from SDK.
         /// </summary>
         /// <param name="region">Region from enum list.</param>
         /// <returns>Amazon.RegionEndpoint static resource.</returns>

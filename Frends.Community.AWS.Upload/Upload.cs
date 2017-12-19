@@ -26,69 +26,44 @@ namespace Frends.Community.AWS.UL
 #pragma warning restore 1591
 
     /// <summary>
-    /// Input filepath and filemask.
-    /// </summary>
-    public class Input
-    {
-        /// <summary>
-        /// Path to folder.
-        /// ( c:\temp\ , \\network\folder )
-        /// </summary>
-        [DefaultValue(@"c:\temp\")]
-        [DefaultDisplayType(DisplayType.Text)]
-        public string FilePath { get; set; }
-
-        /// <summary>
-        /// Windows-style filemask, ( *.* , ?_file.*, foo_*.txt ).
-        /// Empty field means whole directory.
-        /// </summary>
-        [DefaultValue(@"*.*")]
-        [DefaultDisplayType(DisplayType.Text)]
-        public string FileMask { get; set; }
-    }
-
-    /// <summary>
-    /// Parameter class.
+    ///     Parameter class.
     /// </summary>
     public class Parameters
     {
         /// <summary>
-        /// AWS Bucketname, you can add folder path here.
-        /// Prefix will be added after this.
-        /// With Expression-mode, you can add prefixes ( #env.bucket + @"/prefix").
-        /// Do NOT use trailing slash. It will create empty folders.
+        ///     AWS Bucketname, you can add folder path here.
+        ///     Prefix will be added after this.
+        ///     With Expression-mode, you can add prefixes ( #env.bucket + @"/prefix").
+        ///     Do NOT use trailing slash. It will create empty folders.
         /// </summary>
-        [DefaultValue("*REQUIRED*")]
         [DefaultDisplayType(DisplayType.Expression)]
         public string BucketName { get; set; }
 
         /// <summary>
-        /// Access Key.
-        /// Use #env-variable with secret field for security.
+        ///     Access Key.
+        ///     Use #env-variable with secret field for security.
         /// </summary>
-        [DefaultValue("*REQUIRED*")]
         [PasswordPropertyText(true)]
         [DefaultDisplayType(DisplayType.Expression)]
         public string AWSAccessKeyID { get; set; }
 
         /// <summary>
-        /// Secret Access Key.
-        /// Use #env-variable with secret field for security.         
+        ///     Secret Access Key.
+        ///     Use #env-variable with secret field for security.         
         /// </summary>
-        [DefaultValue("*REQUIRED*")]
         [PasswordPropertyText(true)]
         [DefaultDisplayType(DisplayType.Expression)]
         public string AWSSecretAccessKey { get; set; }
 
         /// <summary>
-        /// Region selection, choose nearest.
-        /// Default is EUWest1.
+        ///     Region selection, choose nearest.
+        ///     Default is EUWest1.
         /// </summary>
         public Regions Region { get; set; }
 
         /// <summary>
-        /// Object prefix ( folder path ).
-        /// Use this to set prefix for each file.
+        ///     Object prefix ( folder path ).
+        ///     Use this to set prefix for each file.
         /// </summary>
         [DefaultValue(null)]
         [DefaultDisplayType(DisplayType.Text)]
@@ -96,75 +71,97 @@ namespace Frends.Community.AWS.UL
     }
 
     /// <summary>
-    /// Task behaviour.
-    /// Defaults work fine.
+    ///     Input filepath and filemask.
+    /// </summary>
+    public class Input
+    {
+        /// <summary>
+        ///     Path to folder.
+        ///     ( c:\temp\ , \\network\folder )
+        /// </summary>
+        [DefaultValue(@"c:\temp\")]
+        [DefaultDisplayType(DisplayType.Text)]
+        public string FilePath { get; set; }
+
+        /// <summary>
+        ///     Windows-style filemask, ( *.* , ?_file.*, foo_*.txt ).
+        ///     Empty field means whole directory.
+        /// </summary>
+        [DefaultValue(@"*.*")]
+        [DefaultDisplayType(DisplayType.Text)]
+        public string FileMask { get; set; }
+    }
+
+    /// <summary>
+    ///     Task behaviour.
+    ///     Defaults work fine.
     /// </summary>
     public class Options
     {
         /// <summary>
-        /// If there are no files in the path matching the filemask supplied,
-        /// throw error to fail the process.
+        ///     If there are no files in the path matching the filemask supplied,
+        ///     throw error to fail the process.
         /// </summary>
         [DefaultValue(true)]
         public Boolean ThrowErrorIfNoMatch { get; set; }
 
         /// <summary>
-        /// If you wish, you can return object keys from S3
-        /// ( format: bucket/prefix/prefix/filename.extension )
+        ///     If you wish, you can return object keys from S3
+        ///     ( format: bucket/prefix/prefix/filename.extension )
         /// </summary>
         [DefaultValue(false)]
         public Boolean ReturnListOfObjectKeys { get; set; }
 
         /// <summary>
-        /// You can specify Storage Class for uploaded files.
-        /// Standard is default.
-        /// Consult AWS S3 Documentation for others.
+        ///     You can specify Storage Class for uploaded files.
+        ///     Standard is default.
+        ///     Consult AWS S3 Documentation for others.
         /// </summary>
         public StorageClasses StorageClass { get; set; }
     }
 
     /// <summary>        
-    /// Filemask is Windows-style, eg. *.*, *file?.txt.
-    /// Bucket Name without s3://-prefix.
+    ///     Filemask is Windows-style, eg. *.*, *file?.txt.
+    ///     Bucket Name without s3://-prefix.
     /// </summary>
     public class Upload
     {
         /// <summary>
-        /// TASK OVERWRITES FILES WITH SAME PREFIX AND KEY!
-        /// Trailing slashes in bucketname or prefix will show as folder.
-        /// Filemask is Windows-style, eg. *.*, *file?.txt
-        /// Bucketname without s3://-prefix.
-        /// <param name="input"/>
-        /// <param name="param"/>
-        /// <param name="opt"/>
-        /// <param name="cancellationToken"/>
+        ///     TASK OVERWRITES FILES WITH SAME PREFIX AND KEY!
+        ///     Trailing slashes in bucketname or prefix will show as folder.
+        ///     Filemask is Windows-style, eg. *.*, *file?.txt
+        ///     Bucketname without s3://-prefix.
         /// </summary>
+        /// <param name="input"/>
+        /// <param name="parameters"/>
+        /// <param name="options"/>
+        /// <param name="cancellationToken"/>
         /// <returns>List&lt;string&gt; of filenames transferred. Optionally, return List&lt;string&gt; of object keys in S3.</returns>
-        public static async Task<List<string>> UploadAsync(Input input, Parameters param, Options opt, CancellationToken cancellationToken)
+        public static async Task<List<string>> UploadAsync(Input input, Parameters parameters, Options options, CancellationToken cancellationToken)
         {
             // First check to see if this task gets performed at all.
             cancellationToken.ThrowIfCancellationRequested();
 
             #region Error checks
-            if (string.IsNullOrWhiteSpace(param.AWSAccessKeyID))
-                throw new ArgumentNullException(nameof(param.AWSAccessKeyID), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(param.AWSSecretAccessKey))
-                throw new ArgumentNullException(nameof(param.AWSSecretAccessKey), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(param.BucketName))
-                throw new ArgumentNullException(nameof(param.BucketName), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(parameters.AWSAccessKeyID))
+                throw new ArgumentNullException(nameof(parameters.AWSAccessKeyID), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(parameters.AWSSecretAccessKey))
+                throw new ArgumentNullException(nameof(parameters.AWSSecretAccessKey), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(parameters.BucketName))
+                throw new ArgumentNullException(nameof(parameters.BucketName), "Cannot be empty. ");
 
             if (!Directory.Exists(input.FilePath))
                 throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
 
             // remove trailing slash to avoid empty folders
-            if (param.Prefix.EndsWith("/"))
-                param.Prefix = param.Prefix.TrimEnd('/');
+            if (parameters.Prefix.EndsWith("/"))
+                parameters.Prefix = parameters.Prefix.TrimEnd('/');
 
             var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask) ?
                 Directory.GetFiles(input.FilePath) :
                 Directory.GetFiles(input.FilePath, input.FileMask);
 
-            if (opt.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
+            if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
                 throw new ArgumentException(@"No files match the filemask within supplied path. {nameof(input.FileMask)}");
             #endregion
 
@@ -173,29 +170,29 @@ namespace Frends.Community.AWS.UL
             using (var fileTransferUtility =
                new TransferUtility(
                    new AmazonS3Client(
-                       param.AWSAccessKeyID,
-                       param.AWSSecretAccessKey,
-                       RegionSelection(param.Region))))
+                       parameters.AWSAccessKeyID,
+                       parameters.AWSSecretAccessKey,
+                       RegionSelection(parameters.Region))))
             {
                 foreach (var file in filesToCopy)
                 {
                     var request = new TransferUtilityUploadRequest
                     {
                         AutoCloseStream = true,
-                        BucketName = param.BucketName,
+                        BucketName = parameters.BucketName,
                         FilePath = file,
-                        //StorageClass = StorageClassSelection(options.StorageClass),
+                        StorageClass = StorageClassSelection(options.StorageClass),
                         //PartSize = 6291456, // 6 MB.
-                        Key = string.IsNullOrWhiteSpace(param.Prefix) ?
+                        Key = string.IsNullOrWhiteSpace(parameters.Prefix) ?
                             Path.GetFileName(file) :
-                            string.Join("/", param.Prefix, Path.GetFileName(file))
+                            string.Join("/", parameters.Prefix, Path.GetFileName(file))
                     };
 
                     //register to event, when done, add to result list
                     request.UploadProgressEvent += (o, e) =>
                     {
                         if (e.PercentDone == 100)
-                            if (opt.ReturnListOfObjectKeys)
+                            if (options.ReturnListOfObjectKeys)
                                 result.Add(request.Key);
                             else
                                 result.Add(e.FilePath);
@@ -216,7 +213,7 @@ namespace Frends.Community.AWS.UL
 
 
         /// <summary>
-        /// To create dropdown box for task with enum through RegionEndpoint static list from SDK.
+        ///     To create dropdown box for task with enum through RegionEndpoint static list from SDK.
         /// </summary>
         /// <param name="region">Region from enum list.</param>
         /// <returns>Amazon.RegionEndpoint static resource.</returns>
