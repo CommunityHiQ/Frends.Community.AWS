@@ -26,6 +26,27 @@ namespace Frends.Community.AWS.UL
 #pragma warning restore 1591
 
     /// <summary>
+    ///     Input filepath and filemask.
+    /// </summary>
+    public class Input
+    {
+        /// <summary>
+        ///     Path to folder.
+        ///     ( c:\temp\ , \\network\folder )
+        /// </summary>
+        [DefaultValue(@"c:\temp\")]
+        [DefaultDisplayType(DisplayType.Text)]
+        public string FilePath { get; set; }
+
+        /// <summary>
+        ///     Windows-style filemask, ( *.* , ?_file.*, foo_*.txt ).
+        ///     Empty field means whole directory.
+        /// </summary>
+        [DefaultValue(@"*.*")]
+        [DefaultDisplayType(DisplayType.Text)]
+        public string FileMask { get; set; }
+    }
+    /// <summary>
     ///     Parameter class.
     /// </summary>
     public class Parameters
@@ -68,28 +89,6 @@ namespace Frends.Community.AWS.UL
         [DefaultValue(null)]
         [DefaultDisplayType(DisplayType.Text)]
         public string Prefix { get; set; }
-    }
-
-    /// <summary>
-    ///     Input filepath and filemask.
-    /// </summary>
-    public class Input
-    {
-        /// <summary>
-        ///     Path to folder.
-        ///     ( c:\temp\ , \\network\folder )
-        /// </summary>
-        [DefaultValue(@"c:\temp\")]
-        [DefaultDisplayType(DisplayType.Text)]
-        public string FilePath { get; set; }
-
-        /// <summary>
-        ///     Windows-style filemask, ( *.* , ?_file.*, foo_*.txt ).
-        ///     Empty field means whole directory.
-        /// </summary>
-        [DefaultValue(@"*.*")]
-        [DefaultDisplayType(DisplayType.Text)]
-        public string FileMask { get; set; }
     }
 
     /// <summary>
