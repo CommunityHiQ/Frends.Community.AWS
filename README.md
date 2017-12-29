@@ -12,7 +12,7 @@ See individual README.md for task specific documentation.
 See [Building](#building).
 
 ## Building
-Download source from GitLab, create nuget packagage using nuspec-file. Upload nuget package to FRENDS4-solution.
+Download source from GitHub and restore external AWS API-library nuget references, build solution and create nuget packagage using nuspec-file. Upload nuget package to FRENDS4-solution.
 
 ## Contributing
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
