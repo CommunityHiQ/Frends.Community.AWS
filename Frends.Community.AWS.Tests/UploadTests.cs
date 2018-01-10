@@ -72,7 +72,7 @@ namespace Frends.Community.AWS.UL.UploadTests
                     .With.Message.StartsWith("No files match the filemask within supplied path."));
         }
 
-        /*
+        
         /// <summary>
         /// This tests actually tries to connect with bad credentials.
         /// Comment this test out if it creates problems.
@@ -108,6 +108,5 @@ namespace Frends.Community.AWS.UL.UploadTests
                 Throws.TypeOf<Exception>()
                     .With.Message.StartsWith($"AWS UploadAsync - Error occured while uploading file: "));
         }
-        */
     }
 }

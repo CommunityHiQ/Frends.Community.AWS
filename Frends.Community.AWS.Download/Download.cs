@@ -193,9 +193,7 @@ namespace Frends.Community.AWS.DL
                 BucketName = parameters.BucketName,
                 DownloadFilesConcurrently = false,
                 LocalDirectory = input.DestinationPath,
-                S3Directory = input.SourceDirectory,
-                //ModifiedSinceDate = "", // TODO: How does this work?
-                //UnmodifiedSinceDate = "", // TODO: How does this work?
+                S3Directory = input.SourceDirectory
             };
 
             // anon function lets us to have list in same scope
@@ -219,13 +217,7 @@ namespace Frends.Community.AWS.DL
             {
                 BucketName = parameters.BucketName,
                 FilePath = input.DestinationPathAndFilename,
-                Key = input.SourcePrefixAndFilename,
-                //ModifiedSinceDate = "", // TODO: How does this work? 
-                //ServerSideEncryptionCustomerMethod = "", // TODO: How does this work?
-                //ServerSideEncryptionCustomerProvidedKey = "", // TODO: How does this work?
-                //ServerSideEncryptionCustomerProvidedKeyMD5 = "", // TODO: How does this work?
-                //UnmodifiedSinceDate = "", // TODO: How does this work?
-                //VersionId = "" // TODO: How does this work?
+                Key = input.SourcePrefixAndFilename
             };
 
             request.WriteObjectProgressEvent += (sender, e) =>
@@ -238,9 +230,6 @@ namespace Frends.Community.AWS.DL
 
             tcs.SetResult(list);
         }
-
-
-
 
         /// <summary>
         ///     To create dropdown box for task with enum through RegionEndpoint static list from SDK.

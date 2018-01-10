@@ -7,9 +7,6 @@ using NUnit.Framework.Constraints;
 
 namespace Frends.Community.AWS.DL.DownloadTests
 {
-    /// <summary>
-    /// Testing this task more requires a service with credentials or
-    /// </summary>
     [TestFixture]
     public class Download_ErrorTests_SingleFiles
     {

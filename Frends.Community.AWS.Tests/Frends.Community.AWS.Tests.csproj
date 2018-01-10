@@ -1,23 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{35E632A4-6ED2-4FB8-8817-A9F8405ADFED}</ProjectGuid>
+    <ProjectGuid>{64B0CEE2-1121-482E-A227-AC932D827ABD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Frends.Community.AWS.ListingTests</RootNamespace>
-    <AssemblyName>Frends.Community.AWS.ListingTests</AssemblyName>
+    <RootNamespace>Frends.Community.AWS.Tests</RootNamespace>
+    <AssemblyName>Frends.Community.AWS.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,21 +39,38 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DownloadTests.cs" />
     <Compile Include="ListingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UploadTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Frends.Community.AWS.ListingTests.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Frends.Community.AWS.Download\Frends.Community.AWS.Download.csproj">
+      <Project>{dd893081-f509-4dc1-a720-9704791387c5}</Project>
+      <Name>Frends.Community.AWS.Download</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Frends.Community.AWS.Listing\Frends.Community.AWS.Listing.csproj">
       <Project>{858f258a-0b61-4eae-ba59-b6e80f03ae16}</Project>
       <Name>Frends.Community.AWS.Listing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Frends.Community.AWS.Upload\Frends.Community.AWS.Upload.csproj">
+      <Project>{f1e9a4f4-9a5a-41ed-bf69-c50d6f443673}</Project>
+      <Name>Frends.Community.AWS.Upload</Name>
+    </ProjectReference>
   </ItemGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
