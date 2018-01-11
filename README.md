@@ -1,20 +1,23 @@
+# Frends.Community.AWS
+Frends tasks to download, upload and list files for AWS S3 flat file storage.
+***
 - [Installing](#installing)
 - [Building from source](#building-from-source)
 - [Tasks](#tasks)
   - [DownloadAsync](#downloadasync)
-    - [Download Input](#downloadinput)
-    - [Download Parameters](#downloadparameters)
-    - [Download Result](#downloadresult)
-  - [UploadAsync](#uploadasync)
-    - [Upload Input](#uploadinput)
-    - [Upload Parameters](#uploadparameters)
-    - [Upload Options](#uploadoptions)
-    - [Upload Result](#uploadresult)
-  - [ListObjects](#listobjects)
-    - [ListObjects Input](#listobjectsinput)
-    - [ListObjects Parameters](#listobjectsparameters)
-    - [ListObjects Options](#listobjectsoptions)
-    - [ListObjects Result](#listobjectsresult)
+    - [DownloadAsync Input](#download-input)
+    - [DownloadAsync Parameters](#download-parameters)
+    - [DownloadAsync Result](#download-result)
+  - [UploadAsync](#upload-async)
+    - [UploadAsync Input](#upload-input)
+    - [UploadAsync Parameters](#upload-parameters)
+    - [UploadAsync Options](#upload-options)
+    - [UploadAsync Result](#upload-result)
+  - [ListObjectsAsync](#listobjectsasync)
+    - [ListObjectsAsync Input](#listobjectsasync-input)
+    - [ListObjectsAsync Parameters](#listobjectsasync-parameters)
+    - [ListObjectsAsync Options](#listobjectsasync-options)
+    - [ListObjectsAsync Result](#listobjectsasync-result)
 - [Building](#building)
 - [Contributing](#contributing)
 - [License](#license)
@@ -89,8 +92,9 @@ Property | Type | Description | Example (comma separated)
 Result | List<string> | List of file keys or filepaths. | c:\upload\file.csv, s3-bucket/object/prefix/file.csv
 ***
 ### ListObjects
-Lists files from S3. You can choose to return full response or just keys.
-This task was created to provide Download-task keys to dowlonad.
+Lists files from S3. You can choose to return full response or just object keys.
+Returns an JObject data structure. Keys are in ["S3Objects"]-array.
+You can combine this task with DownloadAsync-task to get the keys you want to download.
 
 #### ListObjects Input
 Property | Type | Description | Example (comma separated)
