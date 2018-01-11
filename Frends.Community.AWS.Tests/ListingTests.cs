@@ -12,16 +12,17 @@ namespace Frends.Community.AWS.LI.ListingTests
         [Test]
         public void Error_IfAccessKeyIsEmpty()
         {
+            var linput = new ListInput() { };
             var param = new Parameters() {
                 AWSAccessKeyID = String.Empty,
-                AWSSecretAccessKey = "foo",
-                BucketName = "bar",
+                AWSSecretAccessKey = "foo", // fake
+                BucketName = "bar", // fake
             };
-            var opt = new Options() { FullResponse = true };
+            var opt = new ListOptions() { FullResponse = true };
 
             ActualValueDelegate<Task> testDelegate =
                 async () => await Listing.ListObjectsAsync(
-                    param, opt, new CancellationToken());
+                    linput, param, opt, new CancellationToken());
 
             Assert.That(testDelegate,
                 Throws.TypeOf<ArgumentNullException>()
@@ -31,17 +32,18 @@ namespace Frends.Community.AWS.LI.ListingTests
         [Test]
         public void Error_IfSecretKeyIsEmpty()
         {
+            var linput = new ListInput() { };
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
+                AWSAccessKeyID = "foo", // fake
                 AWSSecretAccessKey = String.Empty,
-                BucketName = "bar",
+                BucketName = "bar", // fake
             };
-            var opt = new Options() { FullResponse = true };
+            var opt = new ListOptions() { FullResponse = true };
 
             ActualValueDelegate<Task> testDelegate =
                 async () => await Listing.ListObjectsAsync(
-                    param, opt, new CancellationToken());
+                    linput, param, opt, new CancellationToken());
 
             Assert.That(testDelegate,
                 Throws.TypeOf<ArgumentNullException>()
@@ -51,17 +53,18 @@ namespace Frends.Community.AWS.LI.ListingTests
         [Test]
         public void Error_IfBucketNameIsEmpty()
         {
+            var linput = new ListInput() { };
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
-                AWSSecretAccessKey = "bar",
+                AWSAccessKeyID = "foo", // fake
+                AWSSecretAccessKey = "bar", // fake
                 BucketName = String.Empty,
             };
-            var opt = new Options() { FullResponse = true };
+            var opt = new ListOptions() { FullResponse = true };
 
             ActualValueDelegate<Task> testDelegate =
                 async () => await Listing.ListObjectsAsync(
-                    param, opt, new CancellationToken());
+                    linput, param, opt, new CancellationToken());
 
             Assert.That(testDelegate,
                 Throws.TypeOf<ArgumentNullException>()

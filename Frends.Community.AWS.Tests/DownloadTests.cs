@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
-namespace Frends.Community.AWS.DL.DownloadTests
+namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
     public class Download_ErrorTests_SingleFiles
@@ -15,11 +15,11 @@ namespace Frends.Community.AWS.DL.DownloadTests
         {
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
-                AWSSecretAccessKey = "bar",
-                BucketName = "baz"
-            };
-            var input = new Input()
+                AWSAccessKeyID = "foo", // fake
+                AWSSecretAccessKey = "bar", // fake
+                BucketName = "baz" // fake
+            }; 
+            var input = new DownloadInput()
             {
                 DownloadWholeDirectory = false,
                 SourcePrefixAndFilename = @"folder/file",
@@ -41,11 +41,11 @@ namespace Frends.Community.AWS.DL.DownloadTests
 
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
-                AWSSecretAccessKey = "bar",
-                BucketName = "baz"
+                AWSAccessKeyID = "foo", // fake
+                AWSSecretAccessKey = "bar", // fake
+                BucketName = "baz" // fake
             };
-            var input = new Input()
+            var input = new DownloadInput()
             {
                 DownloadWholeDirectory = false,
                 SourcePrefixAndFilename = @" ",
@@ -67,11 +67,11 @@ namespace Frends.Community.AWS.DL.DownloadTests
 
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
-                AWSSecretAccessKey = "bar",
-                BucketName = "baz"
+                AWSAccessKeyID = "foo", // fake
+                AWSSecretAccessKey = "bar", // fake
+                BucketName = "baz" // fake
             };
-            var input = new Input()
+            var input = new DownloadInput()
             {
                 DownloadWholeDirectory = false,
                 SourcePrefixAndFilename = @"foo/bar",
@@ -96,11 +96,11 @@ namespace Frends.Community.AWS.DL.DownloadTests
         {
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
-                AWSSecretAccessKey = "bar",
-                BucketName = "baz"
+                AWSAccessKeyID = "foo", // fake
+                AWSSecretAccessKey = "bar", // fake
+                BucketName = "baz" // fake
             };
-            var input = new Input()
+            var input = new DownloadInput()
             {
                 DownloadWholeDirectory = true,
                 DestinationPath = "foo/bar",
@@ -121,11 +121,11 @@ namespace Frends.Community.AWS.DL.DownloadTests
         {
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
-                AWSSecretAccessKey = "bar",
-                BucketName = "baz"
+                AWSAccessKeyID = "foo", // fake
+                AWSSecretAccessKey = "bar", // fake
+                BucketName = "baz" // fake
             };
-            var input = new Input()
+            var input = new DownloadInput()
             {
                 DownloadWholeDirectory = true,
                 DestinationPath = " ",

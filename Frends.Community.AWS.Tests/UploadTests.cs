@@ -14,18 +14,18 @@ namespace Frends.Community.AWS.UL.UploadTests
         public void Error_IfSourcePathIsInvalid()
         {
 
-            var input = new Input()
+            var input = new UploadInput()
             {
                 FileMask = @"*.test",
                 FilePath = @"c:\there_is_no_folder_like_this\"
             };
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
-                AWSSecretAccessKey = "bar",
-                BucketName = "baz"
+                AWSAccessKeyID = "foo", // fake
+                AWSSecretAccessKey = "bar", // fake
+                BucketName = "baz" // fake
             };
-            var options = new Options()
+            var options = new UploadOptions()
             {
                 ReturnListOfObjectKeys = true,
                 StorageClass = StorageClasses.Standard,
@@ -44,19 +44,19 @@ namespace Frends.Community.AWS.UL.UploadTests
         [Test]
         public void Error_IfSwitchIsOnAndNothingMatches()
         {
-            var input = new Input()
+            var input = new UploadInput()
             {
                 FileMask = "there_is_no_spoon.text",
-                FilePath = Path.GetTempPath()
+                FilePath = Path.GetTempPath(),
+                Prefix = @"\"
             };
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
-                AWSSecretAccessKey = "bar",
-                BucketName = "baz",
-                Prefix = @"\"
+                AWSAccessKeyID = "foo", // fake
+                AWSSecretAccessKey = "bar", // fake
+                BucketName = "baz" // fake
             };
-            var options = new Options()
+            var options = new UploadOptions()
             {
                 ReturnListOfObjectKeys = true,
                 StorageClass = StorageClasses.Standard,
@@ -71,7 +71,6 @@ namespace Frends.Community.AWS.UL.UploadTests
                 Throws.TypeOf<ArgumentException>()
                     .With.Message.StartsWith("No files match the filemask within supplied path."));
         }
-
         
         /// <summary>
         /// This tests actually tries to connect with bad credentials.
@@ -80,20 +79,20 @@ namespace Frends.Community.AWS.UL.UploadTests
         [Test]
         public void Error_IfCredentialsAreIncorrect()
         {
-            var input = new Input()
+            var input = new UploadInput()
             {
                 FileMask = "*.*",
-                FilePath = Path.GetTempPath()
+                FilePath = Path.GetTempPath(),
+                Prefix = ""
             };
             var param = new Parameters()
             {
-                AWSAccessKeyID = "foo",
-                AWSSecretAccessKey = "bar",
-                BucketName = "baz",
-                Prefix = "",
+                AWSAccessKeyID = "foo", // fake
+                AWSSecretAccessKey = "bar", // fake
+                BucketName = "baz", // fake
                 Region = Regions.EUWest2
             };
-            var options = new Options()
+            var options = new UploadOptions()
             {
                 ReturnListOfObjectKeys = true,
                 StorageClass = StorageClasses.Standard,
