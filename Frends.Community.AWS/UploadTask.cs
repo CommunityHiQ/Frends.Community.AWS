@@ -78,9 +78,7 @@ namespace Frends.Community.AWS
                         FilePath = file,
                         StorageClass = Utilities.StorageClassSelection(options.StorageClass),
                         //PartSize = 6291456, // 6 MB.
-                        Key = string.IsNullOrWhiteSpace(input.Prefix) ?
-                            Path.GetFileName(file) :
-                            string.Join("/", input.Prefix, Path.GetFileName(file))
+                        Key = input.Prefix + Path.GetFileName(file)
                     };
 
                     //register to event, when done, add to result list

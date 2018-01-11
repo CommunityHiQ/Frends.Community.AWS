@@ -36,23 +36,23 @@ namespace Frends.Community.AWS
             if (string.IsNullOrWhiteSpace(parameters.BucketName))
                 throw new ArgumentNullException(nameof(parameters.BucketName), "Cannot be empty. ");
             if (input.DownloadWholeDirectory) {
-                if (String.IsNullOrWhiteSpace(input.SourceDirectory))
-                    throw new ArgumentNullException(nameof(input.SourceDirectory), "Cannot be empty. ");
+                if (String.IsNullOrWhiteSpace(input.SourcePrefix))
+                    throw new ArgumentNullException(nameof(input.SourcePrefix), "Cannot be empty. ");
                 if (String.IsNullOrWhiteSpace(input.DestinationPath))
                     throw new ArgumentNullException(nameof(input.DestinationPath), "Cannot be empty. ");
                 // Just to help developers out to fix empty folders.
-                if (!input.SourceDirectory.Trim().EndsWith(@"/"))
-                    input.SourceDirectory += "/";
+                if (!input.SourcePrefix.Trim().EndsWith(@"/"))
+                    input.SourcePrefix += "/";
             }
             else
             {
-                if (String.IsNullOrWhiteSpace(input.SourcePrefixAndFilename))
-                    throw new ArgumentNullException(nameof(input.SourcePrefixAndFilename), "Cannot be empty. ");
+                if (String.IsNullOrWhiteSpace(input.SourcePrefixAndKey))
+                    throw new ArgumentNullException(nameof(input.SourcePrefixAndKey), "Cannot be empty. ");
                 if (String.IsNullOrWhiteSpace(input.DestinationPathAndFilename))
                     throw new ArgumentNullException(nameof(input.DestinationPathAndFilename), "Cannot be empty. ");
                 // Just to help developers out to fix empty folders.
-                if (input.SourcePrefixAndFilename.Trim().EndsWith(@"/"))
-                    input.SourcePrefixAndFilename.TrimEnd('/');
+                if (input.SourcePrefixAndKey.Trim().EndsWith(@"/"))
+                    input.SourcePrefixAndKey.TrimEnd('/');
                 if (input.DestinationPathAndFilename.Trim().EndsWith(@"\"))
                     throw new ArgumentException(@"No filename supplied. ", nameof(input.DestinationPathAndFilename));
             }
@@ -128,7 +128,7 @@ namespace Frends.Community.AWS
                 BucketName = parameters.BucketName,
                 DownloadFilesConcurrently = false,
                 LocalDirectory = input.DestinationPath,
-                S3Directory = input.SourceDirectory
+                S3Directory = input.SourcePrefix
             };
 
             // anon function lets us to have list in same scope
@@ -167,7 +167,7 @@ namespace Frends.Community.AWS
             {
                 BucketName = parameters.BucketName,
                 FilePath = input.DestinationPathAndFilename,
-                Key = input.SourcePrefixAndFilename
+                Key = input.SourcePrefixAndKey
             };
 
             request.WriteObjectProgressEvent += (sender, e) =>

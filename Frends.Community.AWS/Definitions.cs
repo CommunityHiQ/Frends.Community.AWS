@@ -23,8 +23,8 @@ namespace Frends.Community.AWS
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
         [DefaultDisplayType(DisplayType.Text)]
-        [DefaultValue(null)]
-        public string SourceDirectory { get; set; }
+        [DefaultValue(@"/")]
+        public string SourcePrefix { get; set; }
 
         /// <summary>
         ///     Downloads single object (file).
@@ -32,8 +32,8 @@ namespace Frends.Community.AWS
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
         [DefaultDisplayType(DisplayType.Text)]
-        [DefaultValue(null)]
-        public string SourcePrefixAndFilename { get; set; }
+        [DefaultValue(@"/")]
+        public string SourcePrefixAndKey { get; set; }
 
         /// <summary>
         ///     Directory to create folders and files to.
