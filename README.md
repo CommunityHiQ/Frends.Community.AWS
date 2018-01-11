@@ -2,7 +2,6 @@
 Frends tasks to download, upload and list files for AWS S3 flat file storage.
 ***
 - [Installing](#installing)
-- [Building from source](#building-from-source)
 - [Tasks](#tasks)
   - [DownloadAsync](#downloadasync)
     - [DownloadAsync Input](#download-input)
@@ -18,17 +17,15 @@ Frends tasks to download, upload and list files for AWS S3 flat file storage.
     - [ListObjectsAsync Parameters](#listobjectsasync-parameters)
     - [ListObjectsAsync Options](#listobjectsasync-options)
     - [ListObjectsAsync Result](#listobjectsasync-result)
-- [Building](#building)
-- [Contributing](#contributing)
 - [License](#license)
+- [Building from source](#building-from-source)
+- [Contributing](#contributing)
+- [Changelog](#changelog)
 
 ***
 ## Installing
 You can install the task via FRENDS UI Task View or you can find the nuget package from the following nuget feed
 '[https://www.myget.org/F/frends/api/v2](https://www.myget.org/F/frends/api/v2)'
-***
-## Building from source
-Download source from GitHub and restore external AWS API-library nuget references, build solution and create nuget package using nuspec-file from Release binaries. Upload nuget package to FRENDS4-solution.
 ***
 ## Tasks
 
@@ -47,14 +44,14 @@ DownloadWholeDirectory | Boolean | Download all files behind the prefix. | true
 SourcePrefix| String | Prefix for the files, only visible when DownloadWholeDirectory is **true**. | /, object/, object/sub/
 DestinationPath | String | Location to save file to, only visible when DownloadWholeDirectory is **true**. | C:\download\
 SourcePrefixAndKey | String | Prefix and filename, only visible when DownloadWholeDirectory is **false**. | /object.key, /object/file.txt
-DestinationPathAndFilename | String | Destination path with filename, only visible when DownloadWholeDirectory is **false**. | C:\download\filename.txt, "C:\download\" + DateTime.now + ".txt"
+DestinationPathAndFilename | String | Destination path with filename, only visible when DownloadWholeDirectory is **false**. | C:\download\filename.txt, "C:\download\" + DateTime.Now + ".txt"
 
 #### Download Parameters
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-BucketName | Expression | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
-AWSAccessKeyID | Expression (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
-AWSSecretAccessKey | Expression (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
+AWSAccessKeyID | String (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
+AWSSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 
 #### Download Result
@@ -74,9 +71,9 @@ Prefix | String | Prefix for object key.  | folder/{{DateTime.now}}
 #### Upload Parameters
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-BucketName | Expression | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
-AWSAccessKeyID | Expression (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
-AWSSecretAccessKey | Expression (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
+AWSAccessKeyID | String (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
+AWSSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 
 #### Upload Options
@@ -108,9 +105,9 @@ ContinuationToken | String | If list is truncated (MaxKeys), response contains C
 #### ListObjects Parameters
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-BucketName | Expression | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
-AWSAccessKeyID | Expression (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
-AWSSecretAccessKey | Expression (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
+AWSAccessKeyID | String (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
+AWSSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 
 #### ListObjects Options
@@ -125,3 +122,40 @@ Result | JObject | List of file keys or full response with metadata. |
 ***
 ## License
 MIT License.
+***
+## Building from source
+
+Clone a copy of the repo
+
+`git clone https://github.com/CommunityHiQ/Frends.Community.AWS.git`
+
+Restore dependencies
+
+`nuget restore frends.community.aws`
+
+Rebuild the project
+
+Run Tests with nunit3. Tests can be found under
+
+`Frends.Community.PDFWriter.Tests\bin\Release\Frends.Community.AWS.Tests.dll`
+
+Create a nuget package
+
+`nuget pack nuspec/Frends.Community.AWS.nuspec`
+
+# Contributing
+When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
+
+1. Fork the repo on GitHub
+2. Clone the project to your own machine
+3. Commit changes to your own branch
+4. Push your work back up to your fork
+5. Submit a Pull request so that we can review your changes
+
+NOTE: Be sure to merge the latest from "upstream" before making a pull request!
+
+# Changelog
+
+| Version             | Changes                 |
+| ---------------------| ---------------------|
+| pre 1.0 | pending |
