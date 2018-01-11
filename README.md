@@ -2,31 +2,32 @@
 - [Building from source](#building-from-source)
 - [Tasks](#tasks)
     - [DownloadAsync](#downloadasync)
-        - [Input](#input)
-    	 - [Parameters](#parameters)
-    	 - [Options](#options)
-    	 - [Result](#result)
-      - [UploadAsync](#uploadasync)
-    	 - [Input](#input)
-    	 - [Parameters](#parameters)
-    	 - [Options](#options)
-    	 - [Result](#result)
-     - [ListObjects](#listobjects)
-    	 - [Input](#input)
-    	 - [Parameters](#parameters)
-    	 - [Options](#options)
-    	 - [Result](#result)
+        - [Input](#downloadinput)
+		- [Parameters](#downloadparameters)
+		- [Options](#options)
+		- [Result](#result)
+	- [UploadAsync](#uploadasync)
+		- [Input](#uploadasyncinput)
+		- [Parameters](#uploadparameters)
+		- [Options](#options)
+		- [Result](#result)
+	- [ListObjects](#listobjects)
+		- [Input](#input)
+		- [Parameters](#parameters)
+		- [Options](#options)
+		- [Result](#result)
 - [Building](#building)
 - [Contributing](#contributing)
 - [License](#license)
 
+***
 ## Installing
 You can install the task via FRENDS UI Task View or you can find the nuget package from the following nuget feed
 '[https://www.myget.org/F/frends/api/v2](https://www.myget.org/F/frends/api/v2)'
-
+***
 ## Building from source
 Download source from GitHub and restore external AWS API-library nuget references, build solution and create nuget package using nuspec-file from Release binaries. Upload nuget package to FRENDS4-solution.
-
+***
 ## Tasks
 
 ### DownloadAsync
@@ -54,7 +55,7 @@ Region | Selector | Bucket region, select from dropdown-list. |
 #### Result
 Property | Type | Description | Example
 ---------|------|-------------|--------
-#result | List<string> | List of filepaths to downloaded files. |
+Result | List<string> | List of filepaths to downloaded files. |
 
 ### Upload
 
@@ -83,7 +84,7 @@ StorageClass | Selector | Choose the type of storage for files. Read S3 document
 #### Result
 Property | Type | Description | Example
 ---------|------|-------------|--------
-#result | List<string> | List of file keys or filepaths. |
+Result | List<string> | List of file keys or filepaths. |
 
 ### Listing
 Lists files from S3. You can choose to return full response or just keys.
@@ -95,6 +96,7 @@ Delimiter | String | Limits the list to a character. See AWS S3 documents for fu
 MaxKeys | Integer | Limits the result list. |
 StartAfter | String | Start listing after specified key (eg. date if filenames are organised with dates). |
 ContinuationToken | String | If list is truncated (MaxKeys), response contains ContinuationToken. You can use this token to resume listing. |
+
 #### Parameters
 Property | Type | Description | Example
 ---------|------|-------------|--------
@@ -111,7 +113,7 @@ FullResponse | Boolean | Choose between list of files as JObject or full respons
 #### Result
 Property | Type | Description | Example
 ---------|------|-------------|--------
-#result | JObject | List of file keys or full response with metadata. |
+Result | JObject | List of file keys or full response with metadata. |
 
 ## Documentation
 Task downloads files from AWS S3. Full directory download gets all files behind the same prefix.
@@ -138,7 +140,7 @@ Region | Selector | Bucket region, select from dropdown-list.
 #### Result
 Property | Type | Description | Example
 ---------|------|-------------|--------
-#result | List<string> | List of filepaths to downloaded files. | 
+Result | List<string> | List of filepaths to downloaded files. | 
 
 ## License
 MIT License.
