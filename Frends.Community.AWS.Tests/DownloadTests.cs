@@ -22,7 +22,7 @@ namespace Frends.Community.AWS.Tests
             var input = new DownloadInput()
             {
                 DownloadWholeDirectory = false,
-                SourcePrefixAndFilename = @"folder/file",
+                SourcePrefixAndKey = @"folder/file",
                 DestinationPathAndFilename = @"c:\folder\"
             };
 
@@ -48,7 +48,7 @@ namespace Frends.Community.AWS.Tests
             var input = new DownloadInput()
             {
                 DownloadWholeDirectory = false,
-                SourcePrefixAndFilename = @" ",
+                SourcePrefixAndKey = @" ",
                 DestinationPathAndFilename = @"c:\folder\"
             };
 
@@ -58,7 +58,7 @@ namespace Frends.Community.AWS.Tests
 
             Assert.That(testDelegate,
                 Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.EndsWith($"{nameof(input.SourcePrefixAndFilename)}"));
+                    .With.Message.EndsWith($"{nameof(input.SourcePrefixAndKey)}"));
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace Frends.Community.AWS.Tests
             var input = new DownloadInput()
             {
                 DownloadWholeDirectory = false,
-                SourcePrefixAndFilename = @"foo/bar",
+                SourcePrefixAndKey = @"foo/bar",
                 DestinationPathAndFilename = @" "
             };
 
@@ -103,8 +103,8 @@ namespace Frends.Community.AWS.Tests
             var input = new DownloadInput()
             {
                 DownloadWholeDirectory = true,
-                DestinationPath = "foo/bar",
-                SourceDirectory = " "
+                DestinationPath = "c:\foo\bar",
+                SourcePrefix = " "
             };
 
             ActualValueDelegate<Task> testDelegate =
@@ -113,7 +113,7 @@ namespace Frends.Community.AWS.Tests
 
             Assert.That(testDelegate,
                 Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.EndsWith($"{nameof(input.SourceDirectory)}"));
+                    .With.Message.EndsWith($"{nameof(input.SourcePrefix)}"));
         }
 
         [Test]
@@ -129,7 +129,7 @@ namespace Frends.Community.AWS.Tests
             {
                 DownloadWholeDirectory = true,
                 DestinationPath = " ",
-                SourceDirectory = Path.GetTempPath()
+                SourcePrefix = @"\"
             };
 
             ActualValueDelegate<Task> testDelegate =

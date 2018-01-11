@@ -13,6 +13,16 @@ namespace Frends.Community.AWS
     /// </summary>
     public class Listing
     {
+        /// <summary>
+        ///     Lists keys from specified S3 Bucket.
+        ///     You can return full response from S3, or just keys.
+        ///     They're located in "S3Objects"-array in resulting JObject.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="parameters"></param>
+        /// <param name="options"></param>
+        /// <param name="cToken"></param>
+        /// <returns>JObject { JArray, JProperty }</returns>
         public static async Task<JObject> ListObjectsAsync(
             [CustomDisplay(DisplayOption.Tab)] ListInput input,
             [CustomDisplay(DisplayOption.Tab)] Parameters parameters,

@@ -3,6 +3,9 @@ using Amazon.S3;
 
 namespace Frends.Community.AWS
 {
+    /// <summary>
+    ///     Utility class.
+    /// </summary>
     public class Utilities
     {
         /// <summary>

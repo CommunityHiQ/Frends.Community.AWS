@@ -56,6 +56,9 @@ namespace Frends.Community.AWS
     #endregion
 
     #region List
+    /// <summary>
+    ///     Input parameter class for ListObjectsAsync
+    /// </summary>
     [DisplayName("Input")]
     public class ListInput
     {

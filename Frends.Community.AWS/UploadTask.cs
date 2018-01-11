@@ -46,11 +46,7 @@ namespace Frends.Community.AWS
 
             if (!Directory.Exists(input.FilePath))
                 throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
-
-            // remove trailing slash to avoid empty folders
-            if (input.Prefix.EndsWith("/"))
-                input.Prefix = input.Prefix.TrimEnd('/');
-
+            
             var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask) ?
                 Directory.GetFiles(input.FilePath) :
                 Directory.GetFiles(input.FilePath, input.FileMask);
