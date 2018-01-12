@@ -18,12 +18,12 @@
 		</dependencies>
 		<frameworkAssemblies>
 			<group targetFramework="net452">
-				<frameworkAssembly assemblyName="System"/>
-				<frameworkAssembly assemblyName="System.IO"/>			
-				<frameworkAssembly assemblyName="System.Threading"/>
-				<frameworkAssembly assemblyName="System.Threading.Tasks"/>			
-				<frameworkAssembly assemblyName="System.ComponentModel"/>
-				<frameworkAssembly assemblyName="System.Collections.Generic"/>
+				<frameworkAssembly assemblyName="System" targetFramework=""/>
+				<frameworkAssembly assemblyName="System.IO" targetFramework=""/>			
+				<frameworkAssembly assemblyName="System.Threading" targetFramework="net452"/>
+				<frameworkAssembly assemblyName="System.Threading.Tasks targetFramework="net452"/>			
+				<frameworkAssembly assemblyName="System.ComponentModel targetFramework="net452"/>
+				<frameworkAssembly assemblyName="System.Collections.Generic targetFramework="net452"/>
 			</group>
 		</frameworkAssemblies>
 	</metadata>
