@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.ComponentModel;
+using System.Collections.Generic;
 using Frends.Tasks.Attributes;
+using Newtonsoft.Json.Linq;
 
 namespace Frends.Community.AWS
 {
-    #region Download
+    #region Download argument classes
     /// <summary>
     ///     Input class, you can download whole directories or single files.
     /// </summary>
@@ -53,6 +56,59 @@ namespace Frends.Community.AWS
         [DefaultValue(null)]
         public string DestinationPathAndFilename { get; set; }
     }
+    #endregion
+
+    #region Download Result Tokens
+    public class DownloadResultToken
+    {
+        public string ObjectKey { get; set; }
+        public long Size { get; set; }
+        private string _filePath;
+        public string FilePath
+        {
+            get { return _filePath; }
+            set {
+                if (File.Exists(value))
+                    _filePath = value;
+                else
+                    throw new Exception($"AWS Download File Error; Cannot find {value} from filesystem. ");
+            }
+        }
+
+        public DownloadResultToken(string ObjectKey, string FilePath, long Size)
+        {
+            this.ObjectKey = ObjectKey;
+            _filePath = FilePath;
+            this.Size = Size;
+        }
+
+        public JToken ToJToken()
+        {
+            return (JObject)JToken.FromObject(this);
+        }
+    }
+
+    /// <summary>
+    /// Contains information of downloaded files, with ToJToken() as main return method.
+    /// </summary>
+    public class DownloadDirectoryResultToken
+    {
+        public int NumberOfFiles { get; set; }
+        public long TotalSize { get; set; }
+        public List<DownloadResultToken> Files;
+
+        public void Add(DownloadResultToken token)
+        {
+            Files.Add(token);
+        }
+        public JToken ToJToken()
+        {
+            return (JObject)JToken.FromObject(this);
+
+        }
+    }
+
+    
     #endregion
 
     #region List

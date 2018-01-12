@@ -140,5 +140,31 @@ namespace Frends.Community.AWS.Tests
                 Throws.TypeOf<ArgumentNullException>()
                     .With.Message.EndsWith($"{nameof(input.DestinationPath)}"));
         }
+
+        [Test]
+        public void Error_IfFileDoesNotExistsAndAddingToReturnList()
+        {
+            ActualValueDelegate<DownloadResultToken> testDelegate = () => new DownloadResultToken()
+            {
+                ObjectKey = "zz.foo",
+                Size = 987654321,
+                FilePath = @"X:\yy\zz.foo"
+            };
+
+            Assert.That(testDelegate,
+                Throws.Exception.With.Message.StartsWith(@"AWS Download File Error;"));
+        }
+        
+        [Test]
+        public void Download_CreatesProperDownloadResultToken()
+        {
+            var path = Path.GetTempFileName();
+            var token = new DownloadResultToken()
+            {
+                FilePath = path
+            };
+
+            Assert.AreEqual(token.FilePath, path);
+        }
     }
 }

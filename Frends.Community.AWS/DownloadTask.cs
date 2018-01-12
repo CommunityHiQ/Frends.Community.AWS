@@ -2,10 +2,12 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Frends.Tasks.Attributes;
 using Amazon.S3;
 using Amazon.S3.Transfer;
+using Newtonsoft;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Frends.Community.AWS
 {
@@ -21,7 +23,7 @@ namespace Frends.Community.AWS
         /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>List&lt;string&gt;</returns>
-        public static async Task<List<string>> DownloadAsync(
+        public static async Task<JToken> DownloadAsync(
             [CustomDisplay(DisplayOption.Tab)] DownloadInput input,
             [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
             CancellationToken cancellationToken
@@ -53,7 +55,7 @@ namespace Frends.Community.AWS
             }
             #endregion
             // For returning data from events
-            var tcs = new TaskCompletionSource<List<string>>();
+            var tcs = new TaskCompletionSource<JToken>();
 
             // awaited method, tcs gets our data and fills up when .Result is called.
             try
@@ -79,7 +81,7 @@ namespace Frends.Community.AWS
             DownloadInput input, 
             Parameters parameters, 
             CancellationToken cancellationToken, 
-            TaskCompletionSource<List<string>> tcs
+            TaskCompletionSource<JToken> tcs
             )
         {
             using (var fileTransferUtility =
@@ -106,17 +108,15 @@ namespace Frends.Community.AWS
         /// <param name="cancellationToken"></param>
         /// <param name="tcs"></param>
         /// <param name="fileTransferUtility"></param>
-        /// <returns></returns>
+        /// <returns>Task</returns>
         private static async Task DownloadDirectory(
             DownloadInput input, 
             Parameters parameters, 
             CancellationToken cancellationToken, 
-            TaskCompletionSource<List<string>> tcs, 
+            TaskCompletionSource<JToken> tcs, 
             TransferUtility fileTransferUtility
             )
         {
-            var list = new List<string>();
-
             // Create the request for directory download
             var request = new TransferUtilityDownloadDirectoryRequest()
             {
@@ -126,23 +126,35 @@ namespace Frends.Community.AWS
                 S3Directory = input.SourcePrefix
             };
 
+            var filelist = new DownloadDirectoryResultToken();
+
             // anon function lets us to have list in same scope
             request.DownloadedDirectoryProgressEvent += (sender, e) =>
             {
                 if (e.TransferredBytesForCurrentFile >= e.TotalNumberOfBytesForCurrentFile)
                 {
                     var path = Path.Combine(request.LocalDirectory, e.CurrentFile.Replace(@"/", @"\"));
-                    if (File.Exists(path))
-                        list.Add(path);
-                    else
-                        throw new Exception("AWS File error, cannot find downloaded file. ");
+                    var file = new DownloadResultToken()
+                    {
+                        FilePath = path,
+                        ObjectKey = input.SourcePrefix + e.CurrentFile,
+                        Size = e.TotalNumberOfBytesForCurrentFile
+                    };
+
+                    filelist.Add(file);
+                }
+
+                if (e.NumberOfFilesDownloaded >= e.TotalNumberOfFiles)
+                {
+                    filelist.NumberOfFiles = e.NumberOfFilesDownloaded;
+                    filelist.TotalSize = e.TotalBytes;
                 }
             };
 
             await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
 
             // set the produced list as task completion source result when async method has finished.
-            tcs.SetResult(list);
+            tcs.SetResult(filelist.ToJToken());
         }
 
         /// <summary>
@@ -153,16 +165,16 @@ namespace Frends.Community.AWS
         /// <param name="cancellationToken"></param>
         /// <param name="tcs"></param>
         /// <param name="fileTransferUtility"></param>
-        /// <returns></returns>
+        /// <returns>Task</returns>
         private static async Task DownloadFile(
             DownloadInput input, 
             Parameters parameters, 
             CancellationToken cancellationToken, 
-            TaskCompletionSource<List<string>> tcs, 
+            TaskCompletionSource<JToken> tcs, 
             TransferUtility fileTransferUtility
             )
         {
-            var list = new List<string>();
+            var file = new DownloadResultToken();
             // Create the request for single download
             var request = new TransferUtilityDownloadRequest()
             {
@@ -174,12 +186,16 @@ namespace Frends.Community.AWS
             request.WriteObjectProgressEvent += (sender, e) =>
             {
                 if (e.IsCompleted)
-                    list.Add(e.FilePath);
+                {
+                    file.ObjectKey = e.Key;
+                    file.FilePath = e.FilePath;
+                    file.Size = e.TotalBytes;
+                }
             };
             
             await fileTransferUtility.DownloadAsync(request, cancellationToken);
 
-            tcs.SetResult(list);
+            tcs.SetResult(file.ToJToken());
         }
 
     }
