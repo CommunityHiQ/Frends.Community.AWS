@@ -75,6 +75,8 @@ namespace Frends.Community.AWS
             }
         }
 
+        public DownloadResultToken() { }
+
         public DownloadResultToken(string ObjectKey, string FilePath, long Size)
         {
             this.ObjectKey = ObjectKey;
