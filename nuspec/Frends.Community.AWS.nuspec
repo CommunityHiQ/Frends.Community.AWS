@@ -17,14 +17,12 @@
 			</group>
 		</dependencies>
 		<frameworkAssemblies>
-			<group targetFramework="net452">
-				<frameworkAssembly assemblyName="System" targetFramework=""/>
-				<frameworkAssembly assemblyName="System.IO" targetFramework=""/>			
-				<frameworkAssembly assemblyName="System.Threading" targetFramework="net452"/>
-				<frameworkAssembly assemblyName="System.Threading.Tasks targetFramework="net452"/>			
-				<frameworkAssembly assemblyName="System.ComponentModel targetFramework="net452"/>
-				<frameworkAssembly assemblyName="System.Collections.Generic targetFramework="net452"/>
-			</group>
+			<frameworkAssembly assemblyName="System" targetFramework=""/>
+			<frameworkAssembly assemblyName="System.IO" targetFramework=""/>			
+			<frameworkAssembly assemblyName="System.Threading" targetFramework="net452"/>
+			<frameworkAssembly assemblyName="System.Threading.Tasks" targetFramework="net452"/>			
+			<frameworkAssembly assemblyName="System.ComponentModel" targetFramework="net452"/>
+			<frameworkAssembly assemblyName="System.Collections.Generic" targetFramework="net452"/>
 		</frameworkAssemblies>
 	</metadata>
 	<files>
