@@ -25,7 +25,7 @@ namespace Frends.Community.AWS
         /// <param name="parameters"/>
         /// <param name="options"/>
         /// <param name="cancellationToken"/>
-        /// <returns>List&lt;string&gt; of filenames transferred. Optionally, return List&lt;string&gt; of object keys in S3.</returns>
+        /// <returns>List&lt;string&gt;</returns>
         public static async Task<List<string>> UploadAsync(
             [CustomDisplay(DisplayOption.Tab)] UploadInput input,
             [CustomDisplay(DisplayOption.Tab)] Parameters parameters,

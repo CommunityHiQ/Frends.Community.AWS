@@ -121,7 +121,7 @@ FullResponse | Boolean | Choose between list of files as JObject or full respons
 #### ListObjectsAsync Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Result | JObject | List of file keys or full response with metadata. |
+Result | JObject | List of file keys or full response with metadata. | JObect { JArray("S3Objects"), JProperty }
 ***
 ## License
 MIT License.

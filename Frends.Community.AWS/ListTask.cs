@@ -22,7 +22,7 @@ namespace Frends.Community.AWS
         /// <param name="parameters"></param>
         /// <param name="options"></param>
         /// <param name="cToken"></param>
-        /// <returns>JObject { JArray, JProperty }</returns>
+        /// <returns>JObect { JArray("S3Objects"), JProperty }</returns>
         public static async Task<JObject> ListObjectsAsync(
             [CustomDisplay(DisplayOption.Tab)] ListInput input,
             [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
