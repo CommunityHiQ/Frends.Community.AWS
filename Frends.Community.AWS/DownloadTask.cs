@@ -23,7 +23,7 @@ namespace Frends.Community.AWS
         public static async Task<List<string>> DownloadAsync(
             [CustomDisplay(DisplayOption.Tab)] DownloadInput input,
             [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
-            [CustomDisplay(DisplayOption.Tab)] CancellationToken cancellationToken
+            CancellationToken cancellationToken
             )
         {
             cancellationToken.ThrowIfCancellationRequested();
