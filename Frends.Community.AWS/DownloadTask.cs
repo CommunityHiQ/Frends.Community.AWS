@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -40,9 +41,6 @@ namespace Frends.Community.AWS
                     throw new ArgumentNullException(nameof(input.SourcePrefix), "Cannot be empty. ");
                 if (String.IsNullOrWhiteSpace(input.DestinationPath))
                     throw new ArgumentNullException(nameof(input.DestinationPath), "Cannot be empty. ");
-                // Just to help developers out to fix empty folders.
-                if (!input.SourcePrefix.Trim().EndsWith(@"/"))
-                    input.SourcePrefix += "/";
             }
             else
             {
@@ -50,9 +48,6 @@ namespace Frends.Community.AWS
                     throw new ArgumentNullException(nameof(input.SourcePrefixAndKey), "Cannot be empty. ");
                 if (String.IsNullOrWhiteSpace(input.DestinationPathAndFilename))
                     throw new ArgumentNullException(nameof(input.DestinationPathAndFilename), "Cannot be empty. ");
-                // Just to help developers out to fix empty folders.
-                if (input.SourcePrefixAndKey.Trim().EndsWith(@"/"))
-                    input.SourcePrefixAndKey.TrimEnd('/');
                 if (input.DestinationPathAndFilename.Trim().EndsWith(@"\"))
                     throw new ArgumentException(@"No filename supplied. ", nameof(input.DestinationPathAndFilename));
             }
@@ -135,7 +130,13 @@ namespace Frends.Community.AWS
             request.DownloadedDirectoryProgressEvent += (sender, e) =>
             {
                 if (e.TransferredBytesForCurrentFile >= e.TotalNumberOfBytesForCurrentFile)
-                    list.Add(String.Join(@"\", request.LocalDirectory + e.CurrentFile.Replace(@"/", @"\")));
+                {
+                    var path = Path.Combine(request.LocalDirectory, e.CurrentFile.Replace(@"/", @"\"));
+                    if (File.Exists(path))
+                        list.Add(path);
+                    else
+                        throw new Exception("AWS File error, cannot find downloaded file. ");
+                }
             };
 
             await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);

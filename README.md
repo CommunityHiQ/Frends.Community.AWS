@@ -34,6 +34,7 @@ Task downloads files from AWS S3. Full directory download gets all files after t
 To individually download multiple files, you need to run task in a loop and provide object keys exactly.
 You can use ListObjectsAsync-task to provide objects keys.
 **Does not support wildcard characters, such as '*'.** S3 is a flat filesystem.
+Using "/" as prefix downloads everything from root, keeping folder structure (assuming "/" is used as delimiter).
 
 It is highly encouraged to design your S3 filing structure around the flat file schema.
 
@@ -41,7 +42,7 @@ It is highly encouraged to design your S3 filing structure around the flat file 
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 DownloadWholeDirectory | Boolean | Download all files behind the prefix. | true
-SourcePrefix| String | Prefix for the files, only visible when DownloadWholeDirectory is **true**. | /, object/, object/sub/
+SourcePrefix| String | Prefix for the files, only visible when DownloadWholeDirectory is **true**. | /, /object, /object/sub
 DestinationPath | String | Location to save file to, only visible when DownloadWholeDirectory is **true**. | C:\download\
 SourcePrefixAndKey | String | Prefix and filename, only visible when DownloadWholeDirectory is **false**. | /object.key, /object/file.txt
 DestinationPathAndFilename | String | Destination path with filename, only visible when DownloadWholeDirectory is **false**. | C:\download\filename.txt, "C:\download\" + DateTime.Now + ".txt"
