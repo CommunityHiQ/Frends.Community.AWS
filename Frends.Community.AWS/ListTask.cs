@@ -23,7 +23,7 @@ namespace Frends.Community.AWS
         /// <param name="options"></param>
         /// <param name="cToken"></param>
         /// <returns>JObect { JArray("S3Objects"), JProperty }</returns>
-        public static async Task<JObject> ListObjectsAsync(
+        public static async Task<JToken> ListObjectsAsync(
             [CustomDisplay(DisplayOption.Tab)] ListInput input,
             [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
             [CustomDisplay(DisplayOption.Tab)] ListOptions options,
@@ -62,12 +62,21 @@ namespace Frends.Community.AWS
                 response = await client.ListObjectsV2Async(request, cToken);
             }
 
-            var resp = options.FullResponse ? 
-                JObject.FromObject(response) : 
-                new JObject(
-                    new JProperty("S3Objects", JObject.FromObject(response)["S3Objects"]));
-
-            return resp;
+            JToken result = null;
+            // if option is true and array has no objects, 
+            if (options.ThrowErrorIfNoFilesFound && response.S3Objects.Count == 0)
+            {
+                throw new ArgumentException($"No objects found with supplied parameters: {nameof(input.Prefix)} , {nameof(input.Delimiter)} , {nameof(input.StartAfter)}.");
+            }
+            else
+            {
+                result = options.FullResponse ?
+                    JObject.FromObject(response) :
+                    new JObject(
+                        //new JProperty("S3Objects", JObject.FromObject(response)["S3Objects"]));
+                        JObject.FromObject(response)["S3Objects"]);
+            }
+            return result;
         }
     }
 }

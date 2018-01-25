@@ -63,54 +63,33 @@ namespace Frends.Community.AWS
     {
         public string ObjectKey { get; set; }
         public long Size { get; set; }
-        private string _filePath;
+        private string filePath;
         public string FilePath
         {
-            get { return _filePath; }
+            get { return filePath; }
             set {
+                // just to ensure our string.replace from objectkey has created file and path is correct
                 if (File.Exists(value))
-                    _filePath = value;
+                    filePath = value;
                 else
                     throw new Exception($"AWS Download File Error; Cannot find {value} from filesystem. ");
             }
         }
 
         public DownloadResultToken() { }
-
         public DownloadResultToken(string ObjectKey, string FilePath, long Size)
         {
             this.ObjectKey = ObjectKey;
-            _filePath = FilePath;
+            filePath = FilePath;
             this.Size = Size;
         }
 
+        // newtonsofts style of jobject creation.
         public JToken ToJToken()
         {
             return (JObject)JToken.FromObject(this);
         }
-    }
-
-    /// <summary>
-    /// Contains information of downloaded files, with ToJToken() as main return method.
-    /// </summary>
-    public class DownloadDirectoryResultToken
-    {
-        public int NumberOfFiles { get; set; }
-        public long TotalSize { get; set; }
-        public List<DownloadResultToken> Files;
-
-        public void Add(DownloadResultToken token)
-        {
-            Files.Add(token);
-        }
-        public JToken ToJToken()
-        {
-            return (JObject)JToken.FromObject(this);
-
-        }
-    }
-
-    
+    }    
     #endregion
 
     #region List
@@ -175,6 +154,12 @@ namespace Frends.Community.AWS
         /// </summary>
         [DefaultValue(false)]
         public bool FullResponse { get; set; }
+
+        /// <summary>
+        ///     Throw error if reponse has no items in "S3Objects" array.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool ThrowErrorIfNoFilesFound { get; set; }
     }
     #endregion
 

@@ -8,6 +8,7 @@ using Amazon.S3.Transfer;
 using Newtonsoft;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Frends.Community.AWS
 {
@@ -22,7 +23,7 @@ namespace Frends.Community.AWS
         /// <param name="input"></param>
         /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns>List&lt;string&gt;</returns>
+        /// <returns>JObject { properties } </returns>
         public static async Task<JToken> DownloadAsync(
             [CustomDisplay(DisplayOption.Tab)] DownloadInput input,
             [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
@@ -126,35 +127,31 @@ namespace Frends.Community.AWS
                 S3Directory = input.SourcePrefix
             };
 
-            var filelist = new DownloadDirectoryResultToken();
-
+            // create result list
+            var filelist = new List<DownloadResultToken>();
+            
             // anon function lets us to have list in same scope
             request.DownloadedDirectoryProgressEvent += (sender, e) =>
             {
                 if (e.TransferredBytesForCurrentFile >= e.TotalNumberOfBytesForCurrentFile)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    // awssdk creates directories based on objectkey, and does not give local path as eventarg, so we assume replacing is equal. we check this in downloadresulttoken class.
                     var path = Path.Combine(request.LocalDirectory, e.CurrentFile.Replace(@"/", @"\"));
-                    var file = new DownloadResultToken()
-                    {
+
+                    filelist.Add(new DownloadResultToken() {
                         FilePath = path,
                         ObjectKey = input.SourcePrefix + e.CurrentFile,
-                        Size = e.TotalNumberOfBytesForCurrentFile
-                    };
-
-                    filelist.Add(file);
-                }
-
-                if (e.NumberOfFilesDownloaded >= e.TotalNumberOfFiles)
-                {
-                    filelist.NumberOfFiles = e.NumberOfFilesDownloaded;
-                    filelist.TotalSize = e.TotalBytes;
+                        Size = e.TotalNumberOfBytesForCurrentFile } );
                 }
             };
-
+            
+            // run task
             await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
 
-            // set the produced list as task completion source result when async method has finished.
-            tcs.SetResult(filelist.ToJToken());
+            //create jtoken from result list of objects, set it to tcs as task result
+            tcs.SetResult((JArray)JToken.FromObject(filelist));
         }
 
         /// <summary>
@@ -174,7 +171,7 @@ namespace Frends.Community.AWS
             TransferUtility fileTransferUtility
             )
         {
-            var file = new DownloadResultToken();
+            JToken result = null;
             // Create the request for single download
             var request = new TransferUtilityDownloadRequest()
             {
@@ -183,19 +180,23 @@ namespace Frends.Community.AWS
                 Key = input.SourcePrefixAndKey
             };
 
+            // anon event handler
             request.WriteObjectProgressEvent += (sender, e) =>
             {
                 if (e.IsCompleted)
                 {
-                    file.ObjectKey = e.Key;
-                    file.FilePath = e.FilePath;
-                    file.Size = e.TotalBytes;
+                    cancellationToken.ThrowIfCancellationRequested();
+                    result = new DownloadResultToken(
+                        e.Key,
+                        e.FilePath,
+                        e.TotalBytes
+                        ).ToJToken();
                 }
             };
             
             await fileTransferUtility.DownloadAsync(request, cancellationToken);
 
-            tcs.SetResult(file.ToJToken());
+            tcs.SetResult(result);
         }
 
     }
