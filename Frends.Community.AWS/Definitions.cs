@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Frends.Community.AWS
 {
-    #region Download argument classes
+    #region Download
     /// <summary>
     ///     Input class, you can download whole directories or single files.
     /// </summary>
@@ -14,80 +14,50 @@ namespace Frends.Community.AWS
     public class DownloadInput
     {
         /// <summary>
-        ///     Uses different method to download. Whole directory gets all objects recursively.
-        /// </summary>
-        
-        public Boolean DownloadWholeDirectory { get; set; }
-
-        /// <summary>
         ///     Downloads all objects with this prefix. Creates folder structure.
         ///     Examples: folder/, this/is/prefix/
         /// </summary>
-        [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
         [DefaultDisplayType(DisplayType.Text)]
-        public string SourcePrefix { get; set; }
+        public string SourceDirectory { get; set; }
 
         /// <summary>
-        ///     Downloads single object (file).
-        ///     Example: folder/file.txt, this/is/prefix/file
+        ///     String pattern to search files. Might not be exactly the same as in Windows.
         /// </summary>
-        [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
         [DefaultDisplayType(DisplayType.Text)]
-        public string SourcePrefixAndKey { get; set; }
+        public string SearchPattern { get; set; }
 
         /// <summary>
         ///     Directory to create folders and files to.
         ///     Use trailing backlash ( \ ).
         /// </summary>
-        [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
         [DefaultDisplayType(DisplayType.Text)]
         public string DestinationPath { get; set; }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DisplayName("Options")]
+    public class DownloadOptions
+    {
+        /// <summary>
+        ///     Set to false to download files from current directory only.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool DownloadFromCurrentDirectoryOnly { get; set; }
 
         /// <summary>
-        ///     Folder to write file.
-        ///     You can use different filename.
+        ///     Overwrite files.
         /// </summary>
-        [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
-        [DefaultDisplayType(DisplayType.Text)]
-        public string DestinationPathAndFilename { get; set; }
+        [DefaultValue(false)]
+        public bool Overwrite { get; set; }
+
+        /// <summary>
+        ///     If search pattern does not match, throw error.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool ThrowErrorIfNoMatches { get; set; }
     }
-    #endregion
-
-    #region Download Result Tokens
-    /// <summary>
-    ///     Result toke
-    /// </summary>
-    internal class DownloadResultToken
-    {
-        internal string ObjectKey { get; set; }
-        internal long Size { get; set; }
-        private string filePath;
-        internal string FilePath
-        {
-            get { return filePath; }
-            set {
-                // just to ensure our string.replace from objectkey has created file and path is correct
-                if (File.Exists(value))
-                    filePath = value;
-                else
-                    throw new Exception($"AWS Download File Error; Cannot find {value} from filesystem. ");
-            }
-        }
-
-        internal DownloadResultToken() { }
-        internal DownloadResultToken(string ObjectKey, string FilePath, long Size)
-        {
-            this.ObjectKey = ObjectKey;
-            filePath = FilePath;
-            this.Size = Size;
-        }
-
-        // newtonsofts style of jobject creation.
-        internal JToken ToJToken()
-        {
-            return (JObject)JToken.FromObject(this);
-        }
-    }    
     #endregion
 
     #region List

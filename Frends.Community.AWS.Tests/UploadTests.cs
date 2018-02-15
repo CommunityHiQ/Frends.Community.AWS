@@ -71,41 +71,5 @@ namespace Frends.Community.AWS.UL.UploadTests
                 Throws.TypeOf<ArgumentException>()
                     .With.Message.StartsWith("No files match the filemask within supplied path."));
         }
-        
-        /// <summary>
-        /// This tests actually tries to connect with bad credentials.
-        /// Comment this test out if it creates problems.
-        /// </summary>
-        [Test]
-        public void Error_IfCredentialsAreIncorrect()
-        {
-            var input = new UploadInput()
-            {
-                FileMask = "*.*",
-                FilePath = Path.GetTempPath(),
-                Prefix = ""
-            };
-            var param = new Parameters()
-            {
-                AWSAccessKeyID = "foo", // fake
-                AWSSecretAccessKey = "bar", // fake
-                BucketName = "baz", // fake
-                Region = Regions.EUWest2
-            };
-            var options = new UploadOptions()
-            {
-                ReturnListOfObjectKeys = true,
-                StorageClass = StorageClasses.Standard,
-                ThrowErrorIfNoMatch = false
-            };
-
-            ActualValueDelegate<Task> testDelegate = 
-                async () => await Upload.UploadAsync(
-                    input, param, options, new CancellationToken());
-
-            Assert.That(testDelegate,
-                Throws.TypeOf<Exception>()
-                    .With.Message.StartsWith($"AWS UploadAsync - Error occured while uploading file: "));
-        }
     }
 }

@@ -58,16 +58,10 @@ namespace Frends.Community.AWS
                     ContinuationToken = string.IsNullOrWhiteSpace(input.ContinuationToken) ? null : input.ContinuationToken,
                     StartAfter = string.IsNullOrWhiteSpace(input.StartAfter) ? null : input.StartAfter
                 };
-                try
-                {
-                    cToken.ThrowIfCancellationRequested();
 
-                    response = await client.ListObjectsV2Async(request, cToken);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"AWS ListObjectsAsync - Error occured when fetching list: {ex.Message} - {ex.InnerException }");
-                }
+                cToken.ThrowIfCancellationRequested();
+
+                response = await client.ListObjectsV2Async(request, cToken);
             }
             
             // if option is true and array has no objects 

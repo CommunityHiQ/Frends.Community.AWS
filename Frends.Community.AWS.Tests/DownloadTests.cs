@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,90 +19,29 @@ namespace Frends.Community.AWS.Tests
         };
 
         [Test]
-        public void Error_IfSourceIsEmpty()
-        {
-            var input = new DownloadInput()
-            {
-                DownloadWholeDirectory = false,
-                SourcePrefixAndKey = @" ",
-                DestinationPathAndFilename = @"c:\folder\"
-            };
-
-            ActualValueDelegate<Task> testDelegate =
-                async () => await Download.DownloadAsync(
-                    input, param, new CancellationToken());
-
-            Assert.That(testDelegate,
-                Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.EndsWith($"{nameof(input.SourcePrefixAndKey)}"));
-        }
-
-        [Test]
         public void Error_IfDestinationIsEmpty()
         {
-            var input = new DownloadInput()
+            var i = new DownloadInput()
             {
-                DownloadWholeDirectory = false,
-                SourcePrefixAndKey = @"foo/bar",
-                DestinationPathAndFilename = @" "
+                DestinationPath = null,
+                SearchPattern = "*",
+                SourceDirectory = ""
             };
 
-            ActualValueDelegate<Task> testDelegate =
-                async () => await Download.DownloadAsync(
-                    input, param, new CancellationToken());
+            var o = new DownloadOptions()
+            {
+                DownloadFromCurrentDirectoryOnly = true,
+                Overwrite = true,
+                ThrowErrorIfNoMatches = true
+            };
+
+            ActualValueDelegate<List<string>> testDelegate =
+                () => Download.DownloadFiles(
+                    i, param, o, new CancellationToken());
 
             Assert.That(testDelegate,
                 Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.EndsWith($"{nameof(input.DestinationPathAndFilename)}"));
+                    .With.Message.EndsWith($"{nameof(i.DestinationPath)}"));
         }
-    }
-
-    [TestFixture]
-    public class Download_ErrorTest_Directory
-    {
-        private static Parameters param = new Parameters()
-        {
-            AWSAccessKeyID = "foo", // fake
-            AWSSecretAccessKey = "bar", // fake
-            BucketName = "baz" // fake
-        };
-
-        [Test]
-        public void Error_IfSourceDirIsEmpty()
-        {
-            var input = new DownloadInput()
-            {
-                DownloadWholeDirectory = true,
-                DestinationPath = "c:\foo\bar",
-                SourcePrefix = " "
-            };
-
-            ActualValueDelegate<Task> testDelegate =
-                async () => await Download.DownloadAsync(
-                    input, param, new CancellationToken());
-
-            Assert.That(testDelegate,
-                Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.EndsWith($"{nameof(input.SourcePrefix)}"));
-        }
-
-        [Test]
-        public void Error_IfDestinationPathIsEmpty()
-        {
-            var input = new DownloadInput()
-            {
-                DownloadWholeDirectory = true,
-                DestinationPath = " ",
-                SourcePrefix = @"\"
-            };
-
-            ActualValueDelegate<Task> testDelegate =
-                async () => await Download.DownloadAsync(
-                    input, param, new CancellationToken());
-
-            Assert.That(testDelegate,
-                Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.EndsWith($"{nameof(input.DestinationPath)}"));
-        }        
     }
 }

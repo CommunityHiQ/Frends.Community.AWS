@@ -3,10 +3,11 @@ Frends tasks to download, upload and list files for AWS S3 flat file storage.
 ***
 - [Installing](#installing)
 - [Tasks](#tasks)
-  - [DownloadAsync](#downloadasync)
-    - [DownloadAsync Input](#downloadasync-input)
-    - [DownloadAsync Parameters](#downloadasync-parameters)
-    - [DownloadAsync Result](#downloadasync-result)
+  - [DownloadFiles](#downloadfiles)
+    - [DownloadFiles Input](#downloadfiles-input)
+    - [DownloadFiles Parameters](#downloadfiles-parameters)
+	- [DownloadFiles Options](#downloadfiles-options)
+    - [DownloadFiles Result](#downloadfiles-result)
   - [UploadAsync](#uploadasync)
     - [UploadAsync Input](#uploadasync-input)
     - [UploadAsync Parameters](#uploadasync-parameters)
@@ -29,25 +30,17 @@ You can install the task via FRENDS UI Task View or you can find the nuget packa
 ***
 ## Tasks
 
-### DownloadAsync
-Task downloads files from AWS S3. Full directory download gets all files after the same prefix.
-To individually download multiple files, you need to run task in a loop and provide object keys exactly.
-You can use ListObjectsAsync-task to provide objects keys.
-**Does not support wildcard characters, such as '*'.** S3 is a flat filesystem.
-Using "/" as prefix downloads everything from root, keeping folder structure (assuming "/" is used as delimiter).
+### DownloadFiles
 
-It is highly encouraged to design your S3 filing structure around the flat file schema.
 
-#### DownloadAsync Input
+#### DownloadFiles Input
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-DownloadWholeDirectory | Boolean | Download all files behind the prefix. | true
-SourcePrefix| String | Prefix for the files, only visible when DownloadWholeDirectory is **true**. | /, /object, /object/sub
-DestinationPath | String | Location to save file to, only visible when DownloadWholeDirectory is **true**. | C:\download\
-SourcePrefixAndKey | String | Prefix and filename, only visible when DownloadWholeDirectory is **false**. | /object.key, /object/file.txt
-DestinationPathAndFilename | String | Destination path with filename, only visible when DownloadWholeDirectory is **false**. | C:\download\filename.txt, "C:\download\" + DateTime.Now + ".txt"
+SourceDirectory | string | S3 Directory | prefix, prefix/another
+SearchPattern | string | Filemask to match files with | *, *.*, *test*.csv
+DestinationPath | string | Local path to download files to | c:\temp, \\network\path
 
-#### DownloadAsync Parameters
+#### DownloadFiles Parameters
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
@@ -55,7 +48,14 @@ AWSAccessKeyID | String (secret) | S3 Access Key, #env-variable use is encourage
 AWSSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 
-#### DownloadAsync Result
+#### DownloadFiles Options
+Property | Type | Description | Example (comma separated)
+---------|------|-------------|--------
+DownloadFromCurrentDirectoryOnly | bool | To download from subdirectories, set to false. | true
+Overwrite | bool | If set to true, overwrites local files. | false
+ThrowErrorIfNoMatches | If search pattern does not find match any files, throw error. | true
+
+#### DownloadFiles Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 Result | List<string> | List of filepaths to downloaded files. | c:\download\file.csv
@@ -90,7 +90,7 @@ StorageClass | Selector | Choose the type of storage for files. Read S3 document
 #### UploadAsync Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Result | JToken | List of file keys or filepaths. | c:\upload\file.csv, object/prefix/file.csv
+Result | List<string> | List of file keys or filepaths. | c:\upload\file.csv, object/prefix/file.csv
 ***
 ### ListObjectsAsync
 Lists files from S3. You can choose to return full response or just object keys.
