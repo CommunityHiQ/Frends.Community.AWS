@@ -37,7 +37,7 @@ You can install the task via FRENDS UI Task View or you can find the nuget packa
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 SourceDirectory | string | S3 Directory | prefix, prefix/another
-SearchPattern | string | Filemask to match files with | *, *.*, *test*.csv
+SearchPattern | string | Filemask to match files with | \*, \*.\*, \*test\*.csv
 DestinationPath | string | Local path to download files to | c:\temp, \\network\path
 
 #### DownloadFiles Parameters
@@ -53,7 +53,7 @@ Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 DownloadFromCurrentDirectoryOnly | bool | To download from subdirectories, set to false. | true
 Overwrite | bool | If set to true, overwrites local files. | false
-ThrowErrorIfNoMatches | If search pattern does not find match any files, throw error. | true
+ThrowErrorIfNoMatches | bool | If search pattern does not find match any files, throw error. | true
 
 #### DownloadFiles Result
 Property | Type | Description | Example (comma separated)
