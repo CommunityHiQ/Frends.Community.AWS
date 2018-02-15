@@ -2,11 +2,11 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>Frends.Community.AWS</id>
-		<version>0.0.4</version>
+		<version>0.0.7</version>
 		<title>Frends Community AWS</title>
 		<authors>HiQ Finland</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>Tasks for listing and transferring files for AWS S3.</description>
+		<description>Tasks for listing and transferring files to and from AWS S3.</description>
 		<summary />
 		<dependencies>
 			<group targetFramework="net452">

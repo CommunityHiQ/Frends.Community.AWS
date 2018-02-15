@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.ComponentModel;
-using System.Collections.Generic;
 using Frends.Tasks.Attributes;
 using Newtonsoft.Json.Linq;
 
@@ -21,12 +20,11 @@ namespace Frends.Community.AWS
         public Boolean DownloadWholeDirectory { get; set; }
 
         /// <summary>
-        ///     Downloads ALL objects with this prefix. Creates folder structure.
+        ///     Downloads all objects with this prefix. Creates folder structure.
         ///     Examples: folder/, this/is/prefix/
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
         [DefaultDisplayType(DisplayType.Text)]
-        [DefaultValue(@"/")]
         public string SourcePrefix { get; set; }
 
         /// <summary>
@@ -35,7 +33,6 @@ namespace Frends.Community.AWS
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
         [DefaultDisplayType(DisplayType.Text)]
-        [DefaultValue(@"/")]
         public string SourcePrefixAndKey { get; set; }
 
         /// <summary>
@@ -44,7 +41,6 @@ namespace Frends.Community.AWS
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), true)]
         [DefaultDisplayType(DisplayType.Text)]
-        [DefaultValue(null)]
         public string DestinationPath { get; set; }
 
         /// <summary>
@@ -53,18 +49,20 @@ namespace Frends.Community.AWS
         /// </summary>
         [ConditionalDisplay(nameof(DownloadWholeDirectory), false)]
         [DefaultDisplayType(DisplayType.Text)]
-        [DefaultValue(null)]
         public string DestinationPathAndFilename { get; set; }
     }
     #endregion
 
     #region Download Result Tokens
-    public class DownloadResultToken
+    /// <summary>
+    ///     Result toke
+    /// </summary>
+    internal class DownloadResultToken
     {
-        public string ObjectKey { get; set; }
-        public long Size { get; set; }
+        internal string ObjectKey { get; set; }
+        internal long Size { get; set; }
         private string filePath;
-        public string FilePath
+        internal string FilePath
         {
             get { return filePath; }
             set {
@@ -76,8 +74,8 @@ namespace Frends.Community.AWS
             }
         }
 
-        public DownloadResultToken() { }
-        public DownloadResultToken(string ObjectKey, string FilePath, long Size)
+        internal DownloadResultToken() { }
+        internal DownloadResultToken(string ObjectKey, string FilePath, long Size)
         {
             this.ObjectKey = ObjectKey;
             filePath = FilePath;
@@ -85,7 +83,7 @@ namespace Frends.Community.AWS
         }
 
         // newtonsofts style of jobject creation.
-        public JToken ToJToken()
+        internal JToken ToJToken()
         {
             return (JObject)JToken.FromObject(this);
         }
@@ -180,7 +178,7 @@ namespace Frends.Community.AWS
 
         /// <summary>
         ///     Windows-style filemask, ( *.* , ?_file.*, foo_*.txt ).
-        ///     Empty field = all files.
+        ///     Empty field = *.*
         /// </summary>
         [DefaultValue(@"*.*")]
         [DefaultDisplayType(DisplayType.Text)]
@@ -188,7 +186,7 @@ namespace Frends.Community.AWS
         /// <summary>
         ///     S3 prefix for files.
         /// </summary>
-        [DefaultValue(@"\")]
+        [DefaultValue(@"")]
         [DefaultDisplayType(DisplayType.Text)]
         public string Prefix { get; set; }
     }
@@ -202,17 +200,17 @@ namespace Frends.Community.AWS
     {
         /// <summary>
         ///     If there are no files in the path matching the filemask supplied,
-        ///     throw error to fail the process.
+        ///     throw error.
         /// </summary>
         [DefaultValue(true)]
-        public Boolean ThrowErrorIfNoMatch { get; set; }
+        public bool ThrowErrorIfNoMatch { get; set; }
 
         /// <summary>
         ///     If you wish, you can return object keys from S3
-        ///     ( format: bucket/prefix/prefix/filename.extension )
+        ///     ( format: prefix/prefix/filename )
         /// </summary>
         [DefaultValue(false)]
-        public Boolean ReturnListOfObjectKeys { get; set; }
+        public bool ReturnListOfObjectKeys { get; set; }
 
         /// <summary>
         ///     You can specify Storage Class for uploaded files.

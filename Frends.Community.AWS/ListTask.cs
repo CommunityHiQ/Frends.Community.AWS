@@ -50,7 +50,7 @@ namespace Frends.Community.AWS
                 {     
                     BucketName = parameters.BucketName,
                     Delimiter = string.IsNullOrWhiteSpace(input.Delimiter) ? null : input.Delimiter,
-                    Encoding = EncodingType.Url,
+                    Encoding = null,
                     FetchOwner = false,
                     MaxKeys = input.MaxKeys,
                     // added ternary to account for frends not including null as parameter by default...
@@ -58,25 +58,23 @@ namespace Frends.Community.AWS
                     ContinuationToken = string.IsNullOrWhiteSpace(input.ContinuationToken) ? null : input.ContinuationToken,
                     StartAfter = string.IsNullOrWhiteSpace(input.StartAfter) ? null : input.StartAfter
                 };
+                try
+                {
+                    cToken.ThrowIfCancellationRequested();
 
-                response = await client.ListObjectsV2Async(request, cToken);
+                    response = await client.ListObjectsV2Async(request, cToken);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"AWS ListObjectsAsync - Error occured when fetching list: {ex.Message} - {ex.InnerException }");
+                }
             }
-
-            JToken result = null;
-            // if option is true and array has no objects, 
+            
+            // if option is true and array has no objects 
             if (options.ThrowErrorIfNoFilesFound && response.S3Objects.Count == 0)
-            {
-                throw new ArgumentException($"No objects found with supplied parameters: {nameof(input.Prefix)} , {nameof(input.Delimiter)} , {nameof(input.StartAfter)}.");
-            }
-            else
-            {
-                result = options.FullResponse ?
-                    JObject.FromObject(response) :
-                    new JObject(
-                        //new JProperty("S3Objects", JObject.FromObject(response)["S3Objects"]));
-                        JObject.FromObject(response)["S3Objects"]);
-            }
-            return result;
+                throw new ArgumentException($"No objects found with supplied parameters: {nameof(input.Prefix)}, {nameof(input.Delimiter)}, {nameof(input.StartAfter)}.");
+
+            return options.FullResponse ? JToken.FromObject(response) : JToken.FromObject(response)["S3Objects"];
         }
     }
 }

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using Frends.Tasks.Attributes;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Frends.Community.AWS
 {
@@ -26,7 +28,7 @@ namespace Frends.Community.AWS
         /// <param name="options"/>
         /// <param name="cancellationToken"/>
         /// <returns>List&lt;string&gt;</returns>
-        public static async Task<List<string>> UploadAsync(
+        public static async Task<JToken> UploadAsync(
             [CustomDisplay(DisplayOption.Tab)] UploadInput input,
             [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
             [CustomDisplay(DisplayOption.Tab)] UploadOptions options,
@@ -57,8 +59,7 @@ namespace Frends.Community.AWS
 
             var result = new List<string>();
 
-            using (var fileTransferUtility =
-               new TransferUtility(
+            using (var fileTransferUtility = new TransferUtility(
                    new AmazonS3Client(
                        parameters.AWSAccessKeyID,
                        parameters.AWSSecretAccessKey,
@@ -97,7 +98,7 @@ namespace Frends.Community.AWS
                     }
                 }
 
-                return result;
+                return JToken.FromObject(result);
             }
         }
     }

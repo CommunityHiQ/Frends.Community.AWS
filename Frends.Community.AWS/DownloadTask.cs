@@ -51,8 +51,6 @@ namespace Frends.Community.AWS
                     throw new ArgumentNullException(nameof(input.SourcePrefixAndKey), "Cannot be empty. ");
                 if (String.IsNullOrWhiteSpace(input.DestinationPathAndFilename))
                     throw new ArgumentNullException(nameof(input.DestinationPathAndFilename), "Cannot be empty. ");
-                if (input.DestinationPathAndFilename.Trim().EndsWith(@"\"))
-                    throw new ArgumentException(@"No filename supplied. ", nameof(input.DestinationPathAndFilename));
             }
             #endregion
             // For returning data from events
@@ -137,7 +135,9 @@ namespace Frends.Community.AWS
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    // awssdk creates directories based on objectkey, and does not give local path as eventarg, so we assume replacing is equal. we check this in downloadresulttoken class.
+                    // awssdk creates directories based on objectkey, 
+                    // and does not give local path as eventarg, so we assume 
+                    // replacing is equal. we check this in downloadresulttoken class.
                     var path = Path.Combine(request.LocalDirectory, e.CurrentFile.Replace(@"/", @"\"));
 
                     filelist.Add(new DownloadResultToken() {
@@ -148,10 +148,17 @@ namespace Frends.Community.AWS
             };
             
             // run task
-            await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
+            try
+            {
+                await fileTransferUtility.DownloadDirectoryAsync(request, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"AWS DownloadAsync - Error occured while downloading file: {ex.Message} - {ex.InnerException }");
+            }
 
             //create jtoken from result list of objects, set it to tcs as task result
-            tcs.SetResult((JArray)JToken.FromObject(filelist));
+            tcs.SetResult(JToken.FromObject(filelist));
         }
 
         /// <summary>
@@ -159,14 +166,14 @@ namespace Frends.Community.AWS
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cToken"></param>
         /// <param name="tcs"></param>
         /// <param name="fileTransferUtility"></param>
         /// <returns>Task</returns>
         private static async Task DownloadFile(
             DownloadInput input, 
             Parameters parameters, 
-            CancellationToken cancellationToken, 
+            CancellationToken cToken, 
             TaskCompletionSource<JToken> tcs, 
             TransferUtility fileTransferUtility
             )
@@ -185,16 +192,24 @@ namespace Frends.Community.AWS
             {
                 if (e.IsCompleted)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    cToken.ThrowIfCancellationRequested();
+
                     result = new DownloadResultToken(
                         e.Key,
                         e.FilePath,
-                        e.TotalBytes
-                        ).ToJToken();
+                        e.TotalBytes)
+                        .ToJToken();
                 }
             };
-            
-            await fileTransferUtility.DownloadAsync(request, cancellationToken);
+
+            try
+            {
+                await fileTransferUtility.DownloadAsync(request, cToken);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"AWS DownloadAsync - Error occured while downloading file: {ex.Message} - {ex.InnerException }");
+            }
 
             tcs.SetResult(result);
         }
