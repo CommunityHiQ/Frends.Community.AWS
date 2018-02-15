@@ -49,7 +49,8 @@ namespace Frends.Community.AWS
             
             var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask) ?
                 Directory.GetFiles(input.FilePath) :
-                Directory.GetFiles(input.FilePath, input.FileMask);
+                Directory.GetFiles(input.FilePath, input.FileMask, 
+                    options.UploadFromCurrentDirectoryOnly ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
 
             if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
                 throw new ArgumentException($"No files match the filemask within supplied path. {nameof(input.FileMask)}");

@@ -167,6 +167,13 @@ namespace Frends.Community.AWS
     public class UploadOptions
     {
         /// <summary>
+        ///     Set to false to upload files from current directory only.
+        ///     Filemask must not be empty.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool UploadFromCurrentDirectoryOnly { get; set; }
+
+        /// <summary>
         ///     If there are no files in the path matching the filemask supplied,
         ///     throw error.
         /// </summary>
