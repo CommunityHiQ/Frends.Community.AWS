@@ -70,7 +70,7 @@ Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 FilePath | String | Filepath to upload files from. | C:\upload, \\network\folder\
 FileMask | String | Filename or wildcards (eg. *.txt) | *.*, filename.csv
-Prefix | String | Prefix for object key.  | folder/{{DateTime.now}}
+Prefix | String | Prefix for object key. | folder/{{DateTime.Now}}
 
 #### UploadAsync Parameters
 Property | Type | Description | Example (comma separated)
@@ -90,7 +90,7 @@ StorageClass | Selector | Choose the type of storage for files. Read S3 document
 #### UploadAsync Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Result | List<string> | List of file keys or filepaths. | c:\upload\file.csv, s3-bucket/object/prefix/file.csv
+Result | JToken | List of file keys or filepaths. | c:\upload\file.csv, object/prefix/file.csv
 ***
 ### ListObjectsAsync
 Lists files from S3. You can choose to return full response or just object keys.
@@ -100,11 +100,11 @@ You can combine this task with DownloadAsync-task to get the keys you want to do
 #### ListObjectsAsync Input
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Prefix | String | Prefix to list files from. | object/prefix/, object/prefix/key.csv /
+Prefix | String | Prefix to list files from. | prefix, prefix/key.csv
 Delimiter | String | Limits the list to a character. See AWS S3 documents for further details on usage. | /, /20001010/
 MaxKeys | Integer | Limits the result list. | 100, 1, 99999999
 StartAfter | String | Start listing after specified key (eg. date if filenames are organised with dates). | object/prefix/key
-ContinuationToken | String | If list is truncated (MaxKeys), response contains ContinuationToken. You can use this token to resume listing. | 1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36Hy4vbOwM=
+ContinuationToken | String | If list is truncated (eg. MaxKeys is reached), response contains ContinuationToken. You can use this token to resume list. | 1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36HyEXAMPLE=
 
 #### ListObjectsAsync Parameters
 Property | Type | Description | Example (comma separated)
@@ -122,7 +122,7 @@ FullResponse | Boolean | Choose between list of files as JObject or full respons
 #### ListObjectsAsync Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Result | JObject | List of file keys or full response with metadata. | JObect { JArray("S3Objects"), JProperty }
+Result | JObject | List of file keys or full response with metadata. | JObject { JArray("S3Objects"), JProperty }
 ***
 ## License
 MIT License.
