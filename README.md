@@ -38,7 +38,7 @@ Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 SourceDirectory | string | S3 Directory | prefix, prefix/another
 SearchPattern | string | Filemask to match files with | \*, \*.\*, \*test\*.csv
-DestinationPath | string | Local path to download files to | c:\temp, \\network\path
+DestinationPath | string | Local path to download files to | c:\temp, \\\\network\path
 
 #### DownloadFiles Parameters
 Property | Type | Description | Example (comma separated)
