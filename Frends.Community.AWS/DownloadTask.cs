@@ -62,11 +62,11 @@ namespace Frends.Community.AWS
             using (var s3Client = new AmazonS3Client(
                 parameters.AWSAccessKeyID, parameters.AWSSecretAccessKey, Utilities.RegionSelection(parameters.Region)))
             {
-                var dirInfo = new S3DirectoryInfo(s3Client, parameters.BucketName, input.SourceDirectory);
+                var dirInfo = new S3DirectoryInfo(s3Client, parameters.BucketName, input.S3Directory);
                 if (dirInfo.Exists)
                     return DownloadFiles(input, option, dirInfo, cToken);
                 else
-                    throw new ArgumentException($"Cannot find S3 directory. {nameof(input.SourceDirectory)}");
+                    throw new ArgumentException($"Cannot find S3 directory. {nameof(input.S3Directory)}");
             }
         }
 

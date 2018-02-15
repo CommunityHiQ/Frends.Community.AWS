@@ -18,7 +18,7 @@ namespace Frends.Community.AWS
         ///     Examples: folder/, this/is/prefix/
         /// </summary>
         [DefaultDisplayType(DisplayType.Text)]
-        public string SourceDirectory { get; set; }
+        public string S3Directory { get; set; }
 
         /// <summary>
         ///     String pattern to search files. Might not be exactly the same as in Windows.
@@ -108,8 +108,6 @@ namespace Frends.Community.AWS
         [DefaultDisplayType(DisplayType.Text)]
         public string ContinuationToken { get; set; }
     }
-
-
 
     /// <summary>
     ///     Options class.

@@ -25,7 +25,7 @@ namespace Frends.Community.AWS.Tests
             {
                 DestinationPath = null,
                 SearchPattern = "*",
-                SourceDirectory = ""
+                S3Directory = ""
             };
 
             var o = new DownloadOptions()
