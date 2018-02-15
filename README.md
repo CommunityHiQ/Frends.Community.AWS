@@ -68,8 +68,8 @@ Otherwise, supply the prefix with trailing slash to prevent creating empty folde
 #### UploadAsync Input
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-FilePath | String | Filepath to upload files from. | C:\upload, \\network\folder\
-FileMask | String | Filename or wildcards (eg. *.txt) | *.*, filename.csv
+FilePath | String | Filepath to upload files from. | C:\upload, \\\\network\folder\
+FileMask | String | Filename or wildcards (eg. *.txt) | \*.\*, filename.csv
 Prefix | String | Prefix for object key. | folder/{{DateTime.Now}}
 
 #### UploadAsync Parameters

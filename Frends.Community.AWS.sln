@@ -20,8 +20,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuspec", "nuspec", "{F25A1C
 		nuspec\Frends.Community.AWS.nuspec = nuspec\Frends.Community.AWS.nuspec
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aws_tester", "aws_tester\aws_tester.csproj", "{6178859A-8CF7-4CD2-B031-259A495A6FE8}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,10 +34,6 @@ Global
 		{FCACA2AC-05A9-40E5-9A20-2B55E10075A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCACA2AC-05A9-40E5-9A20-2B55E10075A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCACA2AC-05A9-40E5-9A20-2B55E10075A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6178859A-8CF7-4CD2-B031-259A495A6FE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6178859A-8CF7-4CD2-B031-259A495A6FE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6178859A-8CF7-4CD2-B031-259A495A6FE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6178859A-8CF7-4CD2-B031-259A495A6FE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
