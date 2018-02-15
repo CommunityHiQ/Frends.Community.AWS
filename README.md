@@ -58,7 +58,7 @@ ThrowErrorIfNoMatches | bool | If search pattern does not find match any files, 
 #### DownloadFiles Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Result | List<string> | List of filepaths to downloaded files. | c:\download\file.csv
+Result | List\<string\> | List of filepaths to downloaded files. | c:\download\file.csv
 ***
 ### UploadAsync
 Upload creates a list of files from FilePath and FileMask parameters, uploads them to the supplied bucket with Prefix-parameter
@@ -68,9 +68,9 @@ Otherwise, supply the prefix with trailing slash to prevent creating empty folde
 #### UploadAsync Input
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-FilePath | String | Filepath to upload files from. | C:\upload, \\\\network\folder\
-FileMask | String | Filename or wildcards (eg. *.txt) | \*.\*, filename.csv
-Prefix | String | Prefix for object key. | folder/{{DateTime.Now}}
+FilePath | string | Filepath to upload files from. | C:\upload, \\\\network\folder\
+FileMask | string | Filename or wildcards (eg. *.txt) | \*.\*, filename.csv
+Prefix | string | Prefix for object key. | folder/{{DateTime.Now}}
 
 #### UploadAsync Parameters
 Property | Type | Description | Example (comma separated)
@@ -90,7 +90,7 @@ StorageClass | Selector | Choose the type of storage for files. Read S3 document
 #### UploadAsync Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Result | List<string> | List of file keys or filepaths. | c:\upload\file.csv, object/prefix/file.csv
+Result | List\<string\> | List of file keys or filepaths. | c:\upload\file.csv, object/prefix/file.csv
 ***
 ### ListObjectsAsync
 Lists files from S3. You can choose to return full response or just object keys.
@@ -100,11 +100,11 @@ You can combine this task with DownloadAsync-task to get the keys you want to do
 #### ListObjectsAsync Input
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Prefix | String | Prefix to list files from. | prefix, prefix/key.csv
-Delimiter | String | Limits the list to a character. See AWS S3 documents for further details on usage. | /, /20001010/
+Prefix | String | Prefix to list files from. Leave empty for root. | "", prefix, prefix/key.csv
+Delimiter | String | Limits the list to a character. Leave empty for all files. http://docs.aws.amazon.com/AmazonS3/latest/dev/ListingKeysHierarchy.html. | "", /, /20001010/
 MaxKeys | Integer | Limits the result list. | 100, 1, 99999999
-StartAfter | String | Start listing after specified key (eg. date if filenames are organised with dates). | object/prefix/key
-ContinuationToken | String | If list is truncated (eg. MaxKeys is reached), response contains ContinuationToken. You can use this token to resume list. | 1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36HyEXAMPLE=
+StartAfter | String | Start listing after specified key (eg. date if filenames are organised with dates). Can be empty. | "", object/prefix/key
+ContinuationToken | String | If list is truncated (eg. MaxKeys is reached), response contains ContinuationToken. You can use this token to resume list. Can be empty.| 1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36HyEXAMPLE=
 
 #### ListObjectsAsync Parameters
 Property | Type | Description | Example (comma separated)
