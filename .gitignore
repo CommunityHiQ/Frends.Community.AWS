@@ -286,3 +286,10 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+/aws_tester
+/aws_tester/Properties/AssemblyInfo.cs
+/aws_tester/Program.cs
+/aws_tester/packages.config
+/aws_tester/aws_tester.csproj
+/aws_tester/App.config
