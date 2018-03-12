@@ -1,0 +1,13 @@
+{
+  "Tasks": [
+    {
+      "TaskMethod": "Frends.Community.AWS.Download.DownloadFiles"
+    },
+    {
+      "TaskMethod": "Frends.Community.AWS.Upload.UploadAsync"
+    },
+    {
+      "TaskMethod": "Frends.Community.AWS.Listing.ListObjectsAsync"
+    }
+  ]
+}
