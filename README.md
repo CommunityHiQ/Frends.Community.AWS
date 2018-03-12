@@ -141,7 +141,7 @@ Rebuild the project
 
 Run Tests with nunit3. Tests can be found under
 
-`Frends.Community.PDFWriter.Tests\bin\Release\Frends.Community.AWS.Tests.dll`
+`Frends.Community.AWS.Tests\bin\Release\Frends.Community.AWS.Tests.dll`
 
 Create a nuget package
 
