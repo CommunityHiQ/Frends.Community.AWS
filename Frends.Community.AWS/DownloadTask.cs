@@ -17,13 +17,13 @@ namespace Frends.Community.AWS
         ///     Amazon AWS S3 Transfer files.
         /// </summary>
         /// <param name="input"></param>
-        /// <param name="parameter"></param>
+        /// <param name="parameters"></param>
         /// <param name="option"></param>
         /// <param name="cToken"></param>
-        /// <returns>List&lt;string>&gt;</returns>
+        /// <returns>List&lt;string&gt;</returns>
         public static List<string> DownloadFiles(
             [CustomDisplay(DisplayOption.Tab)] DownloadInput input,
-            [CustomDisplay(DisplayOption.Tab)] Parameters parameter,
+            [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
             [CustomDisplay(DisplayOption.Tab)] DownloadOptions option,
             CancellationToken cToken
             )
@@ -31,18 +31,18 @@ namespace Frends.Community.AWS
             cToken.ThrowIfCancellationRequested();
 
             #region Error checks and helps
-            if (string.IsNullOrWhiteSpace(parameter.AWSAccessKeyID))
-                throw new ArgumentNullException(nameof(parameter.AWSAccessKeyID), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(parameter.AWSSecretAccessKey))
-                throw new ArgumentNullException(nameof(parameter.AWSSecretAccessKey), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(parameter.BucketName))
-                throw new ArgumentNullException(nameof(parameter.BucketName), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(parameters.AWSAccessKeyID))
+                throw new ArgumentNullException(nameof(parameters.AWSAccessKeyID), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(parameters.AWSSecretAccessKey))
+                throw new ArgumentNullException(nameof(parameters.AWSSecretAccessKey), "Cannot be empty. ");
+            if (string.IsNullOrWhiteSpace(parameters.BucketName))
+                throw new ArgumentNullException(nameof(parameters.BucketName), "Cannot be empty. ");
             if (String.IsNullOrWhiteSpace(input.DestinationPath))
                 throw new ArgumentNullException(nameof(input.DestinationPath), "Cannot be empty. ");
 
             #endregion
 
-            return DownloadUtility(input, parameter, option, cToken);
+            return DownloadUtility(input, parameters, option, cToken);
         }
         /// <summary>
         ///     Method to create client and call DownloadFiles.
