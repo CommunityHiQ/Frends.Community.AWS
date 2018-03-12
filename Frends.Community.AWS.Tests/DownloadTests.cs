@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
-    public class Download_ErrorTests_SingleFiles
+    public class DownloadErrorTestsSingleFiles
     {
-        private static Parameters param = new Parameters()
+        private static readonly Parameters Param = new Parameters()
         {
             AWSAccessKeyID = "foo", // fake
             AWSSecretAccessKey = "bar", // fake
@@ -35,11 +32,9 @@ namespace Frends.Community.AWS.Tests
                 ThrowErrorIfNoMatches = true
             };
 
-            ActualValueDelegate<List<string>> testDelegate =
-                () => Download.DownloadFiles(
-                    i, param, o, new CancellationToken());
+            List<string> TestDelegate() => Download.DownloadFiles(i, Param, o, new CancellationToken());
 
-            Assert.That(testDelegate,
+            Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentNullException>()
                     .With.Message.EndsWith($"{nameof(i.DestinationPath)}"));
         }

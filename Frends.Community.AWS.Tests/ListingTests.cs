@@ -2,17 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
-namespace Frends.Community.AWS.LI.ListingTests
+namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
-    public class Listing_ErrorTests
+    public class ListingErrorTests
     {
         [Test]
         public void Error_IfAccessKeyIsEmpty()
         {
-            var linput = new ListInput() { };
+            var linput = new ListInput();
             var param = new Parameters() {
                 AWSAccessKeyID = String.Empty,
                 AWSSecretAccessKey = "foo", // fake
@@ -20,11 +19,9 @@ namespace Frends.Community.AWS.LI.ListingTests
             };
             var opt = new ListOptions() { FullResponse = true };
 
-            ActualValueDelegate<Task> testDelegate =
-                async () => await Listing.ListObjectsAsync(
-                    linput, param, opt, new CancellationToken());
+            async Task TestDelegate() => await Listing.ListObjectsAsync(linput, param, opt, new CancellationToken());
 
-            Assert.That(testDelegate,
+            Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentNullException>()
                     .With.Message.StartsWith("Cannot be empty. "));
         }
@@ -32,7 +29,7 @@ namespace Frends.Community.AWS.LI.ListingTests
         [Test]
         public void Error_IfSecretKeyIsEmpty()
         {
-            var linput = new ListInput() { };
+            var linput = new ListInput();
             var param = new Parameters()
             {
                 AWSAccessKeyID = "foo", // fake
@@ -41,11 +38,9 @@ namespace Frends.Community.AWS.LI.ListingTests
             };
             var opt = new ListOptions() { FullResponse = true };
 
-            ActualValueDelegate<Task> testDelegate =
-                async () => await Listing.ListObjectsAsync(
-                    linput, param, opt, new CancellationToken());
+            async Task TestDelegate() => await Listing.ListObjectsAsync(linput, param, opt, new CancellationToken());
 
-            Assert.That(testDelegate,
+            Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentNullException>()
                     .With.Message.StartsWith("Cannot be empty. "));
         }
@@ -53,7 +48,7 @@ namespace Frends.Community.AWS.LI.ListingTests
         [Test]
         public void Error_IfBucketNameIsEmpty()
         {
-            var linput = new ListInput() { };
+            var linput = new ListInput();
             var param = new Parameters()
             {
                 AWSAccessKeyID = "foo", // fake
@@ -62,11 +57,9 @@ namespace Frends.Community.AWS.LI.ListingTests
             };
             var opt = new ListOptions() { FullResponse = true };
 
-            ActualValueDelegate<Task> testDelegate =
-                async () => await Listing.ListObjectsAsync(
-                    linput, param, opt, new CancellationToken());
+            async Task TestDelegate() => await Listing.ListObjectsAsync(linput, param, opt, new CancellationToken());
 
-            Assert.That(testDelegate,
+            Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentNullException>()
                     .With.Message.StartsWith("Cannot be empty. "));
         }

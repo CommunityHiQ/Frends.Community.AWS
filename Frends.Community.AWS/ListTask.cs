@@ -39,7 +39,7 @@ namespace Frends.Community.AWS
                 throw new ArgumentNullException(nameof(parameters.BucketName), "Cannot be empty. ");
             #endregion
 
-            var response = new ListObjectsV2Response();
+            ListObjectsV2Response response;
 
             using (var client = new AmazonS3Client(
                 parameters.AWSAccessKeyID, 

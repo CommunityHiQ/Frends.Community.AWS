@@ -3,12 +3,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
-namespace Frends.Community.AWS.UL.UploadTests
+namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
-    public class Upload_ErrorTests
+    public class UploadErrorTests
     {
         [Test]
         public void Error_IfSourcePathIsInvalid()
@@ -32,11 +31,9 @@ namespace Frends.Community.AWS.UL.UploadTests
                 ThrowErrorIfNoMatch = true
             };
 
-            ActualValueDelegate<Task> testDelegate = 
-                async () => await Upload.UploadAsync(
-                    input, param, options, new CancellationToken());
+            async Task TestDelegate() => await Upload.UploadAsync(input, param, options, new CancellationToken());
 
-            Assert.That(testDelegate, 
+            Assert.That(TestDelegate, 
                 Throws.TypeOf<ArgumentException>()
                     .With.Message.StartsWith("Source path not found."));
         }
@@ -63,11 +60,9 @@ namespace Frends.Community.AWS.UL.UploadTests
                 ThrowErrorIfNoMatch = true
             };
 
-            ActualValueDelegate<Task> testDelegate = 
-                async () => await Upload.UploadAsync(
-                    input, param, options, new CancellationToken());
+            async Task TestDelegate() => await Upload.UploadAsync(input, param, options, new CancellationToken());
 
-            Assert.That(testDelegate, 
+            Assert.That(TestDelegate, 
                 Throws.TypeOf<ArgumentException>()
                     .With.Message.StartsWith("No files match the filemask within supplied path."));
         }

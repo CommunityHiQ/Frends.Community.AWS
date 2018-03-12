@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Frends.Tasks.Attributes;
-using Newtonsoft.Json.Linq;
 
 namespace Frends.Community.AWS
 {
@@ -14,7 +11,7 @@ namespace Frends.Community.AWS
     public class DownloadInput
     {
         /// <summary>
-        ///     Downloads all objects with this prefix. Creates folder structure.
+        ///     Downloads all objects with this prefix. 
         ///     Examples: folder/, this/is/prefix/
         /// </summary>
         [DefaultDisplayType(DisplayType.Text)]

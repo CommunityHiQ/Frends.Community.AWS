@@ -80,11 +80,8 @@ namespace Frends.Community.AWS
                     //register to event, when done, add to result list
                     request.UploadProgressEvent += (o, e) =>
                     {
-                        if (e.PercentDone == 100)
-                            if (options.ReturnListOfObjectKeys)
-                                result.Add(request.Key);
-                            else
-                                result.Add(e.FilePath);
+                        if (e.PercentDone != 100) return;
+                        result.Add(options.ReturnListOfObjectKeys ? request.Key : e.FilePath);
                     };
 
                     await fileTransferUtility.UploadAsync(request, cancellationToken);

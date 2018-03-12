@@ -50,7 +50,7 @@ namespace Frends.Community.AWS
         /// <param name="input"></param>
         /// <param name="parameters"></param>
         /// <param name="cToken"></param>
-        /// <param name="tcs"></param>
+        /// <param name="option"></param>
         /// <returns></returns>
         private static List<string> DownloadUtility(
             DownloadInput input, 
@@ -74,10 +74,9 @@ namespace Frends.Community.AWS
         /// Directory download operation.
         /// </summary>
         /// <param name="input"></param>
-        /// <param name="parameters"></param>
+        /// <param name="option"></param>
         /// <param name="cToken"></param>
-        /// <param name="tcs"></param>
-        /// <param name="fileTransferUtility"></param>
+        /// <param name="dirInfo"></param>
         /// <returns>Task</returns>
         private static List<string> DownloadFiles(
             DownloadInput input,
