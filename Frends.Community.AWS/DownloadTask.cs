@@ -104,10 +104,10 @@ namespace Frends.Community.AWS
                 else
                     file.CopyToLocal(path, option.Overwrite);
 
-                if (File.Exists(path))
-                    filelist.Add(path);
-                else
-                    throw new IOException("Could not find file from local filesystem. ");
+                if (!File.Exists(path))
+                    throw new IOException("Could not find file from local filesystem.");
+
+                filelist.Add(path);
             }
 
             return filelist;
