@@ -65,7 +65,7 @@ namespace Frends.Community.AWS
                 var dirInfo = new S3DirectoryInfo(s3Client, parameters.BucketName, input.S3Directory);
                 if (dirInfo.Exists)
                     return DownloadFiles(input, option, dirInfo, cToken);
-                throw new ArgumentException($"Cannot find S3 directory. {nameof(input.S3Directory)}");
+                throw new ArgumentException($"Cannot find {input.S3Directory} directory. {nameof(input.S3Directory)}");
             }
         }
 
@@ -97,17 +97,17 @@ namespace Frends.Community.AWS
                 if (!file.Exists) continue;
 
                 cToken.ThrowIfCancellationRequested();
+
                 var path = input.DestinationPath + file.Name;
+                
+                var fileinfo = option.DeleteSourceFile
+                    ? file.MoveToLocal(path)
+                    : file.CopyToLocal(path, option.Overwrite);
+                
+                if (!fileinfo.Exists)
+                    throw new IOException($"Could not find {fileinfo.FullName} from local filesystem.");
 
-                if (option.DeleteSourceFile)
-                    file.MoveToLocal(path);
-                else
-                    file.CopyToLocal(path, option.Overwrite);
-
-                if (!File.Exists(path))
-                    throw new IOException("Could not find file from local filesystem.");
-
-                filelist.Add(path);
+                filelist.Add(fileinfo.FullName);
             }
 
             return filelist;
