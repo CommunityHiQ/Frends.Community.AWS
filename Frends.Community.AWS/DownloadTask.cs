@@ -37,7 +37,7 @@ namespace Frends.Community.AWS
                 throw new ArgumentNullException(nameof(parameter.AWSSecretAccessKey), "Cannot be empty. ");
             if (string.IsNullOrWhiteSpace(parameter.BucketName))
                 throw new ArgumentNullException(nameof(parameter.BucketName), "Cannot be empty. ");
-            if (String.IsNullOrWhiteSpace(input.DestinationPath))
+            if (string.IsNullOrWhiteSpace(input.DestinationPath))
                 throw new ArgumentNullException(nameof(input.DestinationPath), "Cannot be empty. ");
 
             #endregion
@@ -65,8 +65,7 @@ namespace Frends.Community.AWS
                 var dirInfo = new S3DirectoryInfo(s3Client, parameters.BucketName, input.S3Directory);
                 if (dirInfo.Exists)
                     return DownloadFiles(input, option, dirInfo, cToken);
-                else
-                    throw new ArgumentException($"Cannot find S3 directory. {nameof(input.S3Directory)}");
+                throw new ArgumentException($"Cannot find S3 directory. {nameof(input.S3Directory)}");
             }
         }
 
@@ -89,22 +88,21 @@ namespace Frends.Community.AWS
                 option.DownloadFromCurrentDirectoryOnly ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
 
             if (option.ThrowErrorIfNoMatches && files.Length < 1)
-                throw new ArgumentException("Could not find");
+                throw new ArgumentException("Could not find any files matching pattern.");
 
             var filelist = new List<string>();
             
             foreach (var file in files)
             {
-                if (file.Exists)
-                {
-                    cToken.ThrowIfCancellationRequested();
-                    var path = input.DestinationPath + file.Name;
-                    file.CopyToLocal(path, option.Overwrite);
-                    if (File.Exists(path))
-                        filelist.Add(path);
-                    else
-                        throw new IOException("Could not find file from local filesystem. ");
-                }
+                if (!file.Exists) continue;
+
+                cToken.ThrowIfCancellationRequested();
+                var path = input.DestinationPath + file.Name;
+                file.CopyToLocal(path, option.Overwrite);
+                if (File.Exists(path))
+                    filelist.Add(path);
+                else
+                    throw new IOException("Could not find file from local filesystem. ");
             }
 
             return filelist;
