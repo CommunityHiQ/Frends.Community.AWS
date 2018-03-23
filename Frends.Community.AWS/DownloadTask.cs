@@ -99,18 +99,26 @@ namespace Frends.Community.AWS
                 cToken.ThrowIfCancellationRequested();
 
                 var path = input.DestinationPath + file.Name;
-                
-                var fileinfo = option.DeleteSourceFile
-                    ? file.MoveToLocal(path)
+
+                // Apparently MoveToLocal does not have overwrite as signature :(
+                var localFile = option.DeleteSourceFile
+                    ? MoveToLocal(file, path, option.Overwrite)
                     : file.CopyToLocal(path, option.Overwrite);
                 
-                if (!fileinfo.Exists)
-                    throw new IOException($"Could not find {fileinfo.FullName} from local filesystem.");
+                if (!localFile.Exists)
+                    throw new IOException($"Could not find {localFile.FullName} from local filesystem.");
 
-                filelist.Add(fileinfo.FullName);
+                filelist.Add(localFile.FullName);
             }
 
             return filelist;
+        }
+
+        private static FileInfo MoveToLocal(S3FileInfo file, string path, bool overwrite)
+        {
+            var localFile = file.CopyToLocal(path, overwrite);
+            file.Delete();
+            return localFile;
         }
     }
 }
