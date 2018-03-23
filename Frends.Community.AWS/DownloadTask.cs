@@ -98,7 +98,12 @@ namespace Frends.Community.AWS
 
                 cToken.ThrowIfCancellationRequested();
                 var path = input.DestinationPath + file.Name;
-                file.CopyToLocal(path, option.Overwrite);
+
+                if (option.DeleteSourceFile)
+                    file.MoveToLocal(path);
+                else
+                    file.CopyToLocal(path, option.Overwrite);
+
                 if (File.Exists(path))
                     filelist.Add(path);
                 else
