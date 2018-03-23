@@ -5,6 +5,7 @@ using Frends.Tasks.Attributes;
 using Amazon.S3;
 using Amazon.S3.IO;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Frends.Community.AWS
 {
@@ -116,9 +117,16 @@ namespace Frends.Community.AWS
 
         private static FileInfo MoveToLocal(S3FileInfo file, string path, bool overwrite)
         {
-            var localFile = file.CopyToLocal(path, overwrite);
-            file.Delete();
-            return localFile;
+            try
+            {
+                var localFile = file.CopyToLocal(path, overwrite);
+                file.Delete();
+                return localFile;
+            }
+            catch (IOException)
+            {   // normal exception does not give filename info, which would be nice.
+                throw new IOException($"{path} already exists.");
+            }
         }
     }
 }
