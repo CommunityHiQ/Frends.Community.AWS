@@ -25,7 +25,6 @@ namespace Frends.Community.AWS
 
         /// <summary>
         ///     Directory to create folders and files to.
-        ///     Use trailing backlash ( \ ).
         /// </summary>
         [DefaultDisplayType(DisplayType.Text)]
         public string DestinationPath { get; set; }

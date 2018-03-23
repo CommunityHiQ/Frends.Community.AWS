@@ -98,7 +98,7 @@ namespace Frends.Community.AWS
 
                 cToken.ThrowIfCancellationRequested();
 
-                var path = input.DestinationPath + file.Name;
+                var path = Path.Combine(input.DestinationPath, file.Name);
 
                 // Apparently MoveToLocal does not have overwrite as signature :(
                 var localFile = option.DeleteSourceFile
