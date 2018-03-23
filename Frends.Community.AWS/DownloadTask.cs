@@ -101,15 +101,24 @@ namespace Frends.Community.AWS
 
                 var path = Path.Combine(input.DestinationPath, file.Name);
 
-                // Apparently MoveToLocal does not have overwrite as signature :(
-                var localFile = option.DeleteSourceFile
+                try
+                {
+                    // Apparently MoveToLocal does not have overwrite as signature :(
+                    var localFile = option.DeleteSourceFile
                     ? MoveToLocal(file, path, option.Overwrite)
                     : file.CopyToLocal(path, option.Overwrite);
                 
-                if (!localFile.Exists)
-                    throw new IOException($"Could not find {localFile.FullName} from local filesystem.");
 
-                filelist.Add(localFile.FullName);
+                    if (!localFile.Exists)
+                        throw new IOException($"Could not find {localFile.FullName} from local filesystem.");
+
+                    filelist.Add(localFile.FullName);
+
+                }
+                catch (IOException ex)
+                {   // normal exception does not give filename info, which would be nice.
+                    throw new IOException($"{path} already exists.", ex.InnerException);
+                }
             }
 
             return filelist;
@@ -117,16 +126,9 @@ namespace Frends.Community.AWS
 
         private static FileInfo MoveToLocal(S3FileInfo file, string path, bool overwrite)
         {
-            try
-            {
                 var localFile = file.CopyToLocal(path, overwrite);
                 file.Delete();
                 return localFile;
-            }
-            catch (IOException)
-            {   // normal exception does not give filename info, which would be nice.
-                throw new IOException($"{path} already exists.");
-            }
         }
     }
 }
