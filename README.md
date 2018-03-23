@@ -164,3 +164,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | ---------------------| ---------------------|
 | pre 1.0 | pending |
 | 1.1.0 | Updated version as 1.0.0 has already been used in some environments. Fixed typos |
+| 1.1.1 | Added feature to move files (deletes sources) to DownloadTask |

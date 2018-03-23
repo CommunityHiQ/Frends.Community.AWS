@@ -44,6 +44,12 @@ namespace Frends.Community.AWS
         public bool DownloadFromCurrentDirectoryOnly { get; set; }
 
         /// <summary>
+        ///     Set to true to move files.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool DeleteSourceFile { get; set; }
+
+        /// <summary>
         ///     Overwrite files.
         /// </summary>
         [DefaultValue(false)]
