@@ -212,8 +212,8 @@ namespace Frends.Community.AWS
     public class Parameters
     {
         /// <summary>
-        ///     AWS Bucket name with Path
-        ///     Example: bucketname/path/to/directory or #env.variable.
+        ///     AWS Bucketname
+        ///     Example: yourbucket
         /// </summary>
         [DisplayFormat(DataFormatString = "Text")]
         public string BucketName { get; set; }
