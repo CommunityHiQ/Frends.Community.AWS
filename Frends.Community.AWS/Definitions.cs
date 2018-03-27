@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Frends.Community.AWS
 {
     #region DownloadTask
+
     /// <summary>
     ///     Input class, you can download whole directories or single files.
     /// </summary>
@@ -11,7 +12,7 @@ namespace Frends.Community.AWS
     public class DownloadInput
     {
         /// <summary>
-        ///     Downloads all objects with this prefix. 
+        ///     Downloads all objects with this prefix.
         ///     Examples: folder/, this/is/prefix/
         /// </summary>
         [DisplayFormat(DataFormatString = "Text")]
@@ -31,7 +32,6 @@ namespace Frends.Community.AWS
     }
 
     /// <summary>
-    /// 
     /// </summary>
     [DisplayName("Options")]
     public class DownloadOptions
@@ -60,9 +60,11 @@ namespace Frends.Community.AWS
         [DefaultValue(true)]
         public bool ThrowErrorIfNoMatches { get; set; }
     }
+
     #endregion
 
     #region List
+
     /// <summary>
     ///     Input parameter class for ListObjectsAsync
     /// </summary>
@@ -129,9 +131,11 @@ namespace Frends.Community.AWS
         [DefaultValue(true)]
         public bool ThrowErrorIfNoFilesFound { get; set; }
     }
+
     #endregion
 
     #region UploadTask
+
     /// <summary>
     ///     Input filepath and filemask.
     /// </summary>
@@ -153,6 +157,7 @@ namespace Frends.Community.AWS
         [DefaultValue(@"*.*")]
         [DisplayFormat(DataFormatString = "Text")]
         public string FileMask { get; set; }
+
         /// <summary>
         ///     S3 prefix for files.
         /// </summary>
@@ -196,9 +201,11 @@ namespace Frends.Community.AWS
         /// </summary>
         public StorageClasses StorageClass { get; set; }
     }
+
     #endregion
 
     #region Parameters for all!
+
     /// <summary>
     ///     Parameter class with username and keys.
     /// </summary>
@@ -233,23 +240,40 @@ namespace Frends.Community.AWS
         [DisplayName("Region")]
         public Regions Region { get; set; }
     }
+
     #endregion
 
     #region Enumerations
 
-    #pragma warning disable 1591
+#pragma warning disable 1591
     public enum Regions
     {
-        EUWest1, EUWest2, EUCentral1,
-        APNortheast1, APNortheast2, APSouth1, APSoutheast1, APSoutheast2,
-        CACentral1, CNNorth1, SAEast1,
-        USEast1, USEast2, USGovCloudWest1, USWest1, USWest2
+        EUWest1,
+        EUWest2,
+        EUCentral1,
+        APNortheast1,
+        APNortheast2,
+        APSouth1,
+        APSoutheast1,
+        APSoutheast2,
+        CACentral1,
+        CNNorth1,
+        SAEast1,
+        USEast1,
+        USEast2,
+        USGovCloudWest1,
+        USWest1,
+        USWest2
     }
+
     public enum StorageClasses
     {
-        Standard, StandardInfrequent, Reduced, Glacier
+        Standard,
+        StandardInfrequent,
+        Reduced,
+        Glacier
     }
-    #pragma warning restore 1591
+#pragma warning restore 1591
 
     #endregion
 }
