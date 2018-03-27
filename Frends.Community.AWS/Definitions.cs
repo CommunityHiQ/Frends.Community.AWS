@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Frends.Tasks.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace Frends.Community.AWS
 {
@@ -14,19 +14,19 @@ namespace Frends.Community.AWS
         ///     Downloads all objects with this prefix. 
         ///     Examples: folder/, this/is/prefix/
         /// </summary>
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string S3Directory { get; set; }
 
         /// <summary>
         ///     String pattern to search files. Might not be exactly the same as in Windows.
         /// </summary>
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string SearchPattern { get; set; }
 
         /// <summary>
         ///     Directory to create folders and files to.
         /// </summary>
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string DestinationPath { get; set; }
     }
 
@@ -75,7 +75,7 @@ namespace Frends.Community.AWS
         ///     Default: null
         /// </summary>
         [DefaultValue(null)]
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string Prefix { get; set; }
 
         /// <summary>
@@ -84,14 +84,14 @@ namespace Frends.Community.AWS
         ///     See: http://docs.aws.amazon.com/AmazonS3/latest/dev/ListingKeysHierarchy.html
         /// </summary>
         [DefaultValue(null)]
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string Delimiter { get; set; }
 
         /// <summary>
         ///     Max number of keys returned.
         /// </summary>
         [DefaultValue(100)]
-        [DefaultDisplayType(DisplayType.Expression)]
+        [DisplayFormat(DataFormatString = "Expression")]
         public int MaxKeys { get; set; }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Frends.Community.AWS
         ///     Default: null
         /// </summary>
         [DefaultValue(null)]
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string StartAfter { get; set; }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace Frends.Community.AWS
         ///     Default: null
         /// </summary>
         [DefaultValue(null)]
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string ContinuationToken { get; set; }
     }
 
@@ -143,7 +143,7 @@ namespace Frends.Community.AWS
         ///     ( c:\temp\ , \\network\folder )
         /// </summary>
         [DefaultValue(@"c:\temp\")]
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string FilePath { get; set; }
 
         /// <summary>
@@ -151,13 +151,13 @@ namespace Frends.Community.AWS
         ///     Empty field = *.*
         /// </summary>
         [DefaultValue(@"*.*")]
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string FileMask { get; set; }
         /// <summary>
         ///     S3 prefix for files.
         /// </summary>
         [DefaultValue(@"")]
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string Prefix { get; set; }
     }
 
@@ -208,7 +208,7 @@ namespace Frends.Community.AWS
         ///     AWS Bucket name with Path
         ///     Example: bucketname/path/to/directory or #env.variable.
         /// </summary>
-        [DefaultDisplayType(DisplayType.Text)]
+        [DisplayFormat(DataFormatString = "Text")]
         public string BucketName { get; set; }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace Frends.Community.AWS
         ///     Use #env.variable.
         /// </summary>
         [PasswordPropertyText(true)]
-        [DefaultDisplayType(DisplayType.Expression)]
+        [DisplayFormat(DataFormatString = "Expression")]
         public string AWSAccessKeyID { get; set; }
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace Frends.Community.AWS
         ///     Use #env.variable.
         /// </summary>
         [PasswordPropertyText(true)]
-        [DefaultDisplayType(DisplayType.Expression)]
+        [DisplayFormat(DataFormatString = "Expression")]
         public string AWSSecretAccessKey { get; set; }
 
         /// <summary>
@@ -250,5 +250,6 @@ namespace Frends.Community.AWS
         Standard, StandardInfrequent, Reduced, Glacier
     }
     #pragma warning restore 1591
+
     #endregion
 }

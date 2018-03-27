@@ -1,7 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Frends.Tasks.Attributes;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Newtonsoft.Json.Linq;
@@ -24,9 +24,9 @@ namespace Frends.Community.AWS
         /// <param name="cToken"></param>
         /// <returns>JObect { JArray("S3Objects"), JProperty }</returns>
         public static async Task<JToken> ListObjectsAsync(
-            [CustomDisplay(DisplayOption.Tab)] ListInput input,
-            [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
-            [CustomDisplay(DisplayOption.Tab)] ListOptions options,
+            [PropertyTab] ListInput input,
+            [PropertyTab] Parameters parameters,
+            [PropertyTab] ListOptions options,
             CancellationToken cToken
             )
         {

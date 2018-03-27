@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using Frends.Tasks.Attributes;
 using Amazon.S3;
 using Amazon.S3.IO;
 using System.Collections.Generic;
-using System.Linq.Expressions;
+using System.ComponentModel;
 
 namespace Frends.Community.AWS
 {
@@ -23,9 +22,9 @@ namespace Frends.Community.AWS
         /// <param name="cToken"></param>
         /// <returns>List&lt;string&gt;</returns>
         public static List<string> DownloadFiles(
-            [CustomDisplay(DisplayOption.Tab)] DownloadInput input,
-            [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
-            [CustomDisplay(DisplayOption.Tab)] DownloadOptions option,
+            [PropertyTab] DownloadInput input,
+            [PropertyTab] Parameters parameters,
+            [PropertyTab] DownloadOptions option,
             CancellationToken cToken
             )
         {

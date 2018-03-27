@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Transfer;
-using Frends.Tasks.Attributes;
 
 namespace Frends.Community.AWS
 {
@@ -27,9 +27,9 @@ namespace Frends.Community.AWS
         /// <param name="cancellationToken"/>
         /// <returns>List&lt;string&gt;</returns>
         public static async Task<List<string>> UploadAsync(
-            [CustomDisplay(DisplayOption.Tab)] UploadInput input,
-            [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
-            [CustomDisplay(DisplayOption.Tab)] UploadOptions options,
+            [PropertyTab] UploadInput input,
+            [PropertyTab] Parameters parameters,
+            [PropertyTab] UploadOptions options,
             CancellationToken cancellationToken
             )
         {
