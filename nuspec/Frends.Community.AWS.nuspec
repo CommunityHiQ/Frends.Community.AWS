@@ -10,7 +10,6 @@
 		<summary />
 		<dependencies>
 			<group targetFramework="net452">
-				<dependency id="Frends.Tasks.Attributes" version="1.2.0" />
 				<dependency id="Newtonsoft.Json" version="6.0.8" />
 				<dependency id="AWSSDK.Core" version="3.3.21.6" />
 				<dependency id="AWSSDK.S3" version="3.3.16.2" />
@@ -23,6 +22,7 @@
 			<frameworkAssembly assemblyName="System.Threading.Tasks" targetFramework="net452"/>			
 			<frameworkAssembly assemblyName="System.ComponentModel" targetFramework="net452"/>
 			<frameworkAssembly assemblyName="System.Collections.Generic" targetFramework="net452"/>
+      <frameworkAssembly assemblyName="System.ComponentModel.DataAnnotations" targetFramework="net452"/>
 		</frameworkAssemblies>
 	</metadata>
 	<files>
