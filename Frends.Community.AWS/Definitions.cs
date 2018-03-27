@@ -13,7 +13,7 @@ namespace Frends.Community.AWS
     {
         /// <summary>
         ///     Downloads all objects with this prefix.
-        ///     Examples: folder/, this/is/prefix/
+        ///     Examples: folder, path/to/folder
         /// </summary>
         [DisplayFormat(DataFormatString = "Text")]
         public string S3Directory { get; set; }
