@@ -12,28 +12,30 @@ namespace Frends.Community.AWS.Tests
         [Test]
         public void Error_IfSourcePathIsInvalid()
         {
-
-            var input = new UploadInput()
+            var input = new UploadInput
             {
                 FileMask = @"*.test",
                 FilePath = @"c:\there_is_no_folder_like_this\"
             };
-            var param = new Parameters()
+            var param = new Parameters
             {
                 AWSAccessKeyID = "foo", // fake
                 AWSSecretAccessKey = "bar", // fake
                 BucketName = "baz" // fake
             };
-            var options = new UploadOptions()
+            var options = new UploadOptions
             {
                 ReturnListOfObjectKeys = true,
                 StorageClass = StorageClasses.Standard,
                 ThrowErrorIfNoMatch = true
             };
 
-            async Task TestDelegate() => await Upload.UploadAsync(input, param, options, new CancellationToken());
+            async Task TestDelegate()
+            {
+                await UploadTask.UploadAsync(input, param, options, new CancellationToken());
+            }
 
-            Assert.That(TestDelegate, 
+            Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentException>()
                     .With.Message.StartsWith("Source path not found."));
         }
@@ -41,28 +43,31 @@ namespace Frends.Community.AWS.Tests
         [Test]
         public void Error_IfSwitchIsOnAndNothingMatches()
         {
-            var input = new UploadInput()
+            var input = new UploadInput
             {
                 FileMask = "there_is_no_spoon.text",
                 FilePath = Path.GetTempPath(),
                 Prefix = @"\"
             };
-            var param = new Parameters()
+            var param = new Parameters
             {
                 AWSAccessKeyID = "foo", // fake
                 AWSSecretAccessKey = "bar", // fake
                 BucketName = "baz" // fake
             };
-            var options = new UploadOptions()
+            var options = new UploadOptions
             {
                 ReturnListOfObjectKeys = true,
                 StorageClass = StorageClasses.Standard,
                 ThrowErrorIfNoMatch = true
             };
 
-            async Task TestDelegate() => await Upload.UploadAsync(input, param, options, new CancellationToken());
+            async Task TestDelegate()
+            {
+                await UploadTask.UploadAsync(input, param, options, new CancellationToken());
+            }
 
-            Assert.That(TestDelegate, 
+            Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentException>()
                     .With.Message.StartsWith("No files match the filemask within supplied path."));
         }

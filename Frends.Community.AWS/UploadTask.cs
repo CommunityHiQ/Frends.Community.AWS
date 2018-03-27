@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Transfer;
-using Frends.Tasks.Attributes;
 
 namespace Frends.Community.AWS
 {
-    /// <summary>        
+    /// <summary>
     ///     Filemask is Windows-style, eg. *.*, *file?.txt.
     ///     Bucket Name without s3://-prefix.
     /// </summary>
-    public class Upload
+    public class UploadTask
     {
         /// <summary>
         ///     TASK OVERWRITES FILES WITH SAME PREFIX AND KEY!
@@ -21,22 +21,23 @@ namespace Frends.Community.AWS
         ///     Filemask is Windows-style, eg. *.*, *file?.txt
         ///     Bucketname without s3://-prefix.
         /// </summary>
-        /// <param name="input"/>
-        /// <param name="parameters"/>
-        /// <param name="options"/>
-        /// <param name="cancellationToken"/>
+        /// <param name="input" />
+        /// <param name="parameters" />
+        /// <param name="options" />
+        /// <param name="cancellationToken" />
         /// <returns>List&lt;string&gt;</returns>
         public static async Task<List<string>> UploadAsync(
-            [CustomDisplay(DisplayOption.Tab)] UploadInput input,
-            [CustomDisplay(DisplayOption.Tab)] Parameters parameters,
-            [CustomDisplay(DisplayOption.Tab)] UploadOptions options,
+            [PropertyTab] UploadInput input,
+            [PropertyTab] Parameters parameters,
+            [PropertyTab] UploadOptions options,
             CancellationToken cancellationToken
-            )
+        )
         {
             // First check to see if this task gets performed at all.
             cancellationToken.ThrowIfCancellationRequested();
 
             #region Error checks
+
             if (string.IsNullOrWhiteSpace(parameters.AWSAccessKeyID))
                 throw new ArgumentNullException(nameof(parameters.AWSAccessKeyID), "Cannot be empty. ");
             if (string.IsNullOrWhiteSpace(parameters.AWSSecretAccessKey))
@@ -46,24 +47,28 @@ namespace Frends.Community.AWS
 
             if (!Directory.Exists(input.FilePath))
                 throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
-            
-            var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask) ?
-                Directory.GetFiles(input.FilePath) :
-                Directory.GetFiles(input.FilePath, input.FileMask, 
-                    options.UploadFromCurrentDirectoryOnly ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
+
+            var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask)
+                ? Directory.GetFiles(input.FilePath)
+                : Directory.GetFiles(input.FilePath, input.FileMask,
+                    options.UploadFromCurrentDirectoryOnly
+                        ? SearchOption.TopDirectoryOnly
+                        : SearchOption.AllDirectories);
 
             if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
-                throw new ArgumentException($"No files match the filemask within supplied path. {nameof(input.FileMask)}");
+                throw new ArgumentException(
+                    $"No files match the filemask within supplied path. {nameof(input.FileMask)}");
+
             #endregion
 
             var result = new List<string>();
 
             using (var fileTransferUtility = new TransferUtility(
-                   new AmazonS3Client(
-                       parameters.AWSAccessKeyID,
-                       parameters.AWSSecretAccessKey,
-                       Utilities.RegionSelection(parameters.Region)
-                       )))
+                new AmazonS3Client(
+                    parameters.AWSAccessKeyID,
+                    parameters.AWSSecretAccessKey,
+                    Utilities.RegionSelection(parameters.Region)
+                )))
             {
                 foreach (var file in filesToCopy)
                 {
@@ -86,6 +91,7 @@ namespace Frends.Community.AWS
 
                     await fileTransferUtility.UploadAsync(request, cancellationToken);
                 }
+
                 return result;
             }
         }

@@ -55,9 +55,9 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        /// You can select different type of storage redundancy option.
-        /// Standard being the default with high redundancy and accessed often, but is the most expensive.
-        /// Defaults to Standard.
+        ///     You can select different type of storage redundancy option.
+        ///     Standard being the default with high redundancy and accessed often, but is the most expensive.
+        ///     Defaults to Standard.
         /// </summary>
         /// <param name="s3StorageClass"></param>
         /// <returns>S3StorageClass-object for UploadRequest-parameter.</returns>

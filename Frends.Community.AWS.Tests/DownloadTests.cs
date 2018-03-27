@@ -8,7 +8,7 @@ namespace Frends.Community.AWS.Tests
     [TestFixture]
     public class DownloadErrorTestsSingleFiles
     {
-        private static readonly Parameters Param = new Parameters()
+        private static readonly Parameters Param = new Parameters
         {
             AWSAccessKeyID = "foo", // fake
             AWSSecretAccessKey = "bar", // fake
@@ -18,21 +18,24 @@ namespace Frends.Community.AWS.Tests
         [Test]
         public void Error_IfDestinationIsEmpty()
         {
-            var i = new DownloadInput()
+            var i = new DownloadInput
             {
                 DestinationPath = null,
                 SearchPattern = "*",
                 S3Directory = ""
             };
 
-            var o = new DownloadOptions()
+            var o = new DownloadOptions
             {
                 DownloadFromCurrentDirectoryOnly = true,
                 Overwrite = true,
                 ThrowErrorIfNoMatches = true
             };
 
-            List<string> TestDelegate() => Download.DownloadFiles(i, Param, o, new CancellationToken());
+            List<string> TestDelegate()
+            {
+                return DownloadTask.DownloadFiles(i, Param, o, new CancellationToken());
+            }
 
             Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentNullException>()

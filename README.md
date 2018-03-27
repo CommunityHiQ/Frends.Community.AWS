@@ -52,6 +52,7 @@ Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 DownloadFromCurrentDirectoryOnly | bool | To download from subdirectories, set to false. | true
+DeleteSourceFile | bool | If set to true, moves files from S3 to local (deletes sourcefiles) | false
 Overwrite | bool | If set to true, overwrites local files. | false
 ThrowErrorIfNoMatches | bool | If search pattern does not find match any files, throw error. | true
 
@@ -163,4 +164,7 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | Version             | Changes                 |
 | ---------------------| ---------------------|
 | pre 1.0 | pending |
-| 1.1.0 | Updated version as 1.0.0 has already been used in some environments. Fixed typos |
+| 1.1.0 | Updated version as 1.0.0 has already been used in some environments. Fixed typos. |
+| 1.1.6 | Added feature to move files (deletes sources) to DownloadTask, better error messages. |
+| 1.1.7 | Removed Frends.Task.Attributes, using DataAnnotations instead. |
+| 1.1.8 | Proper tests. |
