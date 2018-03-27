@@ -9,9 +9,9 @@ using System.ComponentModel;
 namespace Frends.Community.AWS
 {
     /// <summary>        
-    ///     Amazon AWS S3 File Download task
+    ///     Amazon AWS S3 File DownloadTask task
     /// </summary>
-    public class Download
+    public class DownloadTask
     {
         /// <summary>
         ///     Amazon AWS S3 Transfer files.
@@ -31,6 +31,7 @@ namespace Frends.Community.AWS
             cToken.ThrowIfCancellationRequested();
 
             #region Error checks and helps
+
             if (string.IsNullOrWhiteSpace(parameters.AWSAccessKeyID))
                 throw new ArgumentNullException(nameof(parameters.AWSAccessKeyID), "Cannot be empty. ");
             if (string.IsNullOrWhiteSpace(parameters.AWSSecretAccessKey))
@@ -106,7 +107,6 @@ namespace Frends.Community.AWS
                     var localFile = option.DeleteSourceFile
                     ? MoveToLocal(file, path, option.Overwrite)
                     : file.CopyToLocal(path, option.Overwrite);
-                
 
                     if (!localFile.Exists)
                         throw new IOException($"Could not find {localFile.FullName} from local filesystem.");

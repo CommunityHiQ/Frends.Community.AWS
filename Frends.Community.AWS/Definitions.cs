@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Frends.Community.AWS
 {
-    #region Download
+    #region DownloadTask
     /// <summary>
     ///     Input class, you can download whole directories or single files.
     /// </summary>
@@ -131,7 +131,7 @@ namespace Frends.Community.AWS
     }
     #endregion
 
-    #region Upload
+    #region UploadTask
     /// <summary>
     ///     Input filepath and filemask.
     /// </summary>

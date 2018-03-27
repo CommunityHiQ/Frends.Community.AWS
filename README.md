@@ -164,6 +164,7 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | Version             | Changes                 |
 | ---------------------| ---------------------|
 | pre 1.0 | pending |
-| 1.1.0 | Updated version as 1.0.0 has already been used in some environments. Fixed typos |
+| 1.1.0 | Updated version as 1.0.0 has already been used in some environments. Fixed typos. |
 | 1.1.6 | Added feature to move files (deletes sources) to DownloadTask, better error messages. |
-| 1.1.7 | Removed Frends.Task.Attributes, using DataAnnotations instead |
+| 1.1.7 | Removed Frends.Task.Attributes, using DataAnnotations instead. |
+| 1.1.8 | Proper tests. |

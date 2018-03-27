@@ -31,7 +31,7 @@ namespace Frends.Community.AWS.Tests
                 ThrowErrorIfNoMatch = true
             };
 
-            async Task TestDelegate() => await Upload.UploadAsync(input, param, options, new CancellationToken());
+            async Task TestDelegate() => await UploadTask.UploadAsync(input, param, options, new CancellationToken());
 
             Assert.That(TestDelegate, 
                 Throws.TypeOf<ArgumentException>()
@@ -60,7 +60,7 @@ namespace Frends.Community.AWS.Tests
                 ThrowErrorIfNoMatch = true
             };
 
-            async Task TestDelegate() => await Upload.UploadAsync(input, param, options, new CancellationToken());
+            async Task TestDelegate() => await UploadTask.UploadAsync(input, param, options, new CancellationToken());
 
             Assert.That(TestDelegate, 
                 Throws.TypeOf<ArgumentException>()

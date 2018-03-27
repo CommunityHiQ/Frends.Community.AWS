@@ -11,7 +11,7 @@ namespace Frends.Community.AWS
     /// <summary>
     ///     Lists objects in between prefix and delimiter.
     /// </summary>
-    public class Listing
+    public class ListTask
     {
         /// <summary>
         ///     Lists keys from specified S3 Bucket.

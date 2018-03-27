@@ -13,7 +13,7 @@ namespace Frends.Community.AWS
     ///     Filemask is Windows-style, eg. *.*, *file?.txt.
     ///     Bucket Name without s3://-prefix.
     /// </summary>
-    public class Upload
+    public class UploadTask
     {
         /// <summary>
         ///     TASK OVERWRITES FILES WITH SAME PREFIX AND KEY!

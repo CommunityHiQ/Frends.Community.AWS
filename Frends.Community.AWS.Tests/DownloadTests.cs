@@ -32,7 +32,7 @@ namespace Frends.Community.AWS.Tests
                 ThrowErrorIfNoMatches = true
             };
 
-            List<string> TestDelegate() => Download.DownloadFiles(i, Param, o, new CancellationToken());
+            List<string> TestDelegate() => DownloadTask.DownloadFiles(i, Param, o, new CancellationToken());
 
             Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentNullException>()
