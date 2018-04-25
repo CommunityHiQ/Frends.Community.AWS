@@ -3,12 +3,26 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using TestConfigurationHandler;
 
 namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
     public class UploadErrorTests
     {
+        private static Parameters _param;
+
+        [SetUp]
+        public void Setup()
+        {
+            _param = new Parameters
+            {
+                AWSAccessKeyID = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
+                AWSSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
+                BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName")
+            };
+        }
+
         [Test]
         public void Error_IfSourcePathIsInvalid()
         {

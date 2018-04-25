@@ -2,18 +2,25 @@
 using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
+using TestConfigurationHandler;
 
 namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
     public class DownloadErrorTestsSingleFiles
     {
-        private static readonly Parameters Param = new Parameters
+        private static Parameters _param;
+
+        [SetUp]
+        public void Setup()
         {
-            AWSAccessKeyID = "foo", // fake
-            AWSSecretAccessKey = "bar", // fake
-            BucketName = "baz" // fake
-        };
+            _param = new Parameters
+            {
+                AWSAccessKeyID = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
+                AWSSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
+                BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName")
+            };
+        }
 
         [Test]
         public void Error_IfDestinationIsEmpty()
@@ -34,7 +41,7 @@ namespace Frends.Community.AWS.Tests
 
             List<string> TestDelegate()
             {
-                return DownloadTask.DownloadFiles(i, Param, o, new CancellationToken());
+                return DownloadTask.DownloadFiles(i, _param, o, new CancellationToken());
             }
 
             Assert.That(TestDelegate,
