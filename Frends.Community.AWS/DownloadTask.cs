@@ -117,7 +117,7 @@ namespace Frends.Community.AWS
                 catch (IOException ex)
                 {
                     // normal exception does not give filename info, which would be nice.
-                    throw new IOException($"{path} already exists.", ex);
+                    throw new IOException($"{path} already exists or insufficient privileges to write file.", ex);
                 }
             }
 
