@@ -43,8 +43,6 @@ namespace Frends.Community.AWS
                     return RegionEndpoint.USEast1;
                 case Regions.USEast2:
                     return RegionEndpoint.USEast2;
-                //case Regions.USGovCloudWest1:
-                //return RegionEndpoint.USGovCloudWest1;
                 case Regions.USWest1:
                     return RegionEndpoint.USWest1;
                 case Regions.USWest2:

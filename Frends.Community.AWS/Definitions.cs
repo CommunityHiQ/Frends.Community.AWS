@@ -261,7 +261,6 @@ namespace Frends.Community.AWS
         SAEast1,
         USEast1,
         USEast2,
-        USGovCloudWest1,
         USWest1,
         USWest2
     }

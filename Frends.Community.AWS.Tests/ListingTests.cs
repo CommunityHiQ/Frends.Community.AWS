@@ -1,28 +1,15 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using TestConfigurationHandler;
 
 namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
+    [Order(2)]
+    [Description("Listing error tests.")]
     public class ListingErrorTests
     {
-        [SetUp]
-        public void Setup()
-        {
-            _param = new Parameters
-            {
-                AWSAccessKeyID = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
-                AWSSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
-                BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName")
-            };
-        }
-
-        private static Parameters _param;
-
         [Test]
         public void Error_IfAccessKeyIsEmpty()
         {
@@ -87,69 +74,6 @@ namespace Frends.Community.AWS.Tests
             Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentNullException>()
                     .With.Message.StartsWith("Cannot be empty. "));
-        }
-
-        [Test]
-        public void Error_ListShouldThrowIfDoesNotFindObjects()
-        {
-            var linput = new ListInput
-            {
-                ContinuationToken = string.Empty,
-                Delimiter = "/",
-                MaxKeys = 100,
-                Prefix = "/this_should_not_exist",
-                StartAfter = null
-            };
-
-            var opt = new ListOptions {FullResponse = false, ThrowErrorIfNoFilesFound = true};
-
-            async Task TestDelegate()
-            {
-                await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
-            }
-
-            Assert.That(TestDelegate,
-                Throws.TypeOf<ArgumentException>()
-                    .With.Message.StartsWith("No objects found with supplied parameters:"));
-        }
-
-        [Test]
-        public async Task Test_ListShouldReturn()
-        {
-            var linput = new ListInput
-            {
-                ContinuationToken = string.Empty,
-                Delimiter = "/",
-                MaxKeys = 100,
-                Prefix = "/",
-                StartAfter = null
-            };
-
-            var opt = new ListOptions {FullResponse = true, ThrowErrorIfNoFilesFound = false};
-
-            var result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
-
-            Assert.True(result.HasValues);
-            Assert.AreEqual(result.Value<int>("HttpStatusCode"), 200); // should be full respons and proper request.
-        }
-
-        [Test]
-        public async Task Test_ListShouldReturnArrayOnly()
-        {
-            var linput = new ListInput
-            {
-                ContinuationToken = string.Empty,
-                Delimiter = "/",
-                MaxKeys = 100,
-                Prefix = "/",
-                StartAfter = null
-            };
-
-            var opt = new ListOptions {FullResponse = false, ThrowErrorIfNoFilesFound = false};
-
-            var result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
-
-            Assert.IsInstanceOf<JArray>(result);
         }
     }
 }

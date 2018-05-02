@@ -8,11 +8,13 @@ using TestConfigurationHandler;
 namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
+    [Order(1)]
+    [Description("Upload error tests.")]
     public class UploadErrorTests
     {
         private static Parameters _param;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             _param = new Parameters
@@ -31,12 +33,6 @@ namespace Frends.Community.AWS.Tests
                 FileMask = @"*.test",
                 FilePath = @"c:\there_is_no_folder_like_this\"
             };
-            var param = new Parameters
-            {
-                AWSAccessKeyID = "foo", // fake
-                AWSSecretAccessKey = "bar", // fake
-                BucketName = "baz" // fake
-            };
             var options = new UploadOptions
             {
                 ReturnListOfObjectKeys = true,
@@ -46,7 +42,7 @@ namespace Frends.Community.AWS.Tests
 
             async Task TestDelegate()
             {
-                await UploadTask.UploadAsync(input, param, options, new CancellationToken());
+                await UploadTask.UploadAsync(input, _param, options, new CancellationToken());
             }
 
             Assert.That(TestDelegate,
@@ -63,12 +59,7 @@ namespace Frends.Community.AWS.Tests
                 FilePath = Path.GetTempPath(),
                 Prefix = @"\"
             };
-            var param = new Parameters
-            {
-                AWSAccessKeyID = "foo", // fake
-                AWSSecretAccessKey = "bar", // fake
-                BucketName = "baz" // fake
-            };
+
             var options = new UploadOptions
             {
                 ReturnListOfObjectKeys = true,
@@ -78,7 +69,7 @@ namespace Frends.Community.AWS.Tests
 
             async Task TestDelegate()
             {
-                await UploadTask.UploadAsync(input, param, options, new CancellationToken());
+                await UploadTask.UploadAsync(input, _param, options, new CancellationToken());
             }
 
             Assert.That(TestDelegate,

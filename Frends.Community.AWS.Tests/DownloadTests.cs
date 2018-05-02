@@ -7,11 +7,13 @@ using TestConfigurationHandler;
 namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
+    [Order(3)]
+    [Description("Download error tests.")]
     public class DownloadErrorTestsSingleFiles
     {
         private static Parameters _param;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             _param = new Parameters
@@ -36,7 +38,8 @@ namespace Frends.Community.AWS.Tests
             {
                 DownloadFromCurrentDirectoryOnly = true,
                 Overwrite = true,
-                ThrowErrorIfNoMatches = true
+                ThrowErrorIfNoMatches = true,
+                DeleteSourceFile = false
             };
 
             List<string> TestDelegate()
