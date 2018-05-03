@@ -17,22 +17,6 @@ namespace Frends.Community.AWS.Tests
     [Description("Ordered integration tests.")]
     public class IntegrationTests
     {
-        /*
-         * -- Order of tests --
-         * SETUP: create local files -- DONE
-         * Upload one.
-         * Upload multiple from subdirs also.
-         * Upload from current dir only. (tests no recusrsive)
-         * List all. (should return predetermined amount of objects)
-         * List with delimiter. (tests how limiting scope of list works)        
-         * Download single file overwrite off (should work)
-         * Download single file to fail with overwrite on (should throw)
-         * Download all, delete source, overwrite on
-         * List all should return no objects and should throw. == ALL OK
-         * TEARDOWN: remove local files. -- DONE
-         *
-         * Result should be empty AWS, empty local folder, all tests passed.
-         */
         [OneTimeSetUp]
         public static void Setup()
         {
@@ -227,13 +211,13 @@ namespace Frends.Community.AWS.Tests
             var result = DownloadTask.DownloadFiles(dinput, _param, opt, new CancellationToken());
 
             // try to download again with error throw on, should not find the same file.
-            void DownloadThrowDelegate()
+            void DownloadThatThrows()
             {
                 DownloadTask.DownloadFiles(dinput, _param, opt, new CancellationToken());
             }
 
             Assert.AreEqual(1, result.Count);
-            Assert.Throws<ArgumentException>(DownloadThrowDelegate);
+            Assert.Throws<ArgumentException>(DownloadThatThrows);
         }
 
         [Test]
