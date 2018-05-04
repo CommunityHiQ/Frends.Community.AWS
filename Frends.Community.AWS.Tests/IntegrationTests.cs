@@ -12,6 +12,15 @@ using TestConfigurationHandler;
 
 namespace Frends.Community.AWS.Tests
 {
+    /// <summary>
+    /// To run these tests, you need to have proper json in
+    /// C:\VSTestConfiguration\config.json
+    /// with keys and working AWS S3 account & bucket.
+    /// Test will also need access to a local folder specified in the config.json.
+    /// 
+    /// Tests will create local files, upload and download them.
+    /// Tests clean folders and files before and after tests.
+    /// </summary>
     [TestFixture]
     [Order(4)]
     [Description("Ordered integration tests.")]
