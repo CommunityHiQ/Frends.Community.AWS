@@ -152,18 +152,18 @@ namespace Frends.Community.AWS
 
         /// <summary>
         ///     Windows-style filemask, ( *.* , ?_file.*, foo_*.txt ).
-        ///     Empty field = *.*
+        ///     Empty field = all files (*)
         /// </summary>
-        [DefaultValue(@"*.*")]
+        [DefaultValue(@"*")]
         [DisplayFormat(DataFormatString = "Text")]
         public string FileMask { get; set; }
 
         /// <summary>
-        ///     S3 prefix for files.
+        ///     S3 root directory. If directory does not exist, it will be created.
         /// </summary>
         [DefaultValue(@"")]
         [DisplayFormat(DataFormatString = "Text")]
-        public string Prefix { get; set; }
+        public string S3Directory { get; set; }
     }
 
     /// <summary>
@@ -181,6 +181,26 @@ namespace Frends.Community.AWS
         public bool UploadFromCurrentDirectoryOnly { get; set; }
 
         /// <summary>
+        ///     Set to true to create subdirectories in AWS.
+        ///     Works with UploadFromCurrentDirectoryOnly = false.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool PreserveFolderStructure { get; set; }
+
+        /// <summary>
+        ///     Set to true to overwrite files with the same path and name
+        ///     (aka object key).
+        /// </summary>
+        [DefaultValue(false)]
+        public bool Overwrite { get; set; }
+
+        /// <summary>
+        ///     Deletes local source files after transfer.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool DeleteSource { get; set; }
+
+        /// <summary>
         ///     If there are no files in the path matching the filemask supplied,
         ///     throw error.
         /// </summary>
@@ -193,13 +213,6 @@ namespace Frends.Community.AWS
         /// </summary>
         [DefaultValue(false)]
         public bool ReturnListOfObjectKeys { get; set; }
-
-        /// <summary>
-        ///     You can specify Storage Class for uploaded files.
-        ///     Standard is default.
-        ///     Consult AWS S3 Documentation for others.
-        /// </summary>
-        public StorageClasses StorageClass { get; set; }
     }
 
     #endregion

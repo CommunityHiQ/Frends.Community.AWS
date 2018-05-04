@@ -9,12 +9,12 @@ using Amazon.S3.IO;
 namespace Frends.Community.AWS
 {
     /// <summary>
-    ///     Amazon AWS S3 File DownloadTask task
+    ///     Amazon AWS S3 File DownloadTask
     /// </summary>
     public class DownloadTask
     {
         /// <summary>
-        ///     Amazon AWS S3 Transfer files.
+        ///     Amazon AWS S3 DownloadFiles task.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>

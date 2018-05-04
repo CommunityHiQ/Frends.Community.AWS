@@ -1,5 +1,4 @@
 ﻿using Amazon;
-using Amazon.S3;
 
 namespace Frends.Community.AWS
 {
@@ -49,30 +48,6 @@ namespace Frends.Community.AWS
                     return RegionEndpoint.USWest2;
                 default:
                     return RegionEndpoint.EUWest1;
-            }
-        }
-
-        /// <summary>
-        ///     You can select different type of storage redundancy option.
-        ///     Standard being the default with high redundancy and accessed often, but is the most expensive.
-        ///     Defaults to Standard.
-        /// </summary>
-        /// <param name="s3StorageClass"></param>
-        /// <returns>S3StorageClass-object for UploadRequest-parameter.</returns>
-        public static S3StorageClass StorageClassSelection(StorageClasses s3StorageClass)
-        {
-            switch (s3StorageClass)
-            {
-                case StorageClasses.Standard:
-                    return S3StorageClass.Standard;
-                case StorageClasses.StandardInfrequent:
-                    return S3StorageClass.StandardInfrequentAccess;
-                case StorageClasses.Reduced:
-                    return S3StorageClass.ReducedRedundancy;
-                case StorageClasses.Glacier:
-                    return S3StorageClass.Glacier;
-                default:
-                    return S3StorageClass.Standard;
             }
         }
     }

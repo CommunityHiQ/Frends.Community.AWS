@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using TestConfigurationHandler;
 
@@ -36,16 +35,15 @@ namespace Frends.Community.AWS.Tests
             var options = new UploadOptions
             {
                 ReturnListOfObjectKeys = true,
-                StorageClass = StorageClasses.Standard,
                 ThrowErrorIfNoMatch = true
             };
 
-            async Task TestDelegate()
+            void UploadThatThrows()
             {
-                await UploadTask.UploadAsync(input, _param, options, new CancellationToken());
+                UploadTask.UploadFiles(input, _param, options, new CancellationToken());
             }
 
-            Assert.That(TestDelegate,
+            Assert.That(UploadThatThrows,
                 Throws.TypeOf<ArgumentException>()
                     .With.Message.StartsWith("Source path not found."));
         }
@@ -57,22 +55,21 @@ namespace Frends.Community.AWS.Tests
             {
                 FileMask = "there_is_no_spoon.text",
                 FilePath = Path.GetTempPath(),
-                Prefix = @"\"
+                S3Directory = @"\"
             };
 
             var options = new UploadOptions
             {
                 ReturnListOfObjectKeys = true,
-                StorageClass = StorageClasses.Standard,
                 ThrowErrorIfNoMatch = true
             };
 
-            async Task TestDelegate()
+            void UploadThatThrows()
             {
-                await UploadTask.UploadAsync(input, _param, options, new CancellationToken());
+                UploadTask.UploadFiles(input, _param, options, new CancellationToken());
             }
 
-            Assert.That(TestDelegate,
+            Assert.That(UploadThatThrows,
                 Throws.TypeOf<ArgumentException>()
                     .With.Message.StartsWith("No files match the filemask within supplied path."));
         }

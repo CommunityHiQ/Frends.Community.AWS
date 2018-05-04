@@ -30,13 +30,13 @@ namespace Frends.Community.AWS.Tests
             };
             _download = Path.Combine(_root, "download");
 
-            //Cleanup(); // incase something was left behind
+            Cleanup(); // incase something was left behind
 
             if (!CreateTestFiles(_root, Files)) throw new IOException("Could not create testfiles.");
         }
 
         [OneTimeTearDown]
-        public void Cleanup()
+        public static void Cleanup()
         {
             if (Directory.Exists(_root)) Directory.Delete(_root, true);
 
@@ -45,7 +45,7 @@ namespace Frends.Community.AWS.Tests
                 using (var s3Client = new AmazonS3Client(_param.AWSAccessKeyID, _param.AWSSecretAccessKey,
                     new AmazonS3Config {RegionEndpoint = Utilities.RegionSelection(_param.Region)}))
                 {
-                    var directoryToDelete = new S3DirectoryInfo(s3Client, _param.BucketName, _prefix.Replace("/", ""));
+                    var directoryToDelete = new S3DirectoryInfo(s3Client, _param.BucketName, Prefix.Replace("/", ""));
                     if (directoryToDelete.Exists) directoryToDelete.Delete(true);
                 }
             }
@@ -55,7 +55,7 @@ namespace Frends.Community.AWS.Tests
 
         private static Parameters _param;
         private static string _root;
-        private static readonly string _prefix = "test_prefix/";
+        private const string Prefix = "test_prefix";
         private static string _download;
 
         private static readonly (string name, int bytes)[] Files =
@@ -113,13 +113,13 @@ namespace Frends.Community.AWS.Tests
         }
 
         [Test]
-        [Order(9)]
+        [Order(10)]
         public void Error_OverwriteOffShouldThrow()
         {
             var dinput = new DownloadInput
             {
                 DestinationPath = _download,
-                S3Directory = _prefix.Replace("/", ""),
+                S3Directory = Prefix,
                 SearchPattern = "a*"
             };
 
@@ -140,13 +140,13 @@ namespace Frends.Community.AWS.Tests
         }
 
         [Test]
-        [Order(8)]
+        [Order(9)]
         public void Test_DownloadAllFiles()
         {
             var dinput = new DownloadInput
             {
                 DestinationPath = _download,
-                S3Directory = _prefix.Replace("/", ""),
+                S3Directory = Prefix,
                 SearchPattern = "*"
             };
 
@@ -165,13 +165,13 @@ namespace Frends.Community.AWS.Tests
         }
 
         [Test]
-        [Order(10)]
+        [Order(11)]
         public void Test_DownloadOverwriteShouldReturn()
         {
             var dinput = new DownloadInput
             {
                 DestinationPath = _download,
-                S3Directory = _prefix.Replace("/", ""),
+                S3Directory = Prefix,
                 SearchPattern = "b*"
             };
 
@@ -190,13 +190,13 @@ namespace Frends.Community.AWS.Tests
         }
 
         [Test]
-        [Order(11)]
+        [Order(12)]
         public void Test_DownloadShouldDeleteSources()
         {
             var dinput = new DownloadInput
             {
                 DestinationPath = _download,
-                S3Directory = _prefix.Replace("/", ""),
+                S3Directory = Prefix,
                 SearchPattern = "c*"
             };
 
@@ -221,7 +221,7 @@ namespace Frends.Community.AWS.Tests
         }
 
         [Test]
-        [Order(7)]
+        [Order(8)]
         public async Task Test_ListNoFullResponseShouldReturnArrayOnly()
         {
             var linput = new ListInput
@@ -229,7 +229,7 @@ namespace Frends.Community.AWS.Tests
                 ContinuationToken = string.Empty,
                 Delimiter = "/",
                 MaxKeys = 100,
-                Prefix = _prefix,
+                Prefix = Prefix,
                 StartAfter = null
             };
 
@@ -238,11 +238,10 @@ namespace Frends.Community.AWS.Tests
             var result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
 
             Assert.IsInstanceOf<JArray>(result);
-            Assert.AreEqual(true, result.HasValues);
         }
 
         [Test]
-        [Order(6)]
+        [Order(7)]
         public async Task Test_ListShouldReturn()
         {
             var linput = new ListInput
@@ -250,7 +249,7 @@ namespace Frends.Community.AWS.Tests
                 ContinuationToken = string.Empty,
                 Delimiter = "",
                 MaxKeys = 100,
-                Prefix = _prefix,
+                Prefix = Prefix,
                 StartAfter = null
             };
 
@@ -260,53 +259,57 @@ namespace Frends.Community.AWS.Tests
 
             Assert.True(result.HasValues);
             Assert.AreEqual(200, result.Value<int>("HttpStatusCode")); // should be full response and proper request.
-            Assert.AreEqual(1, result.Value<JArray>("S3Objects").Count);
+            Assert.AreEqual(6, result.Value<JArray>("S3Objects").Count);
         }
 
         [Test]
-        [Order(7)]
-        public async Task Test_UploadMultipleFilesShouldReturn()
+        [Order(6)]
+        public void Test_UploadMultipleFilesShouldReturn()
         {
             var uinput = new UploadInput
             {
                 FileMask = "*",
                 FilePath = _root,
-                Prefix = _prefix
+                S3Directory = Prefix
             };
 
             var opt = new UploadOptions
             {
                 ReturnListOfObjectKeys = true,
-                StorageClass = StorageClasses.Standard,
                 ThrowErrorIfNoMatch = true,
-                UploadFromCurrentDirectoryOnly = false
+                UploadFromCurrentDirectoryOnly = false,
+                DeleteSource = false,
+                Overwrite = true,
+                PreserveFolderStructure = true
             };
 
-            var result = await UploadTask.UploadAsync(uinput, _param, opt, new CancellationToken());
+            var result = UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
 
             Assert.AreEqual(result.Count, 5);
         }
 
         [Test]
         [Order(5)]
-        public async Task Test_UploadSingleShouldReturn()
+        public void Test_UploadSingleShouldReturn()
         {
             var uinput = new UploadInput
             {
                 FileMask = "a.file",
                 FilePath = _root,
-                Prefix = _prefix
+                S3Directory = Prefix
             };
 
             var opt = new UploadOptions
             {
                 ReturnListOfObjectKeys = true,
-                StorageClass = StorageClasses.Standard,
                 ThrowErrorIfNoMatch = true,
-                UploadFromCurrentDirectoryOnly = true
+                UploadFromCurrentDirectoryOnly = true,
+                DeleteSource = false,
+                Overwrite = false,
+                PreserveFolderStructure = true
             };
 
-            var result = await UploadTask.UploadAsync(uinput, _param, opt, new CancellationToken());
+            var result = UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
 
             Assert.AreEqual(result.Count, 1);
         }

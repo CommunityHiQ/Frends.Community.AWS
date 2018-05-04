@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using Amazon.S3;
-using Amazon.S3.Transfer;
+using Amazon.S3.IO;
 
 namespace Frends.Community.AWS
 {
@@ -16,8 +15,6 @@ namespace Frends.Community.AWS
     public class UploadTask
     {
         /// <summary>
-        ///     TASK OVERWRITES FILES WITH SAME PREFIX AND KEY!
-        ///     Trailing slashes in bucketname or prefix will show as folder.
         ///     Filemask is Windows-style, eg. *.*, *file?.txt
         ///     Bucketname without s3://-prefix.
         /// </summary>
@@ -26,7 +23,7 @@ namespace Frends.Community.AWS
         /// <param name="options" />
         /// <param name="cancellationToken" />
         /// <returns>List&lt;string&gt;</returns>
-        public static async Task<List<string>> UploadAsync(
+        public static List<string> UploadFiles(
             [PropertyTab] UploadInput input,
             [PropertyTab] Parameters parameters,
             [PropertyTab] UploadOptions options,
@@ -48,12 +45,12 @@ namespace Frends.Community.AWS
             if (!Directory.Exists(input.FilePath))
                 throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
 
-            var filesToCopy = string.IsNullOrWhiteSpace(input.FileMask)
-                ? Directory.GetFiles(input.FilePath)
-                : Directory.GetFiles(input.FilePath, input.FileMask,
-                    options.UploadFromCurrentDirectoryOnly
-                        ? SearchOption.TopDirectoryOnly
-                        : SearchOption.AllDirectories);
+            var localRoot = new DirectoryInfo(input.FilePath);
+            var filesToCopy = localRoot.GetFiles(
+                input.FileMask ?? "*", // if filemask is not set, get all files.
+                options.UploadFromCurrentDirectoryOnly
+                    ? SearchOption.TopDirectoryOnly
+                    : SearchOption.AllDirectories);
 
             if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
                 throw new ArgumentException(
@@ -61,39 +58,80 @@ namespace Frends.Community.AWS
 
             #endregion
 
+            return ExecuteUpload(localRoot, filesToCopy, input, parameters, options, cancellationToken);
+        }
+
+        private static List<string> ExecuteUpload(
+            FileSystemInfo localRoot,
+            IEnumerable<FileInfo> filesToCopy,
+            UploadInput input,
+            Parameters parameters,
+            UploadOptions options,
+            CancellationToken cancellationToken
+        )
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             var result = new List<string>();
 
-            using (var fileTransferUtility = new TransferUtility(
-                new AmazonS3Client(
-                    parameters.AWSAccessKeyID,
-                    parameters.AWSSecretAccessKey,
-                    Utilities.RegionSelection(parameters.Region)
-                )))
+            var client = GetS3Client(parameters, cancellationToken);
+
+            using (client)
             {
+                var root = GetS3Directory(
+                    client,
+                    input,
+                    parameters,
+                    cancellationToken);
+
                 foreach (var file in filesToCopy)
                 {
-                    var request = new TransferUtilityUploadRequest
-                    {
-                        AutoCloseStream = true,
-                        BucketName = parameters.BucketName,
-                        FilePath = file,
-                        StorageClass = Utilities.StorageClassSelection(options.StorageClass),
-                        //PartSize = 6291456, // 6 MB.
-                        Key = input.Prefix + Path.GetFileName(file)
-                    };
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!file.Exists)
+                        throw new IOException($"Source file does not exist: {file.FullName}");
 
-                    //register to event, when done, add to result list
-                    request.UploadProgressEvent += (o, e) =>
-                    {
-                        if (e.PercentDone != 100) return;
-                        result.Add(options.ReturnListOfObjectKeys ? request.Key : e.FilePath);
-                    };
+                    var s3File = new S3FileInfo(
+                        client,
+                        parameters.BucketName,
+                        Path.Combine(
+                            root.Name,
+                            options.PreserveFolderStructure
+                                ? file.FullName.Replace(localRoot.FullName, string.Empty)
+                                : file.Name
+                        ));
 
-                    await fileTransferUtility.UploadAsync(request, cancellationToken);
+                    s3File = options.DeleteSource
+                        ? s3File.MoveFromLocal(file.FullName, options.Overwrite)
+                        : s3File.CopyFromLocal(file.FullName, options.Overwrite);
+
+                    result.Add(options.ReturnListOfObjectKeys ? s3File.FullName : file.FullName);
                 }
-
-                return result;
             }
+
+            return result;
+        }
+
+        private static IAmazonS3 GetS3Client(
+            Parameters parameters,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return new AmazonS3Client(
+                parameters.AWSAccessKeyID,
+                parameters.AWSSecretAccessKey,
+                Utilities.RegionSelection(parameters.Region));
+        }
+
+        private static S3DirectoryInfo GetS3Directory(
+            IAmazonS3 s3Client,
+            UploadInput input,
+            Parameters parameters,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var dirInfo = new S3DirectoryInfo(s3Client, parameters.BucketName, input.S3Directory);
+            if (dirInfo.Exists) return dirInfo;
+            dirInfo.Create();
+            return dirInfo;
         }
     }
 }

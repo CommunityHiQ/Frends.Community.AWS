@@ -61,7 +61,7 @@ namespace Frends.Community.AWS
                         string.IsNullOrWhiteSpace(input.ContinuationToken) ? null : input.ContinuationToken,
                     StartAfter = string.IsNullOrWhiteSpace(input.StartAfter) ? null : input.StartAfter
                 };
-                
+
                 cToken.ThrowIfCancellationRequested();
 
                 response = await client.ListObjectsV2Async(request, cToken);
