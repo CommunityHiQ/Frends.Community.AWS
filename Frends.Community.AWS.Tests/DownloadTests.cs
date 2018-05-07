@@ -29,6 +29,33 @@ namespace Frends.Community.AWS.Tests
         {
             var i = new DownloadInput
             {
+                DestinationPath = string.Empty,
+                SearchPattern = "*",
+                S3Directory = ""
+            };
+
+            var o = new DownloadOptions
+            {
+                DownloadFromCurrentDirectoryOnly = true,
+                Overwrite = true,
+                ThrowErrorIfNoMatches = true,
+                DeleteSourceFile = false
+            };
+
+            List<string> TestDelegate()
+            {
+                return DownloadTask.DownloadFiles(i, _param, o, new CancellationToken());
+            }
+
+            Assert.That(TestDelegate,
+                Throws.TypeOf<ArgumentNullException>()
+                    .With.Message.EndsWith($"{nameof(i.DestinationPath)}"));
+        }
+        [Test]
+        public void Error_IfDestinationIsNull()
+        {
+            var i = new DownloadInput
+            {
                 DestinationPath = null,
                 SearchPattern = "*",
                 S3Directory = ""

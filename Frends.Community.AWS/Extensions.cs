@@ -16,7 +16,7 @@ namespace Frends.Community.AWS
         /// <param name="parameter"></param>
         public static void IsAnyNullOrWhiteSpaceThrow(this Parameters parameter)
         {
-            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+            if (parameter == null) throw new ArgumentNullException();
             var arr =
                 (from pi in parameter.GetType().GetProperties()
                     where pi.PropertyType == typeof(string)
@@ -26,15 +26,6 @@ namespace Frends.Community.AWS
                 .ToArray();
 
             if (arr.Length > 0) throw new ArgumentNullException(string.Join(StringSeparator, arr));
-        }
-
-        /// <summary>
-        ///     To check values and throw standard message.
-        /// </summary>
-        /// <param name="value"></param>
-        public static void IsNullOrWhiteSpaceThrow(this string value)
-        {
-            if (string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException(nameof(value));
         }
     }
 }
