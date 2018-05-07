@@ -16,35 +16,35 @@ namespace Frends.Community.AWS
         {
             switch (region)
             {
-                case Regions.EUWest1:
+                case Regions.EuWest1:
                     return RegionEndpoint.EUWest1;
-                case Regions.EUWest2:
+                case Regions.EuWest2:
                     return RegionEndpoint.EUWest2;
-                case Regions.EUCentral1:
+                case Regions.EuCentral1:
                     return RegionEndpoint.EUCentral1;
-                case Regions.APSoutheast1:
+                case Regions.ApSoutheast1:
                     return RegionEndpoint.APSoutheast1;
-                case Regions.APSoutheast2:
+                case Regions.ApSoutheast2:
                     return RegionEndpoint.APSoutheast2;
-                case Regions.APNortheast1:
+                case Regions.ApNortheast1:
                     return RegionEndpoint.APNortheast1;
-                case Regions.APNortheast2:
+                case Regions.ApNortheast2:
                     return RegionEndpoint.APNortheast2;
-                case Regions.APSouth1:
+                case Regions.ApSouth1:
                     return RegionEndpoint.APSouth1;
-                case Regions.CACentral1:
+                case Regions.CaCentral1:
                     return RegionEndpoint.CACentral1;
-                case Regions.CNNorth1:
+                case Regions.CnNorth1:
                     return RegionEndpoint.CNNorth1;
-                case Regions.SAEast1:
+                case Regions.SaEast1:
                     return RegionEndpoint.SAEast1;
-                case Regions.USEast1:
+                case Regions.UsEast1:
                     return RegionEndpoint.USEast1;
-                case Regions.USEast2:
+                case Regions.UsEast2:
                     return RegionEndpoint.USEast2;
-                case Regions.USWest1:
+                case Regions.UsWest1:
                     return RegionEndpoint.USWest1;
-                case Regions.USWest2:
+                case Regions.UsWest2:
                     return RegionEndpoint.USWest2;
                 default:
                     return RegionEndpoint.EUWest1;

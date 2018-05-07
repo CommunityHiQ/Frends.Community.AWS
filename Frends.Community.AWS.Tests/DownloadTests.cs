@@ -18,8 +18,8 @@ namespace Frends.Community.AWS.Tests
         {
             _param = new Parameters
             {
-                AWSAccessKeyID = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
-                AWSSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
+                AwsAccessKeyId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
+                AwsSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
                 BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName")
             };
         }

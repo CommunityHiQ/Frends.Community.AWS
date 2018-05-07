@@ -32,8 +32,8 @@ namespace Frends.Community.AWS.Tests
             _root = ConfigHandler.ReadConfigValue("HiQ.AWS3Test.LocalTestFolder");
             _param = new Parameters
             {
-                AWSAccessKeyID = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
-                AWSSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
+                AwsAccessKeyId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
+                AwsSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
                 BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName"),
                 Region = (Regions) int.Parse(ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.Region"))
             };
@@ -51,7 +51,7 @@ namespace Frends.Community.AWS.Tests
 
             void DeleteRootFolder()
             {
-                using (var s3Client = new AmazonS3Client(_param.AWSAccessKeyID, _param.AWSSecretAccessKey,
+                using (var s3Client = new AmazonS3Client(_param.AwsAccessKeyId, _param.AwsSecretAccessKey,
                     new AmazonS3Config {RegionEndpoint = Utilities.RegionSelection(_param.Region)}))
                 {
                     var directoryToDelete = new S3DirectoryInfo(s3Client, _param.BucketName, Prefix.Replace("/", ""));

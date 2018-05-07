@@ -33,14 +33,7 @@ namespace Frends.Community.AWS
             // First check to see if this task gets performed at all.
             cancellationToken.ThrowIfCancellationRequested();
 
-            #region Error checks
-
-            if (string.IsNullOrWhiteSpace(parameters.AWSAccessKeyID))
-                throw new ArgumentNullException(nameof(parameters.AWSAccessKeyID), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(parameters.AWSSecretAccessKey))
-                throw new ArgumentNullException(nameof(parameters.AWSSecretAccessKey), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(parameters.BucketName))
-                throw new ArgumentNullException(nameof(parameters.BucketName), "Cannot be empty. ");
+            parameters.IsAnyNullOrWhiteSpaceThrow();
 
             if (!Directory.Exists(input.FilePath))
                 throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
@@ -55,16 +48,14 @@ namespace Frends.Community.AWS
             if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
                 throw new ArgumentException(
                     $"No files match the filemask within supplied path. {nameof(input.FileMask)}");
-
-            #endregion
-
-            return ExecuteUpload(localRoot, filesToCopy, input, parameters, options, cancellationToken);
+            
+            return ExecuteUpload(localRoot, filesToCopy, input.S3Directory, parameters, options, cancellationToken);
         }
 
         private static List<string> ExecuteUpload(
             FileSystemInfo localRoot,
             IEnumerable<FileInfo> filesToCopy,
-            UploadInput input,
+            string s3Directory,
             Parameters parameters,
             UploadOptions options,
             CancellationToken cancellationToken
@@ -73,14 +64,12 @@ namespace Frends.Community.AWS
             cancellationToken.ThrowIfCancellationRequested();
             var result = new List<string>();
 
-            var client = GetS3Client(parameters, cancellationToken);
-
-            using (client)
+            using (var client = GetS3Client(parameters, cancellationToken))
             {
                 var root = GetS3Directory(
                     client,
-                    input,
-                    parameters,
+                    s3Directory,
+                    parameters.BucketName,
                     cancellationToken);
 
                 foreach (var file in filesToCopy)
@@ -95,7 +84,9 @@ namespace Frends.Community.AWS
                         Path.Combine(
                             root.Name,
                             options.PreserveFolderStructure
-                                ? file.FullName.Replace(localRoot.FullName, string.Empty)
+                                ? file.FullName.Replace(
+                                    GetFullPathWithEndingSlashes(localRoot.FullName),
+                                    string.Empty)
                                 : file.Name
                         ));
 
@@ -116,22 +107,28 @@ namespace Frends.Community.AWS
         {
             cancellationToken.ThrowIfCancellationRequested();
             return new AmazonS3Client(
-                parameters.AWSAccessKeyID,
-                parameters.AWSSecretAccessKey,
+                parameters.AwsAccessKeyId,
+                parameters.AwsSecretAccessKey,
                 Utilities.RegionSelection(parameters.Region));
         }
 
         private static S3DirectoryInfo GetS3Directory(
             IAmazonS3 s3Client,
-            UploadInput input,
-            Parameters parameters,
+            string s3Directory,
+            string bucketName,
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var dirInfo = new S3DirectoryInfo(s3Client, parameters.BucketName, input.S3Directory);
+            var dirInfo = new S3DirectoryInfo(s3Client, bucketName, s3Directory);
             if (dirInfo.Exists) return dirInfo;
             dirInfo.Create();
             return dirInfo;
+        }
+        private static string GetFullPathWithEndingSlashes(string input)
+        {
+            return Path.GetFullPath(input)
+                   .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                   + Path.DirectorySeparatorChar;
         }
     }
 }
