@@ -1,4 +1,9 @@
-﻿using Amazon;
+﻿using System.IO;
+using System.Threading;
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.IO;
 
 namespace Frends.Community.AWS
 {
@@ -49,6 +54,57 @@ namespace Frends.Community.AWS
                 default:
                     return RegionEndpoint.EUWest1;
             }
+        }
+
+        /// <summary>
+        ///     Appends ending slash to path if it's missing.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns>string</returns>
+        public static string GetFullPathWithEndingSlashes(string input)
+        {
+            return Path.GetFullPath(input)
+                       .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                   + Path.DirectorySeparatorChar;
+        }
+
+        /// <summary>
+        ///     Gets information of directory. If it does not exist, it will create it.
+        /// </summary>
+        /// <param name="s3Client"></param>
+        /// <param name="s3Directory"></param>
+        /// <param name="bucketName"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>S3DirectoryInfo</returns>
+        public static S3DirectoryInfo GetS3Directory(
+            IAmazonS3 s3Client,
+            string s3Directory,
+            string bucketName,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var dirInfo = new S3DirectoryInfo(s3Client, bucketName, s3Directory);
+            if (dirInfo.Exists) return dirInfo;
+            dirInfo.Create();
+            return dirInfo;
+        }
+
+        /// <summary>
+        ///     Returns S3 client.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>AmazonS3Client</returns>
+        public static IAmazonS3 GetS3Client(
+            Parameters parameters,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            // optionally we can configure client, if the need arises.
+            return new AmazonS3Client(
+                parameters.AwsAccessKeyId,
+                parameters.AwsSecretAccessKey,
+                RegionSelection(parameters.Region));
         }
     }
 }

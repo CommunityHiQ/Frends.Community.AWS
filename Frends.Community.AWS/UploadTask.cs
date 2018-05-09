@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
-using Amazon.S3;
 using Amazon.S3.IO;
 
 namespace Frends.Community.AWS
@@ -64,9 +63,9 @@ namespace Frends.Community.AWS
             cancellationToken.ThrowIfCancellationRequested();
             var result = new List<string>();
 
-            using (var client = GetS3Client(parameters, cancellationToken))
+            using (var client = Utilities.GetS3Client(parameters, cancellationToken))
             {
-                var root = GetS3Directory(
+                var root = Utilities.GetS3Directory(
                     client,
                     s3Directory,
                     parameters.BucketName,
@@ -84,8 +83,7 @@ namespace Frends.Community.AWS
                         Path.Combine(
                             root.Name,
                             options.PreserveFolderStructure
-                                ? file.FullName.Replace(
-                                    GetFullPathWithEndingSlashes(localRoot.FullName),
+                                ? file.FullName.Replace(Utilities.GetFullPathWithEndingSlashes(localRoot.FullName),
                                     string.Empty)
                                 : file.Name
                         ));
@@ -99,36 +97,6 @@ namespace Frends.Community.AWS
             }
 
             return result;
-        }
-
-        private static IAmazonS3 GetS3Client(
-            Parameters parameters,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return new AmazonS3Client(
-                parameters.AwsAccessKeyId,
-                parameters.AwsSecretAccessKey,
-                Utilities.RegionSelection(parameters.Region));
-        }
-
-        private static S3DirectoryInfo GetS3Directory(
-            IAmazonS3 s3Client,
-            string s3Directory,
-            string bucketName,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var dirInfo = new S3DirectoryInfo(s3Client, bucketName, s3Directory);
-            if (dirInfo.Exists) return dirInfo;
-            dirInfo.Create();
-            return dirInfo;
-        }
-        private static string GetFullPathWithEndingSlashes(string input)
-        {
-            return Path.GetFullPath(input)
-                   .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-                   + Path.DirectorySeparatorChar;
         }
     }
 }
