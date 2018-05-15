@@ -30,22 +30,13 @@ namespace Frends.Community.AWS
             CancellationToken cToken
         )
         {
-            #region Error tests
-
-            if (string.IsNullOrWhiteSpace(parameters.AWSAccessKeyID))
-                throw new ArgumentNullException(nameof(parameters.AWSAccessKeyID), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(parameters.AWSSecretAccessKey))
-                throw new ArgumentNullException(nameof(parameters.AWSSecretAccessKey), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(parameters.BucketName))
-                throw new ArgumentNullException(nameof(parameters.BucketName), "Cannot be empty. ");
-
-            #endregion
+            parameters.IsAnyNullOrWhiteSpaceThrow();
 
             ListObjectsV2Response response;
 
             using (var client = new AmazonS3Client(
-                parameters.AWSAccessKeyID,
-                parameters.AWSSecretAccessKey,
+                parameters.AwsAccessKeyId,
+                parameters.AwsSecretAccessKey,
                 Utilities.RegionSelection(parameters.Region)))
             {
                 var request = new ListObjectsV2Request
@@ -61,7 +52,7 @@ namespace Frends.Community.AWS
                         string.IsNullOrWhiteSpace(input.ContinuationToken) ? null : input.ContinuationToken,
                     StartAfter = string.IsNullOrWhiteSpace(input.StartAfter) ? null : input.StartAfter
                 };
-                
+
                 cToken.ThrowIfCancellationRequested();
 
                 response = await client.ListObjectsV2Async(request, cToken);

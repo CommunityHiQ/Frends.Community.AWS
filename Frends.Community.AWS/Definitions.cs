@@ -13,7 +13,7 @@ namespace Frends.Community.AWS
     {
         /// <summary>
         ///     Downloads all objects with this prefix.
-        ///     Examples: folder/, this/is/prefix/
+        ///     Examples: folder, path/to/folder
         /// </summary>
         [DisplayFormat(DataFormatString = "Text")]
         public string S3Directory { get; set; }
@@ -152,18 +152,18 @@ namespace Frends.Community.AWS
 
         /// <summary>
         ///     Windows-style filemask, ( *.* , ?_file.*, foo_*.txt ).
-        ///     Empty field = *.*
+        ///     Empty field = all files (*)
         /// </summary>
-        [DefaultValue(@"*.*")]
+        [DefaultValue(@"*")]
         [DisplayFormat(DataFormatString = "Text")]
         public string FileMask { get; set; }
 
         /// <summary>
-        ///     S3 prefix for files.
+        ///     S3 root directory. If directory does not exist, it will be created.
         /// </summary>
         [DefaultValue(@"")]
         [DisplayFormat(DataFormatString = "Text")]
-        public string Prefix { get; set; }
+        public string S3Directory { get; set; }
     }
 
     /// <summary>
@@ -181,6 +181,26 @@ namespace Frends.Community.AWS
         public bool UploadFromCurrentDirectoryOnly { get; set; }
 
         /// <summary>
+        ///     Set to true to create subdirectories in AWS.
+        ///     Works with UploadFromCurrentDirectoryOnly = false.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool PreserveFolderStructure { get; set; }
+
+        /// <summary>
+        ///     Set to true to overwrite files with the same path and name
+        ///     (aka object key).
+        /// </summary>
+        [DefaultValue(false)]
+        public bool Overwrite { get; set; }
+
+        /// <summary>
+        ///     Deletes local source files after transfer.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool DeleteSource { get; set; }
+
+        /// <summary>
         ///     If there are no files in the path matching the filemask supplied,
         ///     throw error.
         /// </summary>
@@ -193,13 +213,6 @@ namespace Frends.Community.AWS
         /// </summary>
         [DefaultValue(false)]
         public bool ReturnListOfObjectKeys { get; set; }
-
-        /// <summary>
-        ///     You can specify Storage Class for uploaded files.
-        ///     Standard is default.
-        ///     Consult AWS S3 Documentation for others.
-        /// </summary>
-        public StorageClasses StorageClass { get; set; }
     }
 
     #endregion
@@ -215,7 +228,7 @@ namespace Frends.Community.AWS
         ///     AWS Bucketname
         ///     Example: yourbucket
         /// </summary>
-        [DisplayFormat(DataFormatString = "Text")]
+        [DisplayName("Name of bucket")]
         public string BucketName { get; set; }
 
         /// <summary>
@@ -223,16 +236,16 @@ namespace Frends.Community.AWS
         ///     Use #env.variable.
         /// </summary>
         [PasswordPropertyText(true)]
-        [DisplayFormat(DataFormatString = "Expression")]
-        public string AWSAccessKeyID { get; set; }
+        [DisplayName("AWS Access Key ID")]
+        public string AwsAccessKeyId { get; set; }
 
         /// <summary>
         ///     Secret  key name for Amazon s3 File transfer aws_secret_access_key
         ///     Use #env.variable.
         /// </summary>
         [PasswordPropertyText(true)]
-        [DisplayFormat(DataFormatString = "Expression")]
-        public string AWSSecretAccessKey { get; set; }
+        [DisplayName("AWS Secret Access Key")]
+        public string AwsSecretAccessKey { get; set; }
 
         /// <summary>
         ///     Region selection, default EUWest1.
@@ -245,35 +258,26 @@ namespace Frends.Community.AWS
 
     #region Enumerations
 
-#pragma warning disable 1591
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public enum Regions
     {
-        EUWest1,
-        EUWest2,
-        EUCentral1,
-        APNortheast1,
-        APNortheast2,
-        APSouth1,
-        APSoutheast1,
-        APSoutheast2,
-        CACentral1,
-        CNNorth1,
-        SAEast1,
-        USEast1,
-        USEast2,
-        USGovCloudWest1,
-        USWest1,
-        USWest2
+        EuWest1,
+        EuWest2,
+        EuCentral1,
+        ApNortheast1,
+        ApNortheast2,
+        ApSouth1,
+        ApSoutheast1,
+        ApSoutheast2,
+        CaCentral1,
+        CnNorth1,
+        SaEast1,
+        UsEast1,
+        UsEast2,
+        UsWest1,
+        UsWest2
     }
-
-    public enum StorageClasses
-    {
-        Standard,
-        StandardInfrequent,
-        Reduced,
-        Glacier
-    }
-#pragma warning restore 1591
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     #endregion
 }

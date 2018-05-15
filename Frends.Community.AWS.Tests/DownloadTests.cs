@@ -2,21 +2,57 @@
 using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
+using TestConfigurationHandler;
 
 namespace Frends.Community.AWS.Tests
 {
     [TestFixture]
+    [Order(3)]
+    [Description("Download error tests.")]
     public class DownloadErrorTestsSingleFiles
     {
-        private static readonly Parameters Param = new Parameters
+        private static Parameters _param;
+
+        [OneTimeSetUp]
+        public void Setup()
         {
-            AWSAccessKeyID = "foo", // fake
-            AWSSecretAccessKey = "bar", // fake
-            BucketName = "baz" // fake
-        };
+            _param = new Parameters
+            {
+                AwsAccessKeyId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
+                AwsSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
+                BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName")
+            };
+        }
 
         [Test]
         public void Error_IfDestinationIsEmpty()
+        {
+            var i = new DownloadInput
+            {
+                DestinationPath = string.Empty,
+                SearchPattern = "*",
+                S3Directory = ""
+            };
+
+            var o = new DownloadOptions
+            {
+                DownloadFromCurrentDirectoryOnly = true,
+                Overwrite = true,
+                ThrowErrorIfNoMatches = true,
+                DeleteSourceFile = false
+            };
+
+            List<string> TestDelegate()
+            {
+                return DownloadTask.DownloadFiles(i, _param, o, new CancellationToken());
+            }
+
+            Assert.That(TestDelegate,
+                Throws.TypeOf<ArgumentNullException>()
+                    .With.Message.EndsWith($"{nameof(i.DestinationPath)}"));
+        }
+        [Test]
+        public void Error_IfDestinationIsNull()
         {
             var i = new DownloadInput
             {
@@ -29,12 +65,13 @@ namespace Frends.Community.AWS.Tests
             {
                 DownloadFromCurrentDirectoryOnly = true,
                 Overwrite = true,
-                ThrowErrorIfNoMatches = true
+                ThrowErrorIfNoMatches = true,
+                DeleteSourceFile = false
             };
 
             List<string> TestDelegate()
             {
-                return DownloadTask.DownloadFiles(i, Param, o, new CancellationToken());
+                return DownloadTask.DownloadFiles(i, _param, o, new CancellationToken());
             }
 
             Assert.That(TestDelegate,

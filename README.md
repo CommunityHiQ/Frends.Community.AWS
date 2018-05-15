@@ -8,11 +8,11 @@ Frends tasks to download, upload and list files for AWS S3 flat file storage.
     - [DownloadFiles Parameters](#downloadfiles-parameters)
 	- [DownloadFiles Options](#downloadfiles-options)
     - [DownloadFiles Result](#downloadfiles-result)
-  - [UploadAsync](#uploadasync)
-    - [UploadAsync Input](#uploadasync-input)
-    - [UploadAsync Parameters](#uploadasync-parameters)
-    - [UploadAsync Options](#uploadasync-options)
-    - [UploadAsync Result](#uploadasync-result)
+  - [UploadFiles](#uploadfiles)
+    - [UploadFiles Input](#uploadfiles-input)
+    - [UploadFiles Parameters](#uploadfiles-parameters)
+    - [UploadFiles Options](#uploadfiles-options)
+    - [UploadFiles Result](#uploadfiles-result)
   - [ListObjectsAsync](#listobjectsasync)
     - [ListObjectsAsync Input](#listobjectsasync-input)
     - [ListObjectsAsync Parameters](#listobjectsasync-parameters)
@@ -61,19 +61,17 @@ Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 Result | List\<string\> | List of filepaths to downloaded files. | c:\download\file.csv
 ***
-### UploadAsync
-Upload creates a list of files from FilePath and FileMask parameters, uploads them to the supplied bucket with Prefix-parameter
-using the filenames it found.
-You can append strings to prefix, for example DateTime.Now.
-Otherwise, supply the prefix with trailing slash to prevent creating empty folders
-#### UploadAsync Input
+### UploadFiles
+Upload gets files based on directory and filemask, uploads them to S3 using the same filename to a specific directory.
+Optionally moves instead of copy, can do recursive matching and can preserver folder structure.
+#### UploadFiles Input
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 FilePath | string | Filepath to upload files from. | C:\upload, \\\\network\folder\
 FileMask | string | Filename or wildcards (eg. *.txt) | \*.\*, filename.csv
-Prefix | string | Prefix for object key. | folder/{{DateTime.Now}}
+S3Directory | string | Root directory in S3. | folder/{{DateTime.Now}}
 
-#### UploadAsync Parameters
+#### UploadFiles Parameters
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
@@ -81,14 +79,17 @@ AWSAccessKeyID | String (secret) | S3 Access Key, #env-variable use is encourage
 AWSSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 
-#### UploadAsync Options
+#### UploadFiles Options
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
+UploadFromCurrentDirectoryOnly | Boolean | Set to false to search files from subdirectories. | true
+PreserveFolderStructure | Boolean | If used in conjunction with UploadFromCurrentDirectoryOnly, subdirectories will be created. | false
+Overwrite | Boolean | Overwrites files in S3. | false
+DeleteSource | Boolean | Deletes local files after transfer | false
 ThrowErrorIfNoMatch | Boolean | If no files match the FilePath and FileMask supplied, throw error. | true
 ReturnListOfObjectKeys | Boolean | You can choose to return the keys uploaded or filenames with path uploaded. | true
-StorageClass | Selector | Choose the type of storage for files. Read S3 documentation for further details. | Standard
 
-#### UploadAsync Result
+#### UploadFiles Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 Result | List\<string\> | List of file keys or filepaths. | c:\upload\file.csv, object/prefix/file.csv
@@ -161,10 +162,11 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 
 # Changelog
 
-| Version             | Changes                 |
-| ---------------------| ---------------------|
+| Version             | Changes              |
+| --------------------| ---------------------|
 | pre 1.0 | pending |
 | 1.1.0 | Updated version as 1.0.0 has already been used in some environments. Fixed typos. |
 | 1.1.6 | Added feature to move files (deletes sources) to DownloadTask, better error messages. |
 | 1.1.7 | Removed Frends.Task.Attributes, using DataAnnotations instead. |
 | 1.1.8 | Proper tests. |
+| 1.2.0 | Rewrote Upload-task for additional features and increased ease of use. No more async.|

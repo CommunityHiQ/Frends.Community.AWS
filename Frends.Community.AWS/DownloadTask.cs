@@ -9,12 +9,12 @@ using Amazon.S3.IO;
 namespace Frends.Community.AWS
 {
     /// <summary>
-    ///     Amazon AWS S3 File DownloadTask task
+    ///     Amazon AWS S3 File DownloadTask
     /// </summary>
     public class DownloadTask
     {
         /// <summary>
-        ///     Amazon AWS S3 Transfer files.
+        ///     Amazon AWS S3 DownloadFiles task.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>
@@ -29,19 +29,10 @@ namespace Frends.Community.AWS
         )
         {
             cToken.ThrowIfCancellationRequested();
+            parameters.IsAnyNullOrWhiteSpaceThrow();
 
-            #region Error checks and helps
-
-            if (string.IsNullOrWhiteSpace(parameters.AWSAccessKeyID))
-                throw new ArgumentNullException(nameof(parameters.AWSAccessKeyID), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(parameters.AWSSecretAccessKey))
-                throw new ArgumentNullException(nameof(parameters.AWSSecretAccessKey), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(parameters.BucketName))
-                throw new ArgumentNullException(nameof(parameters.BucketName), "Cannot be empty. ");
-            if (string.IsNullOrWhiteSpace(input.DestinationPath))
-                throw new ArgumentNullException(nameof(input.DestinationPath), "Cannot be empty. ");
-
-            #endregion
+            if(string.IsNullOrWhiteSpace(input.DestinationPath))
+                throw new ArgumentNullException(nameof(input.DestinationPath));
 
             return DownloadUtility(input, parameters, option, cToken);
         }
@@ -62,7 +53,7 @@ namespace Frends.Community.AWS
         )
         {
             using (var s3Client = new AmazonS3Client(
-                parameters.AWSAccessKeyID, parameters.AWSSecretAccessKey, Utilities.RegionSelection(parameters.Region)))
+                parameters.AwsAccessKeyId, parameters.AwsSecretAccessKey, Utilities.RegionSelection(parameters.Region)))
             {
                 var dirInfo = new S3DirectoryInfo(s3Client, parameters.BucketName, input.S3Directory);
                 if (dirInfo.Exists)
@@ -117,7 +108,7 @@ namespace Frends.Community.AWS
                 catch (IOException ex)
                 {
                     // normal exception does not give filename info, which would be nice.
-                    throw new IOException($"{path} already exists.", ex);
+                    throw new IOException($"{path} already exists or insufficient privileges to write file.", ex);
                 }
             }
 
