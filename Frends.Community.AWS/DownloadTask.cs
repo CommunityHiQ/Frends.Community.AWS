@@ -97,7 +97,7 @@ namespace Frends.Community.AWS
                 {
                     // Apparently MoveToLocal does not have overwrite as signature :(
                     var localFile = option.DeleteSourceFile
-                        ? MoveToLocal(file, path, option.Overwrite)
+                        ? file.MoveToLocal(path, option.Overwrite)
                         : file.CopyToLocal(path, option.Overwrite);
 
                     if (!localFile.Exists)
@@ -113,13 +113,6 @@ namespace Frends.Community.AWS
             }
 
             return filelist;
-        }
-
-        private static FileInfo MoveToLocal(S3FileInfo file, string path, bool overwrite)
-        {
-            var localFile = file.CopyToLocal(path, overwrite);
-            file.Delete();
-            return localFile;
         }
     }
 }
