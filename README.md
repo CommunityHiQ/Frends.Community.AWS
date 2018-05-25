@@ -141,7 +141,9 @@ Restore dependencies
 
 Rebuild the project
 
+(OPTIONAL)
 Run Tests with nunit3. Tests can be found under
+Integration tests require working S3 Bucket in a config.json fi
 
 `Frends.Community.AWS.Tests\bin\Release\Frends.Community.AWS.Tests.dll`
 

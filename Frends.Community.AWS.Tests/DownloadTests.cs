@@ -11,6 +11,7 @@ namespace Frends.Community.AWS.Tests
     [Description("Download error tests.")]
     public class DownloadErrorTestsSingleFiles
     {
+        
         private static Parameters _param;
 
         [OneTimeSetUp]
@@ -20,9 +21,11 @@ namespace Frends.Community.AWS.Tests
             {
                 AwsAccessKeyId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
                 AwsSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
-                BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName")
+                BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName"),                
+                Region = (Regions) int.Parse(ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.Region"))
             };
         }
+        
 
         [Test]
         public void Error_IfDestinationIsEmpty()

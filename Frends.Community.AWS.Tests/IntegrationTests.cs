@@ -39,7 +39,7 @@ namespace Frends.Community.AWS.Tests
             };
             _download = Path.Combine(_root, "download");
 
-            Cleanup(); // incase something was left behind
+            Cleanup(); // in case something was left behind
 
             if (!CreateTestFiles(_root, Files)) throw new IOException("Could not create testfiles.");
         }
@@ -80,7 +80,7 @@ namespace Frends.Community.AWS.Tests
         {
             foreach (var (name, bytes) in files)
             {
-                if (!Directory.Exists(root)) Directory.CreateDirectory(root);
+                /*if (!Directory.Exists(root))*/ Directory.CreateDirectory(root);
                 var path = Path.Combine(root, name);
                 var file = new FileInfo(path);
                 file.Directory?.Create();

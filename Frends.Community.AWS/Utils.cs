@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Threading;
 using Amazon;
-using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.IO;
 
