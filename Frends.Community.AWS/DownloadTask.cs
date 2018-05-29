@@ -42,22 +42,21 @@ namespace Frends.Community.AWS
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>
-        /// <param name="cToken"></param>
+        /// <param name="cancellationToken"></param>
         /// <param name="option"></param>
         /// <returns></returns>
         private static List<string> DownloadUtility(
             DownloadInput input,
             Parameters parameters,
             DownloadOptions option,
-            CancellationToken cToken
+            CancellationToken cancellationToken
         )
         {
-            using (var s3Client = new AmazonS3Client(
-                parameters.AwsAccessKeyId, parameters.AwsSecretAccessKey, Utilities.RegionSelection(parameters.Region)))
+            using (var s3Client = Utilities.GetS3Client(parameters, cancellationToken))
             {
                 var dirInfo = new S3DirectoryInfo(s3Client, parameters.BucketName, input.S3Directory);
                 if (dirInfo.Exists)
-                    return DownloadFiles(input, option, dirInfo, cToken);
+                    return DownloadFiles(input, option, dirInfo, cancellationToken);
                 throw new ArgumentException($"Cannot find {input.S3Directory} directory. {nameof(input.S3Directory)}");
             }
         }

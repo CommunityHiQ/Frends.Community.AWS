@@ -21,23 +21,20 @@ namespace Frends.Community.AWS
         /// <param name="input"></param>
         /// <param name="parameters"></param>
         /// <param name="options"></param>
-        /// <param name="cToken"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>JObect { JArray("S3Objects"), JProperty }</returns>
         public static async Task<JToken> ListObjectsAsync(
             [PropertyTab] ListInput input,
             [PropertyTab] Parameters parameters,
             [PropertyTab] ListOptions options,
-            CancellationToken cToken
+            CancellationToken cancellationToken
         )
         {
             if (parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
 
             ListObjectsV2Response response;
 
-            using (var client = new AmazonS3Client(
-                parameters.AwsAccessKeyId,
-                parameters.AwsSecretAccessKey,
-                Utilities.RegionSelection(parameters.Region)))
+            using (var client = Utilities.GetS3Client(parameters, cancellationToken))
             {
                 var request = new ListObjectsV2Request
                 {
@@ -53,9 +50,9 @@ namespace Frends.Community.AWS
                     StartAfter = string.IsNullOrWhiteSpace(input.StartAfter) ? null : input.StartAfter
                 };
 
-                cToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
-                response = await client.ListObjectsV2Async(request, cToken);
+                response = await client.ListObjectsV2Async(request, cancellationToken);
             }
 
             // if option is true and array has no objects 
