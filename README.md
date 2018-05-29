@@ -179,4 +179,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.1.7 | Removed Frends.Task.Attributes, using DataAnnotations instead. |
 | 1.1.8 | Proper tests. |
 | 1.2.0 | Rewrote Upload-task for additional features and increased ease of use. No more async.|
-| 1.2.2 | Added GetTemporaryCredentials task. Added Credentials-field to Parameters. It accepts the result of GetTemporaryCredentials task.|
+| 1.2.5 | Added GetTemporaryCredentials task. Added Credentials-field to Parameters. It accepts the result of GetTemporaryCredentials task.|

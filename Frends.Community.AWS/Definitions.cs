@@ -277,6 +277,7 @@ namespace Frends.Community.AWS
         /// </summary>
         [PasswordPropertyText(true)]
         [DisplayName("AWS Access Key ID")]
+        [DisplayFormat(DataFormatString = "Expression")]
         public string AwsAccessKeyId { get; set; }
 
         /// <summary>
@@ -285,6 +286,7 @@ namespace Frends.Community.AWS
         /// </summary>
         [PasswordPropertyText(true)]
         [DisplayName("AWS Secret Access Key")]
+        [DisplayFormat(DataFormatString = "Expression")]
         public string AwsSecretAccessKey { get; set; }
 
         /// <summary>

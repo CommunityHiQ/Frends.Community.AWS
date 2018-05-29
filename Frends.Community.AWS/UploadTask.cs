@@ -32,7 +32,7 @@ namespace Frends.Community.AWS
             // First check to see if this task gets performed at all.
             cancellationToken.ThrowIfCancellationRequested();
 
-            parameters.IsAnyNullOrWhiteSpaceThrow();
+            if (parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
 
             if (!Directory.Exists(input.FilePath))
                 throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));

@@ -3,7 +3,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Frends.Community.AWS</id>
-    <version>1.2.2</version>
+    <version>1.2.5</version>
     <title>Frends Community AWS</title>
     <authors>HiQ Finland</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -32,6 +32,13 @@
           target="lib\net452\Frends.Community.AWS.dll" />
     <file src="..\Frends.Community.AWS\bin\release\Frends.Community.AWS.xml"
           target="lib\net452\Frends.Community.AWS.xml" />
-    <file src="..\Frends.Community.AWS\FrendsTaskMetadata.json" target="FrendsTaskMetadata.json" />
+    <file src="..\Frends.Community.AWS\FrendsTaskMetadata.json" 
+          target="FrendsTaskMetadata.json" />
+    <file src="..\Frends.Community.AWS\bin\release\AWSSDK.Core.dll"
+          target="lib\net452\AWSSDK.Core.dll" />    
+    <file src="..\Frends.Community.AWS\bin\release\AWSSDK.S3.dll"
+          target="lib\net452\AWSSDK.S3.dll" />    
+    <file src="..\Frends.Community.AWS\bin\release\AWSSDK.SecurityToken.dll"
+          target="lib\net452\AWSSDK.SecurityToken.dll" />
   </files>
 </package>
