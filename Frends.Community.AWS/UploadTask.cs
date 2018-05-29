@@ -47,7 +47,7 @@ namespace Frends.Community.AWS
             if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
                 throw new ArgumentException(
                     $"No files match the filemask within supplied path. {nameof(input.FileMask)}");
-            
+
             return ExecuteUpload(localRoot, filesToCopy, input.S3Directory, parameters, options, cancellationToken);
         }
 

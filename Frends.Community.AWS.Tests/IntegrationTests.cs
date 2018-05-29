@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.IO;
+using Amazon.SecurityToken.Model;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using TestConfigurationHandler;
@@ -13,13 +14,12 @@ using TestConfigurationHandler;
 namespace Frends.Community.AWS.Tests
 {
     /// <summary>
-    /// To run these tests, you need to have proper json in
-    /// C:\VSTestConfiguration\config.json
-    /// with keys and working AWS S3 account & bucket.
-    /// Test will also need access to a local folder specified in the config.json.
-    /// 
-    /// Tests will create local files, upload and download them.
-    /// Tests clean folders and files before and after tests.
+    ///     To run these tests, you need to have proper json in
+    ///     C:\VSTestConfiguration\config.json
+    ///     with keys and working AWS S3 account & bucket.
+    ///     Test will also need access to a local folder specified in the config.json.
+    ///     Tests will create local files, upload and download them.
+    ///     Tests clean folders and files before and after tests.
     /// </summary>
     [TestFixture]
     [Order(4)]
@@ -29,7 +29,6 @@ namespace Frends.Community.AWS.Tests
         [OneTimeSetUp]
         public static void Setup()
         {
-            _root = ConfigHandler.ReadConfigValue("HiQ.AWS3Test.LocalTestFolder");
             _param = new Parameters
             {
                 AwsAccessKeyId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
@@ -37,7 +36,17 @@ namespace Frends.Community.AWS.Tests
                 BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName"),
                 Region = (Regions) int.Parse(ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.Region"))
             };
+            _assumerParam = new Parameters
+            {
+                AwsAccessKeyId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AssumerKey"),
+                AwsSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AssumerSecret"),
+                BucketName = _param.BucketName,
+                Region = _param.Region
+            };
+            _root = ConfigHandler.ReadConfigValue("HiQ.AWS3Test.LocalTestFolder");
             _download = Path.Combine(_root, "download");
+            _tempCredRole = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.Arn");
+            _extId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.ExternalId");
 
             Cleanup(); // in case something was left behind
 
@@ -63,9 +72,12 @@ namespace Frends.Community.AWS.Tests
         }
 
         private static Parameters _param;
+        private static Parameters _assumerParam;
         private static string _root;
         private const string Prefix = "test_prefix";
         private static string _download;
+        private static string _tempCredRole;
+        private static string _extId;
 
         private static readonly (string name, int bytes)[] Files =
         {
@@ -80,7 +92,8 @@ namespace Frends.Community.AWS.Tests
         {
             foreach (var (name, bytes) in files)
             {
-                /*if (!Directory.Exists(root))*/ Directory.CreateDirectory(root);
+                /*if (!Directory.Exists(root))*/
+                Directory.CreateDirectory(root);
                 var path = Path.Combine(root, name);
                 var file = new FileInfo(path);
                 file.Directory?.Create();
@@ -227,6 +240,24 @@ namespace Frends.Community.AWS.Tests
 
             Assert.AreEqual(1, result.Count);
             Assert.Throws<ArgumentException>(DownloadThatThrows);
+        }
+
+        [Test]
+        [Order(13)]
+        public async Task Test_GetTemporaryCredentialsShouldReturnProper()
+        {
+            var tcinput = new TempCredInput
+            {
+                CredentialDurationSeconds = 3600,
+                CredentialExternalId = _extId,
+                CredentialUniqueRequestId = "12345foobar",
+                RoleArn = _tempCredRole
+            };
+
+            var result = await GetTemporaryCredentialsTask.GetTemporaryCredentialsAsync(
+                tcinput, _assumerParam, new CancellationToken());
+
+            Assert.IsInstanceOf(typeof(Credentials), result);
         }
 
         [Test]

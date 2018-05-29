@@ -11,32 +11,6 @@ namespace Frends.Community.AWS.Tests
     public class ListingErrorTests
     {
         [Test]
-        public void Error_IfParametersAreNull()
-        {
-            var linput = new ListInput();
-            var param = new Parameters
-            {
-                AwsAccessKeyId = null, // null
-                AwsSecretAccessKey = " ", // whitespace
-                BucketName = string.Empty // empty
-            };
-            var opt = new ListOptions {FullResponse = true};
-
-            async Task TestDelegate()
-            {
-                await ListTask.ListObjectsAsync(linput, param, opt, new CancellationToken());
-            }
-
-            Assert.That(TestDelegate,
-                Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.EndsWith(
-                        string.Join(", ", 
-                            nameof(param.AwsAccessKeyId), 
-                            nameof(param.AwsSecretAccessKey),
-                            nameof(param.BucketName))));
-        }
-
-        [Test]
         public void Error_IfBucketNameIsEmpty()
         {
             var linput = new ListInput();
@@ -56,6 +30,32 @@ namespace Frends.Community.AWS.Tests
             Assert.That(TestDelegate,
                 Throws.TypeOf<ArgumentNullException>()
                     .With.Message.StartWith("Value cannot be null."));
+        }
+
+        [Test]
+        public void Error_IfParametersAreNull()
+        {
+            var linput = new ListInput();
+            var param = new Parameters
+            {
+                AwsAccessKeyId = null, // null
+                AwsSecretAccessKey = " ", // whitespace
+                BucketName = string.Empty // empty
+            };
+            var opt = new ListOptions {FullResponse = true};
+
+            async Task TestDelegate()
+            {
+                await ListTask.ListObjectsAsync(linput, param, opt, new CancellationToken());
+            }
+
+            Assert.That(TestDelegate,
+                Throws.TypeOf<ArgumentNullException>()
+                    .With.Message.EndsWith(
+                        string.Join(", ",
+                            nameof(param.AwsAccessKeyId),
+                            nameof(param.AwsSecretAccessKey),
+                            nameof(param.BucketName))));
         }
     }
 }

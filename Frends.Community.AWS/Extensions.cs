@@ -18,14 +18,14 @@ namespace Frends.Community.AWS
         ///     forms an array from property names. Ordering to enable testing.
         ///     Error message contains ordered list of params.
         /// </summary>
-        /// <param name="parameter"></param>
-        public static void IsAnyNullOrWhiteSpaceThrow(this Parameters parameter)
+        /// <param name="property"></param>
+        public static void IsAnyNullOrWhiteSpaceThrow(this object property)
         {
-            if (parameter == null) throw new ArgumentNullException();
+            if (property == null) throw new ArgumentNullException();
             var arr =
-                (from pi in parameter.GetType().GetProperties()
+                (from pi in property.GetType().GetProperties()
                     where pi.PropertyType == typeof(string)
-                    where string.IsNullOrWhiteSpace((string) pi.GetValue(parameter))
+                    where string.IsNullOrWhiteSpace((string) pi.GetValue(property))
                     orderby pi.Name
                     select pi.Name)
                 .ToArray();

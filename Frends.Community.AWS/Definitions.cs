@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Amazon.SecurityToken.Model;
 
 namespace Frends.Community.AWS
 {
@@ -63,7 +64,7 @@ namespace Frends.Community.AWS
 
     #endregion
 
-    #region List
+    #region ListTask
 
     /// <summary>
     ///     Input parameter class for ListObjectsAsync
@@ -217,6 +218,45 @@ namespace Frends.Community.AWS
 
     #endregion
 
+    #region TempCredTask
+
+    /// <summary>
+    ///     Input parameters for Temporary Credentials.
+    /// </summary>
+    public class TempCredInput
+    {
+        /// <summary>
+        ///     AWS Role parameter
+        ///     Example: arn:aws:iam:::role/someRole
+        /// </summary>
+        [DisplayFormat(DataFormatString = "Text")]
+        [DefaultValue("arn:aws:iam:::role/frends")]
+        public string RoleArn { get; set; }
+
+        /// <summary>
+        ///     External Id used to track requests.
+        /// </summary>
+        [DisplayFormat(DataFormatString = "Text")]
+        [DefaultValue("FRENDS")]
+        public string CredentialExternalId { get; set; }
+
+        /// <summary>
+        ///     External Id used to track requests.
+        /// </summary>
+        [DisplayFormat(DataFormatString = "Text")]
+        [DefaultValue("FRENDS_{{#process.executionid}}")]
+        public string CredentialUniqueRequestId { get; set; }
+
+        /// <summary>
+        ///     Credentials expire after this time (in seconds).
+        ///     Note: Minimum and maximum allowed expiration are set by AWS and S3 configuration.
+        /// </summary>
+        [DefaultValue(3600)]
+        public int CredentialDurationSeconds { get; set; }
+    }
+
+    #endregion
+
     #region Parameters for all!
 
     /// <summary>
@@ -246,6 +286,12 @@ namespace Frends.Community.AWS
         [PasswordPropertyText(true)]
         [DisplayName("AWS Secret Access Key")]
         public string AwsSecretAccessKey { get; set; }
+
+        /// <summary>
+        ///     Usage: The result of GetTemporaryCredentials-task.
+        /// </summary>
+        [DisplayName("Temporary Credentials")]
+        public Credentials AwsCredentials { get; set; }
 
         /// <summary>
         ///     Region selection, default EUWest1.

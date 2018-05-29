@@ -31,7 +31,7 @@ namespace Frends.Community.AWS
             cToken.ThrowIfCancellationRequested();
             parameters.IsAnyNullOrWhiteSpaceThrow();
 
-            if(string.IsNullOrWhiteSpace(input.DestinationPath))
+            if (string.IsNullOrWhiteSpace(input.DestinationPath))
                 throw new ArgumentNullException(nameof(input.DestinationPath));
 
             return DownloadUtility(input, parameters, option, cToken);

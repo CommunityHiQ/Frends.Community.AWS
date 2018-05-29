@@ -99,11 +99,15 @@ namespace Frends.Community.AWS
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            var region = RegionSelection(parameters.Region);
+
             // optionally we can configure client, if the need arises.
-            return new AmazonS3Client(
-                parameters.AwsAccessKeyId,
-                parameters.AwsSecretAccessKey,
-                RegionSelection(parameters.Region));
+            return parameters.AwsCredentials == null
+                ? new AmazonS3Client(
+                    parameters.AwsAccessKeyId,
+                    parameters.AwsSecretAccessKey,
+                    region)
+                : new AmazonS3Client(parameters.AwsCredentials, region);
         }
     }
 }
