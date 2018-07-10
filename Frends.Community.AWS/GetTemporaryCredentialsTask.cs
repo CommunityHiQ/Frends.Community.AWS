@@ -19,27 +19,47 @@ namespace Frends.Community.AWS
         /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>Credentials</returns>
-        public static async Task<Credentials> GetTemporaryCredentialsAsync(
+        public static async Task<dynamic> GetTemporaryCredentialsAsync(
             [PropertyTab] TempCredInput input,
             [PropertyTab] Parameters parameters,
             CancellationToken cancellationToken)
         {
             input.IsAnyNullOrWhiteSpaceThrow();
 
-            using (var stsClient = new AmazonSecurityTokenServiceClient(
-                parameters.AwsAccessKeyId,
-                parameters.AwsSecretAccessKey,
-                Utilities.RegionSelection(parameters.Region)))
+            // Now, it is possible to call task without awsAcessKeyId and AwsSecretAccessKey
+            if (string.IsNullOrWhiteSpace(parameters.AwsAccessKeyId) && string.IsNullOrWhiteSpace(parameters.AwsSecretAccessKey))
             {
-                var assumeRoleRequest = new AssumeRoleRequest
+                using (var stsClient = new AmazonSecurityTokenServiceClient(
+                    Utilities.RegionSelection(parameters.Region)))
                 {
-                    DurationSeconds = input.CredentialDurationSeconds,
-                    ExternalId = input.CredentialExternalId,
-                    RoleArn = input.RoleArn,
-                    RoleSessionName = input.CredentialUniqueRequestId
-                };
+                    var assumeRoleRequest = new AssumeRoleRequest
+                    {
+                        DurationSeconds = input.CredentialDurationSeconds,
+                        ExternalId = input.CredentialExternalId,
+                        RoleArn = input.RoleArn,
+                        RoleSessionName = input.CredentialUniqueRequestId
+                    };
 
-                return (await stsClient.AssumeRoleAsync(assumeRoleRequest, cancellationToken)).Credentials;
+                    return (await stsClient.AssumeRoleAsync(assumeRoleRequest, cancellationToken)).Credentials;
+                }
+            }
+            else
+            {               
+                using (var stsClient = new AmazonSecurityTokenServiceClient(
+                    parameters.AwsAccessKeyId,
+                    parameters.AwsSecretAccessKey,
+                    Utilities.RegionSelection(parameters.Region)))
+                {
+                    var assumeRoleRequest = new AssumeRoleRequest
+                    {
+                        DurationSeconds = input.CredentialDurationSeconds,
+                        ExternalId = input.CredentialExternalId,
+                        RoleArn = input.RoleArn,
+                        RoleSessionName = input.CredentialUniqueRequestId
+                    };
+
+                    return (await stsClient.AssumeRoleAsync(assumeRoleRequest, cancellationToken)).Credentials;
+                }
             }
         }
     }

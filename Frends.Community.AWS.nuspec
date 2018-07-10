@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Frends.Community.AWS</id>
+    <version>1.3.2</version>
+    <title>Frends Community AWS</title>
+    <authors>HiQ Finland</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Tasks for listing and transferring files to and from AWS S3.</description>
+    <summary />
+    <dependencies>
+      <group targetFramework="net452">
+        <dependency id="Newtonsoft.Json" version="10.0.2" />
+        <dependency id="AWSSDK.Core" version="3.3.22.3" />
+        <dependency id="AWSSDK.S3" version="3.3.18.2" />
+        <dependency id="AWSSDK.SecurityToken" version="3.3.4.3" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System" targetFramework="" />
+      <frameworkAssembly assemblyName="System.IO" targetFramework="" />
+      <frameworkAssembly assemblyName="System.Threading" targetFramework="net452" />
+      <frameworkAssembly assemblyName="System.Threading.Tasks" targetFramework="net452" />
+      <frameworkAssembly assemblyName="System.ComponentModel" targetFramework="net452" />
+      <frameworkAssembly assemblyName="System.Collections.Generic" targetFramework="net452" />
+      <frameworkAssembly assemblyName="System.ComponentModel.DataAnnotations" targetFramework="net452" />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+    <file src="..\Frends.Community.AWS\bin\release\Frends.Community.AWS.dll"
+          target="lib\net452\Frends.Community.AWS.dll" />
+    <file src="..\Frends.Community.AWS\bin\release\Frends.Community.AWS.xml"
+          target="lib\net452\Frends.Community.AWS.xml" />
+    <file src="..\Frends.Community.AWS\FrendsTaskMetadata.json" 
+          target="FrendsTaskMetadata.json" />
+  </files>
+</package>

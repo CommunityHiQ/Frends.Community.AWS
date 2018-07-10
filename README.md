@@ -180,3 +180,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.1.8 | Proper tests. |
 | 1.2.0 | Rewrote Upload-task for additional features and increased ease of use. No more async.|
 | 1.2.7 | Added GetTemporaryCredentials task. Added Credentials-field to Parameters. It accepts the result of GetTemporaryCredentials task.|
+| 1.3.2 | Now it is possible to call GetTemporaryCredentials also without AwsSecretAccessKey and AwsAccessKeyId. GetTemporaryCrednetials returns now dynamic. |

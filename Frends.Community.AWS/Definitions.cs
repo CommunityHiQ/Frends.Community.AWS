@@ -293,7 +293,7 @@ namespace Frends.Community.AWS
         ///     Usage: The result of GetTemporaryCredentials-task.
         /// </summary>
         [DisplayName("Temporary Credentials")]
-        public Credentials AwsCredentials { get; set; }
+        public dynamic AwsCredentials { get; set; }
 
         /// <summary>
         ///     Region selection, default EUWest1.
