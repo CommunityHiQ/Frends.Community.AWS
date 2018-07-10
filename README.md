@@ -40,7 +40,7 @@ Property | Type | Description | Example (comma separated)
 BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
 AwsAccessKeyId | String (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
 AwsSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-AwsCredentials | Credentials | Used ONLY for GetTemporaryCredentialsTask result. If set, other keys are ignored. | #result[Get Temporary Credentials]
+AwsCredentials | dynamic | Used ONLY for GetTemporaryCredentialsTask result. If set, other keys are ignored. | #result[Get Temporary Credentials]
 Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 ***
 ### DownloadFiles
@@ -181,4 +181,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.2.0 | Rewrote Upload-task for additional features and increased ease of use. No more async.|
 | 1.2.7 | Added GetTemporaryCredentials task. Added Credentials-field to Parameters. It accepts the result of GetTemporaryCredentials task.|
 | 1.3.2 | Now it is possible to call GetTemporaryCredentials also without AwsSecretAccessKey and AwsAccessKeyId. GetTemporaryCrednetials returns now dynamic. |
-| 1.3.3 | Documentation update and relocating nucpec file. |
+| 1.3.3 | Documentation update and relocating nuspec file. |
