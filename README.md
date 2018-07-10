@@ -131,7 +131,7 @@ CredentialDurationSeconds | Int | How long the credentials last. Check AWS docum
 #### GetTemporaryCredentialsAsync Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Result | Credentials | Object. Can be used directly in the AwsCredentials field in Parameters tab. | Credentials { AccessKeyId, SecretAccessKey, Expiration, SessionToken }
+Result | Dynamic | Object. Can be used directly in the AwsCredentials field in Parameters tab. | Credentials { AccessKeyId, SecretAccessKey, Expiration, SessionToken }
 ***
 ## License
 MIT License.
@@ -181,3 +181,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.2.0 | Rewrote Upload-task for additional features and increased ease of use. No more async.|
 | 1.2.7 | Added GetTemporaryCredentials task. Added Credentials-field to Parameters. It accepts the result of GetTemporaryCredentials task.|
 | 1.3.2 | Now it is possible to call GetTemporaryCredentials also without AwsSecretAccessKey and AwsAccessKeyId. GetTemporaryCrednetials returns now dynamic. |
+| 1.3.3 | Documentation update and relocating nucpec file. |
