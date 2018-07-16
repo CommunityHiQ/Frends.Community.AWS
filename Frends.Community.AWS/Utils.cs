@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Threading;
 using Amazon;
-using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.IO;
 
@@ -100,11 +99,15 @@ namespace Frends.Community.AWS
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            var region = RegionSelection(parameters.Region);
+
             // optionally we can configure client, if the need arises.
-            return new AmazonS3Client(
-                parameters.AwsAccessKeyId,
-                parameters.AwsSecretAccessKey,
-                RegionSelection(parameters.Region));
+            return parameters.AwsCredentials == null
+                ? new AmazonS3Client(
+                    parameters.AwsAccessKeyId,
+                    parameters.AwsSecretAccessKey,
+                    region)
+                : new AmazonS3Client(parameters.AwsCredentials, region);
         }
     }
 }

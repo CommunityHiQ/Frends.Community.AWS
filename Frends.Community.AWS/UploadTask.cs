@@ -32,7 +32,7 @@ namespace Frends.Community.AWS
             // First check to see if this task gets performed at all.
             cancellationToken.ThrowIfCancellationRequested();
 
-            parameters.IsAnyNullOrWhiteSpaceThrow();
+            if (parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
 
             if (!Directory.Exists(input.FilePath))
                 throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
@@ -47,7 +47,7 @@ namespace Frends.Community.AWS
             if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
                 throw new ArgumentException(
                     $"No files match the filemask within supplied path. {nameof(input.FileMask)}");
-            
+
             return ExecuteUpload(localRoot, filesToCopy, input.S3Directory, parameters, options, cancellationToken);
         }
 

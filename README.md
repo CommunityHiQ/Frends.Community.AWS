@@ -3,21 +3,22 @@ Frends tasks to download, upload and list files for AWS S3 flat file storage.
 ***
 - [Installing](#installing)
 - [Tasks](#tasks)
+  - [Parameters](#parameters)
   - [DownloadFiles](#downloadfiles)
     - [DownloadFiles Input](#downloadfiles-input)
-    - [DownloadFiles Parameters](#downloadfiles-parameters)
 	- [DownloadFiles Options](#downloadfiles-options)
     - [DownloadFiles Result](#downloadfiles-result)
   - [UploadFiles](#uploadfiles)
     - [UploadFiles Input](#uploadfiles-input)
-    - [UploadFiles Parameters](#uploadfiles-parameters)
     - [UploadFiles Options](#uploadfiles-options)
     - [UploadFiles Result](#uploadfiles-result)
   - [ListObjectsAsync](#listobjectsasync)
     - [ListObjectsAsync Input](#listobjectsasync-input)
-    - [ListObjectsAsync Parameters](#listobjectsasync-parameters)
     - [ListObjectsAsync Options](#listobjectsasync-options)
     - [ListObjectsAsync Result](#listobjectsasync-result)
+  - [GetTemporaryCredentialsAsync](#gettemporarycredentialsasync)
+	- [GetTemporaryCredentialsAsync Input](#gettemporarycredentialsasync-input)
+	- [GetTemporaryCredentialsAsync Result](#gettemporarycredentialsasync-result)
 - [License](#license)
 - [Building from source](#building-from-source)
 - [Contributing](#contributing)
@@ -30,8 +31,20 @@ You can install the task via FRENDS UI Task View or you can find the nuget packa
 ***
 ## Tasks
 
-### DownloadFiles
+### Parameters
+All tasks use the same Parameters-tab.
+If AwsCredentials is set, AwsAccessKeyId and AwsSecretAccessKey are ignored.
 
+Property | Type | Description | Example (comma separated)
+---------|------|-------------|--------
+BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
+AwsAccessKeyId | String (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
+AwsSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+AwsCredentials | dynamic | Used ONLY for GetTemporaryCredentialsTask result. If set, other keys are ignored. | #result[Get Temporary Credentials]
+Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
+***
+### DownloadFiles
+Simulates Windows-style folder structure. Can download subdirectories.
 
 #### DownloadFiles Input
 Property | Type | Description | Example (comma separated)
@@ -39,14 +52,6 @@ Property | Type | Description | Example (comma separated)
 SourceDirectory | string | S3 Directory | prefix, prefix/another
 SearchPattern | string | Filemask to match files with | \*, \*.\*, \*test\*.csv
 DestinationPath | string | Local path to download files to | c:\temp, \\\\network\path
-
-#### DownloadFiles Parameters
-Property | Type | Description | Example (comma separated)
----------|------|-------------|--------
-BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
-AWSAccessKeyID | String (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
-AWSSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 
 #### DownloadFiles Options
 Property | Type | Description | Example (comma separated)
@@ -64,20 +69,13 @@ Result | List\<string\> | List of filepaths to downloaded files. | c:\download\f
 ### UploadFiles
 Upload gets files based on directory and filemask, uploads them to S3 using the same filename to a specific directory.
 Optionally moves instead of copy, can do recursive matching and can preserver folder structure.
+
 #### UploadFiles Input
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 FilePath | string | Filepath to upload files from. | C:\upload, \\\\network\folder\
 FileMask | string | Filename or wildcards (eg. *.txt) | \*.\*, filename.csv
 S3Directory | string | Root directory in S3. | folder/{{DateTime.Now}}
-
-#### UploadFiles Parameters
-Property | Type | Description | Example (comma separated)
----------|------|-------------|--------
-BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
-AWSAccessKeyID | String (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
-AWSSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 
 #### UploadFiles Options
 Property | Type | Description | Example (comma separated)
@@ -97,7 +95,6 @@ Result | List\<string\> | List of file keys or filepaths. | c:\upload\file.csv, 
 ### ListObjectsAsync
 Lists files from S3. You can choose to return full response or just object keys.
 Returns an JObject data structure. Keys are in ["S3Objects"]-array.
-You can combine this task with DownloadAsync-task to get the keys you want to download.
 
 #### ListObjectsAsync Input
 Property | Type | Description | Example (comma separated)
@@ -108,14 +105,6 @@ MaxKeys | Integer | Limits the result list. | 100, 1, 99999999
 StartAfter | String | Start listing after specified key (eg. date if filenames are organised with dates). Can be empty. | "", object/prefix/key
 ContinuationToken | String | If list is truncated (eg. MaxKeys is reached), response contains ContinuationToken. You can use this token to resume list. Can be empty.| 1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36HyEXAMPLE=
 
-#### ListObjectsAsync Parameters
-Property | Type | Description | Example (comma separated)
----------|------|-------------|--------
-BucketName | String | S3 Buckets name, #env-variable use is encouraged. | s3-bucket
-AWSAccessKeyID | String (secret) | S3 Access Key, #env-variable use is encouraged. | AKIAIOSFODNN7EXAMPLE
-AWSSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encouraged. | wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
-
 #### ListObjectsAsync Options
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
@@ -125,6 +114,24 @@ FullResponse | Boolean | Choose between list of files as JObject or full respons
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
 Result | JObject | List of file keys or full response with metadata. | JObject { JArray("S3Objects"), JProperty }
+***
+### GetTemporaryCredentialsAsync
+Gets temporary credentials. All fields must be set.
+The result of this task is Credentials-object, that contains AccessKey, SecretAccessKey, Token and Duration.
+You can use the result as a parameter for the other Tasks in Parameters/Credentials-field.
+
+#### GetTemporaryCredentialsAsync Input
+Property | Type | Description | Example (comma separated)
+---------|------|-------------|--------
+RoleArn | String | Role, which to assume.| arn:aws:iam::123456789012:role/AssumerRole
+CredentialExternalId | String | Predetermined id for 3rd parties. | Foobar
+CredentialUniqueRequestId | String | ID used to track requests in AWS | Foobar_Request_{GUID}
+CredentialDurationSeconds | Int | How long the credentials last. Check AWS documentation and AWS configuration for min/max values. | 3600
+
+#### GetTemporaryCredentialsAsync Result
+Property | Type | Description | Example (comma separated)
+---------|------|-------------|--------
+Result | Dynamic | Object. Can be used directly in the AwsCredentials field in Parameters tab. | Credentials { AccessKeyId, SecretAccessKey, Expiration, SessionToken }
 ***
 ## License
 MIT License.
@@ -141,7 +148,9 @@ Restore dependencies
 
 Rebuild the project
 
+(OPTIONAL)
 Run Tests with nunit3. Tests can be found under
+Integration tests require working S3 Bucket in a config.json fi
 
 `Frends.Community.AWS.Tests\bin\Release\Frends.Community.AWS.Tests.dll`
 
@@ -170,3 +179,6 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.1.7 | Removed Frends.Task.Attributes, using DataAnnotations instead. |
 | 1.1.8 | Proper tests. |
 | 1.2.0 | Rewrote Upload-task for additional features and increased ease of use. No more async.|
+| 1.2.7 | Added GetTemporaryCredentials task. Added Credentials-field to Parameters. It accepts the result of GetTemporaryCredentials task.|
+| 1.3.2 | Now it is possible to call GetTemporaryCredentials also without AwsSecretAccessKey and AwsAccessKeyId. GetTemporaryCrednetials returns now dynamic. |
+| 1.3.3 | Documentation update and relocating nuspec file. |

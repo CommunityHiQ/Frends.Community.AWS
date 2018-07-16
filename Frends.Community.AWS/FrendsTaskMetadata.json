@@ -8,6 +8,9 @@
     },
     {
       "TaskMethod": "Frends.Community.AWS.ListTask.ListObjectsAsync"
+    },
+    {
+      "TaskMethod": "Frends.Community.AWS.GetTemporaryCredentialsTask.GetTemporaryCredentialsAsync"
     }
   ]
 }
