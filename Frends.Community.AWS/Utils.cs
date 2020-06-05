@@ -63,7 +63,7 @@ namespace Frends.Community.AWS
                 case Regions.UsEast2:
                     return RegionEndpoint.USEast2;
                 case Regions.UsWest1:
-                    return RegionEndpoint.EUWest1;
+                    return RegionEndpoint.USWest1;
                 case Regions.UsWest2:
                     return RegionEndpoint.USWest2;
                 default:
