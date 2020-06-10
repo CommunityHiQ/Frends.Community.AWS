@@ -182,3 +182,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.2.7 | Added GetTemporaryCredentials task. Added Credentials-field to Parameters. It accepts the result of GetTemporaryCredentials task.|
 | 1.3.2 | Now it is possible to call GetTemporaryCredentials also without AwsSecretAccessKey and AwsAccessKeyId. GetTemporaryCrednetials returns now dynamic. |
 | 1.3.3 | Documentation update and relocating nuspec file. |
+| 1.3.4 | Added new and removed old RegionEndpoints. Updated SDK. |
