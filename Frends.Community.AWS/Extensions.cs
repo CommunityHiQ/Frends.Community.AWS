@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using Amazon.S3.IO;
 
 namespace Frends.Community.AWS
 {
@@ -31,20 +29,6 @@ namespace Frends.Community.AWS
                 .ToArray();
 
             if (arr.Length > 0) throw new ArgumentNullException(string.Join(StringSeparator, arr));
-        }
-
-        /// <summary>
-        ///     Move feature with source delete and option for overwrite.
-        /// </summary>
-        /// <param name="file"></param>
-        /// <param name="path"></param>
-        /// <param name="overwrite"></param>
-        /// <returns>FileInfo</returns>
-        public static FileInfo MoveToLocal(this S3FileInfo file, string path, bool overwrite)
-        {
-            var localFile = file.CopyToLocal(path, overwrite);
-            file.Delete();
-            return localFile;
         }
     }
 }

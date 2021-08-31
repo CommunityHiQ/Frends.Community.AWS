@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
-using TestConfigurationHandler;
 
 namespace Frends.Community.AWS.Tests
 {
@@ -18,10 +16,10 @@ namespace Frends.Community.AWS.Tests
         {
             _param = new Parameters
             {
-                AwsAccessKeyId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
-                AwsSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
-                BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName"),
-                Region = (Regions) int.Parse(ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.Region"))
+                AwsAccessKeyId = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_AccessKey"),
+                AwsSecretAccessKey = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_SecretAccessKey"),
+                BucketName = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName"),
+                Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region"))
             };
         }
 
@@ -44,13 +42,13 @@ namespace Frends.Community.AWS.Tests
                 DeleteSourceFile = false
             };
 
-            List<string> TestDelegate()
+            void TestDelegate()
             {
-                return DownloadTask.DownloadFiles(i, _param, o, new CancellationToken());
+                DownloadTask.DownloadFiles(i, _param, o, new CancellationToken());
             }
 
-            Assert.That(TestDelegate,
-                Throws.TypeOf<ArgumentNullException>()
+            Assert.Throws<ArgumentNullException>(TestDelegate);
+            Assert.That(TestDelegate, Throws.TypeOf<ArgumentNullException>()
                     .With.Message.EndsWith($"{nameof(i.DestinationPath)}"));
         }
 
@@ -72,9 +70,9 @@ namespace Frends.Community.AWS.Tests
                 DeleteSourceFile = false
             };
 
-            List<string> TestDelegate()
+            void TestDelegate()
             {
-                return DownloadTask.DownloadFiles(i, _param, o, new CancellationToken());
+                DownloadTask.DownloadFiles(i, _param, o, new CancellationToken());
             }
 
             Assert.That(TestDelegate,

@@ -1,4 +1,7 @@
 # Frends.Community.AWS
+
+[![Actions Status](https://github.com/CommunityHiQ/Frends.Community.AWS/workflows/PackAndPushAfterMerge/badge.svg)](https://github.com/CommunityHiQ/Frends.Community.AWS/actions) ![MyGet](https://img.shields.io/myget/frends-community/v/Frends.Community.AWS) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+
 Frends tasks to download, upload and list files for AWS S3 flat file storage.
 ***
 - [Installing](#installing)
