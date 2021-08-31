@@ -84,27 +84,6 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        ///     Gets information of directory. If it does not exist, it will create it.
-        /// </summary>
-        /// <param name="s3Client"></param>
-        /// <param name="s3Directory"></param>
-        /// <param name="bucketName"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>S3DirectoryInfo</returns>
-        /*public static S3DirectoryInfo GetS3Directory(
-            IAmazonS3 s3Client,
-            string s3Directory,
-            string bucketName,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var dirInfo = new S3DirectoryInfo(s3Client, bucketName, s3Directory);
-            if (dirInfo.Exists) return dirInfo;
-            dirInfo.Create();
-            return dirInfo;
-        }*/
-
-        /// <summary>
         ///     Returns S3 client.
         /// </summary>
         /// <param name="parameters"></param>
