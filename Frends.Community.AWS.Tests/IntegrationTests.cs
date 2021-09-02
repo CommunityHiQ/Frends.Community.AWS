@@ -174,7 +174,7 @@ namespace Frends.Community.AWS.Tests
                 PreserveFolderStructure = true
             };
 
-            List<string> result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
+            var result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
 
             Assert.AreEqual(result.Count, 1);
         }
@@ -200,7 +200,7 @@ namespace Frends.Community.AWS.Tests
                 PreserveFolderStructure = true
             };
 
-            List<string> result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
+            var result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
 
             Assert.AreEqual(result.Count, 5);
         }
@@ -218,13 +218,13 @@ namespace Frends.Community.AWS.Tests
                 StartAfter = null
             };
 
-            ListOptions opt = new ListOptions { FullResponse = true, ThrowErrorIfNoFilesFound = false };
+            var opt = new ListOptions { FullResponse = true, ThrowErrorIfNoFilesFound = false };
 
             // Sleep 2 seconds to give AWS some time to write the objects.
             // Otherwise only a.file object is created before the test executes.
             Thread.Sleep(2000);
 
-            JToken result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
+            var result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
 
             Assert.True(result.HasValues);
             Assert.AreEqual(200, result.Value<int>("HttpStatusCode")); // should be full response and proper request.

@@ -56,20 +56,23 @@ namespace Frends.Community.AWS
         )
 
         {
-            List<string> paths = new List<string>();
-            string targetPath = input.S3Directory + input.SearchPattern;
-            Regex mask = new Regex(input.SearchPattern.Replace(".", "[.]").Replace("*", ".*").Replace("?", "."));
-            using (AmazonS3Client s3Client = (AmazonS3Client)Utilities.GetS3Client(parameters, cancellationToken))
+            var paths = new List<string>();
+            var targetPath = input.S3Directory + input.SearchPattern;
+            var mask = new Regex(input.SearchPattern.Replace(".", "[.]").Replace("*", ".*").Replace("?", "."));
+            using (var s3Client = (AmazonS3Client)Utilities.GetS3Client(parameters, cancellationToken))
             {
-                List<S3Object> allObjectsInDirectory = new List<S3Object>();
-                ListObjectsResponse allObjectsResponse = await s3Client.ListObjectsAsync(parameters.BucketName, cancellationToken);
-                allObjectsInDirectory = allObjectsResponse.S3Objects;
-                foreach (S3Object fileObject in allObjectsInDirectory)
+                var allObjectsResponse = await s3Client.ListObjectsAsync(parameters.BucketName, cancellationToken);
+                var allObjectsInDirectory = allObjectsResponse.S3Objects;
+                foreach (var fileObject in allObjectsInDirectory)
                 {
                     if (mask.IsMatch(fileObject.Key.Split('/').Last()) && (targetPath.Split('/').Length == fileObject.Key.Split('/').Length || !option.DownloadFromCurrentDirectoryOnly) && !fileObject.Key.EndsWith("/") && fileObject.Key.StartsWith(input.S3Directory))
                     {
-                        if (!input.DestinationPath.EndsWith("/")) Path.Combine(input.DestinationPath, "/");
-                        string fullPath = Path.Combine(input.DestinationPath, fileObject.Key.Split('/').Last());
+                        if (!input.DestinationPath.EndsWith("/"))
+                        {
+                            var _ = Path.Combine(input.DestinationPath, "/");
+                        }
+
+                        var fullPath = Path.Combine(input.DestinationPath, fileObject.Key.Split('/').Last());
                         if (File.Exists(fullPath) & !option.Overwrite) throw new IOException($"File {fileObject.Key.Split('/').Last()} already exists at {fullPath}. Set Overwrite to true from options to overwrite the file.");
                         paths.Add(await WriteToFile(parameters, fileObject, s3Client, input.DestinationPath, fullPath));
                         if (option.DeleteSourceFile) Utilities.DeleteSourceFile(s3Client, cancellationToken, parameters.BucketName, fileObject.Key, true);
@@ -109,7 +112,7 @@ namespace Frends.Community.AWS
             using (var responseStream = response.ResponseStream)
             using (var reader = new StreamReader(responseStream))
             {
-                responseBody = reader.ReadToEnd();
+                responseBody = await reader.ReadToEndAsync();
             }
             if (File.Exists(fullPath))
             {

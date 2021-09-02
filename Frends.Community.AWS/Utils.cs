@@ -124,7 +124,7 @@ namespace Frends.Community.AWS
         {
             if (sourceIsS3)
             {
-                DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
+                var deleteObjectRequest = new DeleteObjectRequest
                 {
                     BucketName = bucketName,
                     Key = filePath
@@ -134,7 +134,7 @@ namespace Frends.Community.AWS
             }
             else
             {
-                FileInfo file = new FileInfo(filePath);
+                var file = new FileInfo(filePath);
                 while (IsFileLocked(file)) Thread.Sleep(1000);
                 File.Delete(filePath);
             }
@@ -158,8 +158,7 @@ namespace Frends.Community.AWS
             }
             finally
             {
-                if (stream != null)
-                    stream.Close();
+                stream?.Close();
             }
 
             //file is not locked

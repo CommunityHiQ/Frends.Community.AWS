@@ -22,10 +22,10 @@ namespace Frends.Community.AWS
             if (property == null) throw new ArgumentNullException();
             var arr =
                 (from pi in property.GetType().GetProperties()
-                    where pi.PropertyType == typeof(string)
-                    where string.IsNullOrWhiteSpace((string) pi.GetValue(property))
-                    orderby pi.Name
-                    select pi.Name)
+                 where pi.PropertyType == typeof(string)
+                 where string.IsNullOrWhiteSpace((string)pi.GetValue(property))
+                 orderby pi.Name
+                 select pi.Name)
                 .ToArray();
 
             if (arr.Length > 0) throw new ArgumentNullException(string.Join(StringSeparator, arr));

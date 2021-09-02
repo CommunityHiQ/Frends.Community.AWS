@@ -186,3 +186,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.3.2 | Now it is possible to call GetTemporaryCredentials also without AwsSecretAccessKey and AwsAccessKeyId. GetTemporaryCrednetials returns now dynamic. |
 | 1.3.3 | Documentation update and relocating nuspec file. |
 | 1.3.4 | Added new and removed old RegionEndpoints. Updated SDK. |
+| 1.3.6 | Multitarget support (.Net Standard 2.0 and .Net Framework 4.7.1 |

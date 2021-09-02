@@ -14,12 +14,20 @@ namespace Frends.Community.AWS.Tests
         [OneTimeSetUp]
         public void Setup()
         {
+
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_AccessKey")) ||
+                string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_SecretAccessKey")) ||
+                string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName")))
+            {
+                throw new ArgumentException("Some secrets/environment variables are null/empty.");
+            }
+
             _param = new Parameters
             {
                 AwsAccessKeyId = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_AccessKey"),
                 AwsSecretAccessKey = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_SecretAccessKey"),
                 BucketName = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName"),
-                Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region"))
+                Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region") ?? throw new ArgumentException("Some secrets/environment variables are null/empty."))
             };
         }
 

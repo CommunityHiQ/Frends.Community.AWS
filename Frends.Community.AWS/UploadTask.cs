@@ -75,44 +75,44 @@ namespace Frends.Community.AWS
             cancellationToken.ThrowIfCancellationRequested();
             var result = new List<string>();
 
-            using (AmazonS3Client client = (AmazonS3Client)Utilities.GetS3Client(parameters, cancellationToken))
+            using (var client = (AmazonS3Client)Utilities.GetS3Client(parameters, cancellationToken))
             {
                 foreach (var file in filesToCopy)
                 {
                     if ((file.FullName.Split(Path.DirectorySeparatorChar).Length > input.FilePath.Split(Path.DirectorySeparatorChar).Length && options.PreserveFolderStructure))
                     {
-                        string subfolders = file.FullName.Replace(file.Name, "").Replace(input.FilePath.Replace(file.Name, ""), "").Replace(Path.DirectorySeparatorChar, '/');
+                        var subfolders = file.FullName.Replace(file.Name, "").Replace(input.FilePath.Replace(file.Name, ""), "").Replace(Path.DirectorySeparatorChar, '/');
                         if (subfolders.StartsWith("/")) subfolders = subfolders.Remove(0, 1);
-                        string fullPath = s3Directory + subfolders + file.Name;
+                        var fullPath = s3Directory + subfolders + file.Name;
                         if (!options.Overwrite)
                         {
                             try
                             {
-                                GetObjectRequest request = new GetObjectRequest
+                                var request = new GetObjectRequest
                                 {
                                     BucketName = parameters.BucketName,
                                     Key = fullPath
                                 };
-                                GetObjectResponse response = await client.GetObjectAsync(request);
+                                var _ = await client.GetObjectAsync(request, cancellationToken);
                                 throw new ArgumentException($"File {file.Name} already exists in S3 at {fullPath}. Set Overwrite-option to true to overwrite the existing file.");
                             }
                             catch (AmazonS3Exception) { }
                         }
                         UploadFileToS3(cancellationToken, file, parameters, client, fullPath);
-                        if (options.ReturnListOfObjectKeys) result.Add(fullPath);
-                        else result.Add(file.FullName);
+                        result.Add(options.ReturnListOfObjectKeys ? fullPath : file.FullName);
                     }
-                    else {
+                    else
+                    {
                         if (!options.Overwrite)
                         {
                             try
                             {
-                                GetObjectRequest request = new GetObjectRequest
+                                var request = new GetObjectRequest
                                 {
                                     BucketName = parameters.BucketName,
                                     Key = s3Directory + file.Name
                                 };
-                                GetObjectResponse response = await client.GetObjectAsync(request);
+                                var _ = await client.GetObjectAsync(request, cancellationToken);
                                 throw new ArgumentException($"File {file.Name} already exists in S3 at {request.Key}. Set Overwrite-option to true to overwrite the existing file.");
                             }
                             catch (AmazonS3Exception) { }
@@ -145,7 +145,7 @@ namespace Frends.Community.AWS
         )
         {
             cancellationToken.ThrowIfCancellationRequested();
-            PutObjectRequest putObjectRequest = new PutObjectRequest
+            var putObjectRequest = new PutObjectRequest
             {
                 BucketName = parameters.BucketName,
                 Key = path,
