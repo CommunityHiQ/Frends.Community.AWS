@@ -69,7 +69,7 @@ namespace Frends.Community.AWS
                     {
                         if (!input.DestinationPath.EndsWith("/"))
                         {
-                            var _ = Path.Combine(input.DestinationPath, "/");
+                            input.DestinationPath = Path.Combine(input.DestinationPath, "/");
                         }
 
                         var fullPath = Path.Combine(input.DestinationPath, fileObject.Key.Split('/').Last());
