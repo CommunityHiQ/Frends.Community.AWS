@@ -67,9 +67,9 @@ namespace Frends.Community.AWS
                 {
                     if (mask.IsMatch(fileObject.Key.Split('/').Last()) && (targetPath.Split('/').Length == fileObject.Key.Split('/').Length || !option.DownloadFromCurrentDirectoryOnly) && !fileObject.Key.EndsWith("/") && fileObject.Key.StartsWith(input.S3Directory))
                     {
-                        if (!input.DestinationPath.EndsWith("/"))
+                        if (!input.DestinationPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
                         {
-                            input.DestinationPath = Path.Combine(input.DestinationPath, "/");
+                            input.DestinationPath += Path.DirectorySeparatorChar.ToString();
                         }
 
                         var fullPath = Path.Combine(input.DestinationPath, fileObject.Key.Split('/').Last());
