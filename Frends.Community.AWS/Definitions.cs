@@ -275,6 +275,7 @@ namespace Frends.Community.AWS
         ///     Use #env.variable.
         /// </summary>
         [PasswordPropertyText(true)]
+        [UIHint(nameof(UseDefaultCredentials), "", false)]
         [DisplayName("AWS Access Key ID")]
         [DisplayFormat(DataFormatString = "Expression")]
         public string AwsAccessKeyId { get; set; }
@@ -284,6 +285,7 @@ namespace Frends.Community.AWS
         ///     Use #env.variable.
         /// </summary>
         [PasswordPropertyText(true)]
+        [UIHint(nameof(UseDefaultCredentials), "", false)]
         [DisplayName("AWS Secret Access Key")]
         [DisplayFormat(DataFormatString = "Expression")]
         public string AwsSecretAccessKey { get; set; }
@@ -291,6 +293,7 @@ namespace Frends.Community.AWS
         /// <summary>
         ///     Usage: The result of GetTemporaryCredentials-task.
         /// </summary>
+        [UIHint(nameof(UseDefaultCredentials), "", false)]
         [DisplayName("Temporary Credentials")]
         public dynamic AwsCredentials { get; set; }
 
@@ -299,6 +302,12 @@ namespace Frends.Community.AWS
         /// </summary>
         [DisplayName("Region")]
         public Regions Region { get; set; }
+
+        /// <summary>
+        /// Credentials are loaded from the application's default configuration, and if unsuccessful from the Instance Profile service on an EC2 instance. 
+        /// </summary>
+        [DisplayName("Use Default Credentials")]
+        public bool UseDefaultCredentials { get; set; }
     }
 
     #endregion
