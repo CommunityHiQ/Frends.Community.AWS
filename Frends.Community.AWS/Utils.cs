@@ -97,7 +97,7 @@ namespace Frends.Community.AWS
             var region = RegionSelection(parameters.Region);
 
             // use the application's default configuration
-            if( parameters.UseDefaultCredentials)
+            if(parameters.UseDefaultCredentials)
             {
                 return new AmazonS3Client(region);
             }

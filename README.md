@@ -188,4 +188,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.3.3 | Documentation update and relocating nuspec file. |
 | 1.3.4 | Added new and removed old RegionEndpoints. Updated SDK. |
 | 1.3.6 | Multitarget support (.Net Standard 2.0 and .Net Framework 4.7.1 |
-| 1.3.7 | Added UseDefaultCredentials option. |
+| 1.3.8 | Added UseDefaultCredentials option. |

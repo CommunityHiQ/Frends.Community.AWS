@@ -32,7 +32,7 @@ namespace Frends.Community.AWS
         )
         {
             cToken.ThrowIfCancellationRequested();
-            if (parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
+            if (!parameters.UseDefaultCredentials && parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
 
             if (string.IsNullOrWhiteSpace(input.DestinationPath))
                 throw new ArgumentNullException(nameof(input.DestinationPath));
