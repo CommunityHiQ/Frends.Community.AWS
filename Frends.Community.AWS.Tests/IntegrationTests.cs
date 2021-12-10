@@ -9,15 +9,11 @@ using Amazon.S3.IO;
 using Amazon.SecurityToken.Model;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using TestConfigurationHandler;
+using System.Runtime.InteropServices;
 
 namespace Frends.Community.AWS.Tests
 {
     /// <summary>
-    ///     To run these tests, you need to have proper json in
-    ///     C:\VSTestConfiguration\config.json
-    ///     with keys and working AWS S3 account & bucket.
-    ///     Test will also need access to a local folder specified in the config.json.
     ///     Tests will create local files, upload and download them.
     ///     Tests clean folders and files before and after tests.
     /// </summary>
@@ -31,22 +27,22 @@ namespace Frends.Community.AWS.Tests
         {
             _param = new Parameters
             {
-                AwsAccessKeyId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AccessKey"),
-                AwsSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.SecretAccessKey"),
-                BucketName = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.BucketName"),
-                Region = (Regions) int.Parse(ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.Region"))
+                AwsAccessKeyId = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_AccessKey"),
+                AwsSecretAccessKey = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_SecretAccessKey"),
+                BucketName = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName"),
+                Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region"))
             };
             _assumerParam = new Parameters
             {
-                AwsAccessKeyId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AssumerKey"),
-                AwsSecretAccessKey = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.AssumerSecret"),
+                AwsAccessKeyId = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_AssumerKey"),
+                AwsSecretAccessKey = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_AssumerSecret"),
                 BucketName = _param.BucketName,
                 Region = _param.Region
             };
-            _root = ConfigHandler.ReadConfigValue("HiQ.AWS3Test.LocalTestFolder");
+            _root = Environment.GetEnvironmentVariable("HiQ_AWS3Test_LocalTestFolder");
             _download = Path.Combine(_root, "download");
-            _tempCredRole = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.Arn");
-            _extId = ConfigHandler.ReadConfigValue("HiQ.AWSS3Test.ExternalId");
+            _tempCredRole = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Arn");
+            _extId = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_ExternalId");
 
             Cleanup(); // in case something was left behind
 
@@ -74,12 +70,12 @@ namespace Frends.Community.AWS.Tests
         private static Parameters _param;
         private static Parameters _assumerParam;
         private static string _root;
-        private const string Prefix = "test_prefix";
+        private const string Prefix = "test/";
         private static string _download;
         private static string _tempCredRole;
         private static string _extId;
 
-        private static readonly (string name, int bytes)[] Files =
+        private static readonly (string name, int bytes)[] WindowsFiles =
         {
             ("a.file", 1000),
             (@"upload\b.file", 1000),
@@ -87,6 +83,29 @@ namespace Frends.Community.AWS.Tests
             (@"upload\d.file", 1000000),
             (@"upload\prefix\e.file", 100000)
         };
+
+        private static readonly (string name, int bytes)[] LinuxFiles =
+        {
+            ("a.file", 1000),
+            (@"upload/b.file", 1000),
+            (@"upload/c.file", 100000),
+            (@"upload/d.file", 1000000),
+            (@"upload/prefix/e.file", 100000)
+        };
+
+        private static readonly (string name, int bytes)[] Files = OSFiles();
+
+        private static (string name, int bytes)[] OSFiles()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                return LinuxFiles;
+            }
+            else
+            {
+                return WindowsFiles;
+            }
+        }
 
         private static bool CreateTestFiles(string root, IEnumerable<(string name, int bytes)> files)
         {
@@ -110,7 +129,7 @@ namespace Frends.Community.AWS.Tests
         ///     AWS should be empty when running this test.
         /// </summary>
         [Test]
-        [Order(4)]
+        [Order(1)]
         public void Error_ListShouldThrowIfDoesNotFindObjects()
         {
             var linput = new ListInput
@@ -135,34 +154,105 @@ namespace Frends.Community.AWS.Tests
         }
 
         [Test]
-        [Order(10)]
-        public void Error_OverwriteOffShouldThrow()
+        [Order(2)]
+        public async Task Test_UploadSingleShouldReturn()
         {
-            var dinput = new DownloadInput
+            var uinput = new UploadInput
             {
-                DestinationPath = _download,
-                S3Directory = Prefix,
-                SearchPattern = "a*"
+                FileMask = "a.file",
+                FilePath = _root,
+                S3Directory = Prefix
             };
 
-            var opt = new DownloadOptions
+            var opt = new UploadOptions
             {
-                DeleteSourceFile = false,
-                DownloadFromCurrentDirectoryOnly = false,
+                ReturnListOfObjectKeys = true,
+                ThrowErrorIfNoMatch = true,
+                UploadFromCurrentDirectoryOnly = true,
+                DeleteSource = false,
                 Overwrite = false,
-                ThrowErrorIfNoMatches = true
+                PreserveFolderStructure = true
             };
 
-            void DelegateDownload()
-            {
-                DownloadTask.DownloadFiles(dinput, _param, opt, new CancellationToken());
-            }
+            var result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
 
-            Assert.Throws<IOException>(DelegateDownload);
+            Assert.AreEqual(result.Count, 1);
         }
 
         [Test]
-        [Order(9)]
+        [Order(3)]
+        public async Task Test_UploadMultipleFilesShouldReturn()
+        {
+            var uinput = new UploadInput
+            {
+                FileMask = "*",
+                FilePath = _root,
+                S3Directory = Prefix
+            };
+
+            var opt = new UploadOptions
+            {
+                ReturnListOfObjectKeys = true,
+                ThrowErrorIfNoMatch = true,
+                UploadFromCurrentDirectoryOnly = false,
+                DeleteSource = false,
+                Overwrite = true,
+                PreserveFolderStructure = true
+            };
+
+            var result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
+
+            Assert.AreEqual(result.Count, 5);
+        }
+
+        [Test]
+        [Order(4)]
+        public async Task Test_ListShouldReturn()
+        {
+            var linput = new ListInput
+            {
+                ContinuationToken = string.Empty,
+                Delimiter = "",
+                MaxKeys = 100,
+                Prefix = Prefix,
+                StartAfter = null
+            };
+
+            var opt = new ListOptions { FullResponse = true, ThrowErrorIfNoFilesFound = false };
+
+            // Sleep 2 seconds to give AWS some time to write the objects.
+            // Otherwise only a.file object is created before the test executes.
+            Thread.Sleep(2000);
+
+            var result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
+
+            Assert.True(result.HasValues);
+            Assert.AreEqual(200, result.Value<int>("HttpStatusCode")); // should be full response and proper request.
+            Assert.AreEqual(5, result.Value<JArray>("S3Objects").Count);
+        }
+
+        [Test]
+        [Order(5)]
+        public async Task Test_ListNoFullResponseShouldReturnArrayOnly()
+        {
+            var linput = new ListInput
+            {
+                ContinuationToken = string.Empty,
+                Delimiter = "/",
+                MaxKeys = 100,
+                Prefix = Prefix,
+                StartAfter = null
+            };
+
+            var opt = new ListOptions { FullResponse = false, ThrowErrorIfNoFilesFound = false };
+
+            var result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
+
+            Assert.IsInstanceOf<JArray>(result);
+        }
+
+        [Test]
+        [Order(6)]
         public void Test_DownloadAllFiles()
         {
             var dinput = new DownloadInput
@@ -187,7 +277,34 @@ namespace Frends.Community.AWS.Tests
         }
 
         [Test]
-        [Order(11)]
+        [Order(7)]
+        public void Error_OverwriteOffShouldThrow()
+        {
+            var dinput = new DownloadInput
+            {
+                DestinationPath = _download,
+                S3Directory = Prefix,
+                SearchPattern = "a*"
+            };
+
+            var opt = new DownloadOptions
+            {
+                DeleteSourceFile = false,
+                DownloadFromCurrentDirectoryOnly = false,
+                Overwrite = false,
+                ThrowErrorIfNoMatches = true
+            };
+
+            void DelegateDownload()
+            {
+                DownloadTask.DownloadFiles(dinput, _param, opt, new CancellationToken());
+            }
+
+            Assert.Throws<AggregateException>(DelegateDownload);
+        }
+
+        [Test]
+        [Order(8)]
         public void Test_DownloadOverwriteShouldReturn()
         {
             var dinput = new DownloadInput
@@ -212,7 +329,7 @@ namespace Frends.Community.AWS.Tests
         }
 
         [Test]
-        [Order(12)]
+        [Order(9)]
         public void Test_DownloadShouldDeleteSources()
         {
             var dinput = new DownloadInput
@@ -239,11 +356,11 @@ namespace Frends.Community.AWS.Tests
             }
 
             Assert.AreEqual(1, result.Count);
-            Assert.Throws<ArgumentException>(DownloadThatThrows);
+            Assert.Throws<AggregateException>(DownloadThatThrows);
         }
 
         [Test]
-        [Order(13)]
+        [Order(10)]
         public async Task Test_GetTemporaryCredentialsShouldReturnProper()
         {
             var tcinput = new TempCredInput
@@ -258,100 +375,6 @@ namespace Frends.Community.AWS.Tests
                 tcinput, _assumerParam, new CancellationToken());
 
             Assert.IsInstanceOf(typeof(Credentials), result);
-        }
-
-        [Test]
-        [Order(8)]
-        public async Task Test_ListNoFullResponseShouldReturnArrayOnly()
-        {
-            var linput = new ListInput
-            {
-                ContinuationToken = string.Empty,
-                Delimiter = "/",
-                MaxKeys = 100,
-                Prefix = Prefix,
-                StartAfter = null
-            };
-
-            var opt = new ListOptions {FullResponse = false, ThrowErrorIfNoFilesFound = false};
-
-            var result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
-
-            Assert.IsInstanceOf<JArray>(result);
-        }
-
-        [Test]
-        [Order(7)]
-        public async Task Test_ListShouldReturn()
-        {
-            var linput = new ListInput
-            {
-                ContinuationToken = string.Empty,
-                Delimiter = "",
-                MaxKeys = 100,
-                Prefix = Prefix,
-                StartAfter = null
-            };
-
-            var opt = new ListOptions {FullResponse = true, ThrowErrorIfNoFilesFound = false};
-
-            var result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
-
-            Assert.True(result.HasValues);
-            Assert.AreEqual(200, result.Value<int>("HttpStatusCode")); // should be full response and proper request.
-            Assert.AreEqual(6, result.Value<JArray>("S3Objects").Count);
-        }
-
-        [Test]
-        [Order(6)]
-        public void Test_UploadMultipleFilesShouldReturn()
-        {
-            var uinput = new UploadInput
-            {
-                FileMask = "*",
-                FilePath = _root,
-                S3Directory = Prefix
-            };
-
-            var opt = new UploadOptions
-            {
-                ReturnListOfObjectKeys = true,
-                ThrowErrorIfNoMatch = true,
-                UploadFromCurrentDirectoryOnly = false,
-                DeleteSource = false,
-                Overwrite = true,
-                PreserveFolderStructure = true
-            };
-
-            var result = UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
-
-            Assert.AreEqual(result.Count, 5);
-        }
-
-        [Test]
-        [Order(5)]
-        public void Test_UploadSingleShouldReturn()
-        {
-            var uinput = new UploadInput
-            {
-                FileMask = "a.file",
-                FilePath = _root,
-                S3Directory = Prefix
-            };
-
-            var opt = new UploadOptions
-            {
-                ReturnListOfObjectKeys = true,
-                ThrowErrorIfNoMatch = true,
-                UploadFromCurrentDirectoryOnly = true,
-                DeleteSource = false,
-                Overwrite = false,
-                PreserveFolderStructure = true
-            };
-
-            var result = UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
-
-            Assert.AreEqual(result.Count, 1);
         }
     }
 }

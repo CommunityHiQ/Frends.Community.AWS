@@ -2,7 +2,7 @@
 using System.Threading;
 using Amazon;
 using Amazon.S3;
-using Amazon.S3.IO;
+using Amazon.S3.Model;
 
 namespace Frends.Community.AWS
 {
@@ -84,27 +84,6 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        ///     Gets information of directory. If it does not exist, it will create it.
-        /// </summary>
-        /// <param name="s3Client"></param>
-        /// <param name="s3Directory"></param>
-        /// <param name="bucketName"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>S3DirectoryInfo</returns>
-        public static S3DirectoryInfo GetS3Directory(
-            IAmazonS3 s3Client,
-            string s3Directory,
-            string bucketName,
-            CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var dirInfo = new S3DirectoryInfo(s3Client, bucketName, s3Directory);
-            if (dirInfo.Exists) return dirInfo;
-            dirInfo.Create();
-            return dirInfo;
-        }
-
-        /// <summary>
         ///     Returns S3 client.
         /// </summary>
         /// <param name="parameters"></param>
@@ -124,6 +103,66 @@ namespace Frends.Community.AWS
                     parameters.AwsSecretAccessKey,
                     region)
                 : new AmazonS3Client(parameters.AwsCredentials, region);
+        }
+
+        /// <summary>
+        ///     Delete source file from S3 or agent.
+        /// </summary>
+        /// <param name="s3Client"></param>
+        /// <param name="cancellationToken"></param>
+        /// <param name="bucketName"></param>
+        /// <param name="filePath"></param>
+        /// <param name="sourceIsS3"></param>
+        /// <returns></returns>
+        public static void DeleteSourceFile(
+            AmazonS3Client s3Client,
+            CancellationToken cancellationToken,
+            string bucketName,
+            string filePath,
+            bool sourceIsS3
+        )
+        {
+            if (sourceIsS3)
+            {
+                var deleteObjectRequest = new DeleteObjectRequest
+                {
+                    BucketName = bucketName,
+                    Key = filePath
+                };
+
+                s3Client.DeleteObjectAsync(deleteObjectRequest, cancellationToken);
+            }
+            else
+            {
+                var file = new FileInfo(filePath);
+                while (IsFileLocked(file)) Thread.Sleep(1000);
+                File.Delete(filePath);
+            }
+        }
+
+        private static bool IsFileLocked(FileInfo file)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                stream = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+            finally
+            {
+                stream?.Close();
+            }
+
+            //file is not locked
+            return false;
         }
     }
 }

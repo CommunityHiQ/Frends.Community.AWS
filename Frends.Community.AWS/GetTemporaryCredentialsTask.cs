@@ -44,7 +44,7 @@ namespace Frends.Community.AWS
                 }
             }
             else
-            {               
+            {
                 using (var stsClient = new AmazonSecurityTokenServiceClient(
                     parameters.AwsAccessKeyId,
                     parameters.AwsSecretAccessKey,

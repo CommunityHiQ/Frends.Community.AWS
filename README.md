@@ -1,4 +1,7 @@
 # Frends.Community.AWS
+
+[![Actions Status](https://github.com/CommunityHiQ/Frends.Community.AWS/workflows/PackAndPushAfterMerge/badge.svg)](https://github.com/CommunityHiQ/Frends.Community.AWS/actions) ![MyGet](https://img.shields.io/myget/frends-community/v/Frends.Community.AWS) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+
 Frends tasks to download, upload and list files for AWS S3 flat file storage.
 ***
 - [Installing](#installing)
@@ -183,3 +186,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.3.2 | Now it is possible to call GetTemporaryCredentials also without AwsSecretAccessKey and AwsAccessKeyId. GetTemporaryCrednetials returns now dynamic. |
 | 1.3.3 | Documentation update and relocating nuspec file. |
 | 1.3.4 | Added new and removed old RegionEndpoints. Updated SDK. |
+| 1.3.6 | Multitarget support (.Net Standard 2.0 and .Net Framework 4.7.1 |

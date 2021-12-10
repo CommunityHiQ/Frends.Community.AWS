@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Amazon.SecurityToken.Model;
 
 namespace Frends.Community.AWS
 {

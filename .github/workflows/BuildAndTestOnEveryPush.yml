@@ -1,0 +1,36 @@
+name: BuildAndTestOnEveryPush
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  build:
+    name: Build on windows-latest
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Build
+      run: dotnet build
+    
+    - name: Test
+      env:
+        HiQ_AWSS3Test_AccessKey: ${{ secrets.HiQ_AWSS3Test_AccessKey }}
+        HiQ_AWSS3Test_SecretAccessKey: ${{ secrets.HiQ_AWSS3Test_SecretAccessKey }}
+        HiQ_AWSS3Test_BucketName: ${{ secrets.HiQ_AWSS3Test_BucketName }}
+        HiQ_AWS3Test_LocalTestFolder: ${{ secrets.HiQ_AWS3Test_LocalTestFolder }}
+        HiQ_AWSS3Test_Region: ${{ secrets.HiQ_AWSS3Test_Region }}
+        HiQ_AWSS3Test_Arn: ${{ secrets.HiQ_AWSS3Test_Arn }}
+        HiQ_AWSS3Test_ExternalId: ${{ secrets.HiQ_AWSS3Test_ExternalId }}
+        HiQ_AWSS3Test_AssumerKey: ${{ secrets.HiQ_AWSS3Test_AssumerKey }}
+        HiQ_AWSS3Test_AssumerSecret: ${{ secrets.HiQ_AWSS3Test_AssumerSecret }}
+      run: dotnet test
+      
+    - name: Pack release version of task
+      run: dotnet pack --configuration Release --include-source
+      
+    - name: Push NuGet package to the testfeed
+      run: dotnet nuget push Frends.Community.AWS\bin\Release\Frends.Community.AWS.*.nupkg  --api-key ${{ secrets.COMMUNITY_FEED_API_KEY }} --source https://www.myget.org/F/frends-community-test/api/v2/package --symbol-source https://www.myget.org/F/frends-community-test/symbols/api/v2/package
