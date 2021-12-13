@@ -29,7 +29,7 @@ namespace Frends.Community.AWS
             CancellationToken cancellationToken
         )
         {
-            if (parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
+            if (!parameters.UseDefaultCredentials && parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
 
             ListObjectsV2Response response;
 

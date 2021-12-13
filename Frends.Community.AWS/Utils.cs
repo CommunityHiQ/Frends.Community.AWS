@@ -96,6 +96,12 @@ namespace Frends.Community.AWS
             cancellationToken.ThrowIfCancellationRequested();
             var region = RegionSelection(parameters.Region);
 
+            // use the application's default configuration
+            if(parameters.UseDefaultCredentials)
+            {
+                return new AmazonS3Client(region);
+            }
+
             // optionally we can configure client, if the need arises.
             return parameters.AwsCredentials == null
                 ? new AmazonS3Client(
