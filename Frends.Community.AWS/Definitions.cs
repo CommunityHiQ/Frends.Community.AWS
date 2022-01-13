@@ -308,6 +308,12 @@ namespace Frends.Community.AWS
         /// </summary>
         [DisplayName("Use Default Credentials")]
         public bool UseDefaultCredentials { get; set; }
+
+        /// <summery>
+        ///     Usage: Throws exception if error occures in upload
+        /// </summery>
+        [DefaultValue(false)]
+        public bool ThrowExceptionOnErrorResponse { get; set; }
     }
 
     #endregion

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3;
@@ -24,7 +25,7 @@ namespace Frends.Community.AWS
         /// <param name="options" />
         /// <param name="cancellationToken" />
         /// <returns>List&lt;string&gt;</returns>
-        public static Task<List<string>> UploadFiles(
+        public static async Task<List<string>> UploadFiles(
             [PropertyTab] UploadInput input,
             [PropertyTab] Parameters parameters,
             [PropertyTab] UploadOptions options,
@@ -50,7 +51,7 @@ namespace Frends.Community.AWS
                 throw new ArgumentException(
                     $"No files match the filemask within supplied path. {nameof(input.FileMask)}");
 
-            return ExecuteUpload(filesToCopy, input.S3Directory, parameters, options, cancellationToken, input);
+            return await ExecuteUpload(filesToCopy, input.S3Directory, parameters, options, cancellationToken, input);
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace Frends.Community.AWS
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        UploadFileToS3(cancellationToken, file, parameters, client, fullPath);
+                        _ = await UploadFileToS3(cancellationToken, file, parameters, client, fullPath);
                         result.Add(options.ReturnListOfObjectKeys ? fullPath : file.FullName);
                     }
                     else
@@ -117,7 +118,7 @@ namespace Frends.Community.AWS
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name);
+                        _ = await UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name);
                         if (options.ReturnListOfObjectKeys) result.Add(s3Directory + file.Name);
                         else result.Add(file.FullName);
                     }
@@ -136,7 +137,7 @@ namespace Frends.Community.AWS
         /// <param name="client" />
         /// <param name="path" />
         /// <returns></returns>
-        private static async void UploadFileToS3(
+        private static async Task<PutObjectResponse> UploadFileToS3(
             CancellationToken cancellationToken,
             FileInfo file,
             Parameters parameters,
@@ -144,14 +145,36 @@ namespace Frends.Community.AWS
             string path
         )
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var putObjectRequest = new PutObjectRequest
+            try
             {
-                BucketName = parameters.BucketName,
-                Key = path,
-                FilePath = file.FullName
-            };
-            _ = await client.PutObjectAsync(putObjectRequest, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                var putObjectRequest = new PutObjectRequest
+                {
+                    BucketName = parameters.BucketName,
+                    Key = path,
+                    FilePath = file.FullName
+                };
+                var response = await client.PutObjectAsync(putObjectRequest, cancellationToken);
+
+                return response;
+            }
+            catch (AmazonS3Exception amazonS3Exception)
+            {
+                if (parameters.ThrowExceptionOnErrorResponse)
+                {
+                    if (amazonS3Exception.ErrorCode != null &&
+                    (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") || amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
+                    {
+                        throw new SecurityException("Invalid Amazon S3 Credentials - data was not uploaded.", amazonS3Exception);
+                    }
+
+                    throw new Exception("Unspecified error attempting to upload data: " + amazonS3Exception.Message, amazonS3Exception);
+                }
+
+                return null;
+                
+            }
+            
         }
     }
 }

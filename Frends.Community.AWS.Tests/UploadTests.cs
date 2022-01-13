@@ -1,7 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
+using System.Collections.Generic;
+using Amazon.S3;
+using System.Security;
 
 namespace Frends.Community.AWS.Tests
 {
@@ -20,7 +24,8 @@ namespace Frends.Community.AWS.Tests
                 AwsAccessKeyId = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_AccessKey"),
                 AwsSecretAccessKey = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_SecretAccessKey"),
                 BucketName = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName"),
-                Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region"))
+                Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region")),
+                ThrowExceptionOnErrorResponse = true
             };
         }
 
@@ -38,9 +43,10 @@ namespace Frends.Community.AWS.Tests
                 ThrowErrorIfNoMatch = true
             };
 
-            void UploadThatThrows()
+            async Task<List<string>> UploadThatThrows()
             {
-                UploadTask.UploadFiles(input, _param, options, new CancellationToken());
+                var response = await UploadTask.UploadFiles(input, _param, options, new CancellationToken());
+                return response;
             }
 
             Assert.That(UploadThatThrows,
@@ -64,14 +70,93 @@ namespace Frends.Community.AWS.Tests
                 ThrowErrorIfNoMatch = true
             };
 
-            void UploadThatThrows()
+            async Task<List<string>> UploadThatThrows()
             {
-                UploadTask.UploadFiles(input, _param, options, new CancellationToken());
+                var response = await UploadTask.UploadFiles(input, _param, options, new CancellationToken());
+                return response;
             }
 
             Assert.That(UploadThatThrows,
                 Throws.TypeOf<ArgumentException>()
                     .With.Message.StartsWith("No files match the filemask within supplied path."));
+        }
+
+        [Test]
+        public void Error_IfCredentialsAreInvalidAndThrowExceptionOnErrorResponseIsTrue()
+        {
+            var input = new UploadInput
+            {
+                FileMask = "TestFile1.csv",
+                FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../TestData/"),
+                S3Directory = @"\"
+            };
+
+            var options = new UploadOptions
+            {
+                ReturnListOfObjectKeys = true,
+                ThrowErrorIfNoMatch = true
+            };
+
+            var param = new Parameters
+            {
+                AwsAccessKeyId = "fnvfdvfkdjvn", // Invalid AwsAccesKeyId
+                AwsSecretAccessKey = "bvfjhbvdjhvbjdhf", // Invalid AwsSecretAccessKey
+                BucketName = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName"),
+                Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region")),
+                ThrowExceptionOnErrorResponse = true
+            };
+
+            async Task<List<string>> UploadThatThrows()
+            {
+                var response = await UploadTask.UploadFiles(input, param, options, new CancellationToken());
+                return response;
+            }
+
+            Assert.That(UploadThatThrows,
+                Throws.TypeOf<SecurityException>()
+                    .With.Message.StartsWith("Invalid Amazon S3 Credentials - data was not uploaded."));
+        }
+
+        [Test]
+        public void Error_IfCredentialsAreInvalidAndThrowExceptionOnErrorResponseIsFalse()
+        {
+            var input = new UploadInput
+            {
+                FileMask = "TestFile1.csv",
+                FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../TestData/"),
+                S3Directory = @"\"
+            };
+
+            var options = new UploadOptions
+            {
+                ReturnListOfObjectKeys = true,
+                ThrowErrorIfNoMatch = true
+            };
+
+            var param = new Parameters
+            {
+                AwsAccessKeyId = "fnvfdvfkdjvn", // Invalid AwsAccesKeyId
+                AwsSecretAccessKey = "bvfjhbvdjhvbjdhf", // Invalid AwsSecretAccessKey
+                BucketName = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName"),
+                Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region")),
+                ThrowExceptionOnErrorResponse = false
+            };
+
+            async Task<List<string>> UploadThatThrows()
+            {
+                var response = await UploadTask.UploadFiles(input, param, options, new CancellationToken());
+                return response;
+            }
+
+            try
+            {
+                _ = UploadThatThrows();
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Expected no exception, but got: " + ex.Message);
+            }
         }
     }
 }

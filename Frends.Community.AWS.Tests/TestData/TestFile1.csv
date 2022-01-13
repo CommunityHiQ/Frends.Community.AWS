@@ -1,0 +1,4 @@
+﻿name,url,fancy_characters,foo,id
+Google,https://en.wikipedia.org/wiki/Google,,comma inside /n field,1
+Apple,https://en.wik/nipedia.org/wiki/Apple_Inc.,"Kanji, Kanji2 ",,2
+Missing columns,,@,,3
