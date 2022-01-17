@@ -14,8 +14,8 @@ using System.Runtime.InteropServices;
 namespace Frends.Community.AWS.Tests
 {
     /// <summary>
-    ///     Tests will create local files, upload and download them.
-    ///     Tests clean folders and files before and after tests.
+    /// Tests will create local files, upload and download them.
+    /// Tests clean folders and files before and after tests.
     /// </summary>
     [TestFixture]
     [Order(4)]
@@ -44,7 +44,8 @@ namespace Frends.Community.AWS.Tests
             _tempCredRole = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Arn");
             _extId = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_ExternalId");
 
-            Cleanup(); // in case something was left behind
+            // In case something was left behind.
+            Cleanup();
 
             if (!CreateTestFiles(_root, Files)) throw new IOException("Could not create testfiles.");
         }
@@ -97,21 +98,14 @@ namespace Frends.Community.AWS.Tests
 
         private static (string name, int bytes)[] OSFiles()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return LinuxFiles;
-            }
-            else
-            {
-                return WindowsFiles;
-            }
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) return LinuxFiles;
+            else return WindowsFiles;
         }
 
         private static bool CreateTestFiles(string root, IEnumerable<(string name, int bytes)> files)
         {
             foreach (var (name, bytes) in files)
             {
-                /*if (!Directory.Exists(root))*/
                 Directory.CreateDirectory(root);
                 var path = Path.Combine(root, name);
                 var file = new FileInfo(path);
@@ -126,7 +120,7 @@ namespace Frends.Community.AWS.Tests
         }
 
         /// <summary>
-        ///     AWS should be empty when running this test.
+        /// AWS should be empty when running this test.
         /// </summary>
         [Test]
         [Order(1)]
@@ -227,7 +221,9 @@ namespace Frends.Community.AWS.Tests
             var result = await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
 
             Assert.True(result.HasValues);
-            Assert.AreEqual(200, result.Value<int>("HttpStatusCode")); // should be full response and proper request.
+
+            // Should be full response and proper request.
+            Assert.AreEqual(200, result.Value<int>("HttpStatusCode"));
             Assert.AreEqual(5, result.Value<JArray>("S3Objects").Count);
         }
 
@@ -349,7 +345,7 @@ namespace Frends.Community.AWS.Tests
 
             var result = DownloadTask.DownloadFiles(dinput, _param, opt, new CancellationToken());
 
-            // try to download again with error throw on, should not find the same file.
+            // Try to download again with error throw on, should not find the same file.
             void DownloadThatThrows()
             {
                 DownloadTask.DownloadFiles(dinput, _param, opt, new CancellationToken());

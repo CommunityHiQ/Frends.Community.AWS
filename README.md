@@ -46,6 +46,7 @@ AwsSecretAccessKey | String (secret) | S3 Access Key, #env-variable use is encou
 AwsCredentials | dynamic | Used ONLY for GetTemporaryCredentialsTask result. If set, other keys are ignored. | #result[Get Temporary Credentials]
 Region | Selector | Location for S3 bucket, select from dropdown-list. | EUWest1
 UseDefaultCredentials | bool | If set to true, credentials are loaded from the application's default configuration, and if unsuccessful from the Instance Profile service on an EC2 instance.  | false
+ThrowExceptionOnErrorResponse | bool | If set true, task throws error when upload was not successful | true
 ***
 ### DownloadFiles
 Simulates Windows-style folder structure. Can download subdirectories.
@@ -189,3 +190,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.3.4 | Added new and removed old RegionEndpoints. Updated SDK. |
 | 1.3.6 | Multitarget support (.Net Standard 2.0 and .Net Framework 4.7.1 |
 | 1.3.8 | Added UseDefaultCredentials option. |
+| 1.3.9 | Added parameter ThrowExceptionOnErrorResponse, fixed issue: invalid credentials and unsuccessful upload threw no exception and added TestData for tests. | 

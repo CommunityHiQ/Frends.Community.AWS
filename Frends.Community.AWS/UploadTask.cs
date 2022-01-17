@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3;
@@ -10,38 +11,36 @@ using Amazon.S3.Model;
 namespace Frends.Community.AWS
 {
     /// <summary>
-    ///     Filemask, eg. *.*, *file?.txt.
-    ///     Bucket Name without s3://-prefix.
+    /// Filemask, eg. *.*, *file?.txt.
+    /// Bucket Name without s3://-prefix.
     /// </summary>
     public class UploadTask
     {
         /// <summary>
-        ///     Filemask, eg. *.*, *file?.txt
-        ///     Bucketname without s3://-prefix.
+        /// Filemask, eg. *.*, *file?.txt
+        /// Bucketname without s3://-prefix.
         /// </summary>
         /// <param name="input" />
         /// <param name="parameters" />
         /// <param name="options" />
         /// <param name="cancellationToken" />
         /// <returns>List&lt;string&gt;</returns>
-        public static Task<List<string>> UploadFiles(
+        public static async Task<List<string>> UploadFiles(
             [PropertyTab] UploadInput input,
             [PropertyTab] Parameters parameters,
             [PropertyTab] UploadOptions options,
             CancellationToken cancellationToken
         )
         {
-            // First check to see if this task gets performed at all.
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (!parameters.UseDefaultCredentials && parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
 
-            if (!Directory.Exists(input.FilePath))
-                throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
+            if (!Directory.Exists(input.FilePath)) throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
 
             var localRoot = new DirectoryInfo(input.FilePath);
+
+            // If filemask is not set, get all files.
             var filesToCopy = localRoot.GetFiles(
-                input.FileMask ?? "*", // if filemask is not set, get all files.
+                input.FileMask ?? "*",
                 options.UploadFromCurrentDirectoryOnly
                     ? SearchOption.TopDirectoryOnly
                     : SearchOption.AllDirectories);
@@ -50,11 +49,11 @@ namespace Frends.Community.AWS
                 throw new ArgumentException(
                     $"No files match the filemask within supplied path. {nameof(input.FileMask)}");
 
-            return ExecuteUpload(filesToCopy, input.S3Directory, parameters, options, cancellationToken, input);
+            return await ExecuteUpload(filesToCopy, input.S3Directory, parameters, options, cancellationToken, input);
         }
 
         /// <summary>
-        ///     Prepare to file upload by checking options and file structures.
+        /// Prepare to file upload by checking options and file structures.
         /// </summary>
         /// <param name="filesToCopy" />
         /// <param name="s3Directory" />
@@ -75,10 +74,11 @@ namespace Frends.Community.AWS
             cancellationToken.ThrowIfCancellationRequested();
             var result = new List<string>();
 
-            using (var client = (AmazonS3Client)Utilities.GetS3Client(parameters, cancellationToken))
+            using (var client = (AmazonS3Client)Utilities.GetS3Client(parameters))
             {
                 foreach (var file in filesToCopy)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if ((file.FullName.Split(Path.DirectorySeparatorChar).Length > input.FilePath.Split(Path.DirectorySeparatorChar).Length && options.PreserveFolderStructure))
                     {
                         var subfolders = file.FullName.Replace(file.Name, "").Replace(input.FilePath.Replace(file.Name, ""), "").Replace(Path.DirectorySeparatorChar, '/');
@@ -93,12 +93,12 @@ namespace Frends.Community.AWS
                                     BucketName = parameters.BucketName,
                                     Key = fullPath
                                 };
-                                var _ = await client.GetObjectAsync(request, cancellationToken);
+                                await client.GetObjectAsync(request, cancellationToken);
                                 throw new ArgumentException($"File {file.Name} already exists in S3 at {fullPath}. Set Overwrite-option to true to overwrite the existing file.");
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        UploadFileToS3(cancellationToken, file, parameters, client, fullPath);
+                        await UploadFileToS3(cancellationToken, file, parameters, client, fullPath);
                         result.Add(options.ReturnListOfObjectKeys ? fullPath : file.FullName);
                     }
                     else
@@ -112,12 +112,12 @@ namespace Frends.Community.AWS
                                     BucketName = parameters.BucketName,
                                     Key = s3Directory + file.Name
                                 };
-                                var _ = await client.GetObjectAsync(request, cancellationToken);
+                                await client.GetObjectAsync(request, cancellationToken);
                                 throw new ArgumentException($"File {file.Name} already exists in S3 at {request.Key}. Set Overwrite-option to true to overwrite the existing file.");
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name);
+                        await UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name);
                         if (options.ReturnListOfObjectKeys) result.Add(s3Directory + file.Name);
                         else result.Add(file.FullName);
                     }
@@ -128,7 +128,7 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        ///     Upload file(s) to S3.
+        /// Upload file(s) to S3.
         /// </summary>
         /// <param name="cancellationToken" />
         /// <param name="file" />
@@ -136,7 +136,7 @@ namespace Frends.Community.AWS
         /// <param name="client" />
         /// <param name="path" />
         /// <returns></returns>
-        private static async void UploadFileToS3(
+        private static async Task<PutObjectResponse> UploadFileToS3(
             CancellationToken cancellationToken,
             FileInfo file,
             Parameters parameters,
@@ -144,14 +144,33 @@ namespace Frends.Community.AWS
             string path
         )
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var putObjectRequest = new PutObjectRequest
+            try
             {
-                BucketName = parameters.BucketName,
-                Key = path,
-                FilePath = file.FullName
-            };
-            _ = await client.PutObjectAsync(putObjectRequest, cancellationToken);
+                var putObjectRequest = new PutObjectRequest
+                {
+                    BucketName = parameters.BucketName,
+                    Key = path,
+                    FilePath = file.FullName
+                };
+                var response = await client.PutObjectAsync(putObjectRequest, cancellationToken);
+
+                return response;
+            }
+            catch (AmazonS3Exception amazonS3Exception)
+            {
+                if (parameters.ThrowExceptionOnErrorResponse)
+                {
+                    if (amazonS3Exception.ErrorCode != null &&
+                    (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") || amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
+                        throw new SecurityException("Invalid Amazon S3 Credentials - data was not uploaded.", amazonS3Exception);
+
+                    throw new Exception("Unspecified error attempting to upload data: " + amazonS3Exception.Message, amazonS3Exception);
+                }
+
+                return null;
+                
+            }
+            
         }
     }
 }
