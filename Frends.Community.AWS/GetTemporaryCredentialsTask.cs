@@ -7,13 +7,12 @@ using Amazon.SecurityToken.Model;
 namespace Frends.Community.AWS
 {
     /// <summary>
-    ///     Gets temporary credentials.
+    /// Gets temporary credentials.
     /// </summary>
     public class GetTemporaryCredentialsTask
     {
         /// <summary>
-        ///     You can use the result of this task as Parameter
-        ///     for other AWS related tasks in the same process
+        /// You can use the result of this task as Parameter for other AWS related tasks in the same process.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>
@@ -26,7 +25,7 @@ namespace Frends.Community.AWS
         {
             input.IsAnyNullOrWhiteSpaceThrow();
 
-            // Now, it is possible to call task without awsAcessKeyId and AwsSecretAccessKey
+            // Now, it is possible to call task without awsAcessKeyId and AwsSecretAccessKey.
             if (string.IsNullOrWhiteSpace(parameters.AwsAccessKeyId) && string.IsNullOrWhiteSpace(parameters.AwsSecretAccessKey))
             {
                 using (var stsClient = new AmazonSecurityTokenServiceClient(

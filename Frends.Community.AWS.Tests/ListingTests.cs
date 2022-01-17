@@ -14,10 +14,11 @@ namespace Frends.Community.AWS.Tests
         public void Error_IfBucketNameIsEmpty()
         {
             var linput = new ListInput();
+
             var param = new Parameters
             {
-                AwsAccessKeyId = "foo", // fake
-                AwsSecretAccessKey = "bar", // fake
+                AwsAccessKeyId = "foo",
+                AwsSecretAccessKey = "bar",
                 BucketName = null
             };
             var opt = new ListOptions {FullResponse = true};
@@ -38,9 +39,9 @@ namespace Frends.Community.AWS.Tests
             var linput = new ListInput();
             var param = new Parameters
             {
-                AwsAccessKeyId = null, // null
-                AwsSecretAccessKey = " ", // whitespace
-                BucketName = string.Empty // empty
+                AwsAccessKeyId = null,
+                AwsSecretAccessKey = " ",
+                BucketName = string.Empty
             };
             var opt = new ListOptions {FullResponse = true};
 
