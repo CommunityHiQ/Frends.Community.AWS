@@ -164,6 +164,19 @@ namespace Frends.Community.AWS
         [DefaultValue(@"")]
         [DisplayFormat(DataFormatString = "Text")]
         public string S3Directory { get; set; }
+
+        /// <summary>
+        ///     Enable/disable S3CannedACL selection, default value false
+        /// </summary>
+        [DefaultValue("false")]
+        public bool S3CannedACL { get; set; }
+
+        /// <summary>
+        ///     S3CannedACL selection, default private
+        /// </summary>
+        [DisplayName("S3CannedACL")]
+        [UIHint(nameof(S3CannedACL), "", true)]
+        public S3CannedACLs CannedACL { get; set; }
     }
 
     /// <summary>
@@ -348,6 +361,18 @@ namespace Frends.Community.AWS
         UsWest2
 
     }
+
+    public enum S3CannedACLs
+    {
+        Private,
+        PublicRead,
+        PublicReadWrite,
+        AuthenticatedRead,
+        BucketOwnerRead,
+        BucketOwnerFullControl,
+        LogDeliveryWrite
+    }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     #endregion

@@ -81,6 +81,8 @@ Property | Type | Description | Example (comma separated)
 FilePath | string | Filepath to upload files from. | C:\upload, \\\\network\folder\
 FileMask | string | Filename or wildcards (eg. *.txt) | \*.\*, filename.csv
 S3Directory | string | Root directory in S3. | folder/{{DateTime.Now}}
+S3CannedACL | bool | Enable S3CannedACL selection | false
+CannedACL | Selector | Selection of S3CannedACL permissions, visible if S3CannedACL enabled | Private
 
 #### UploadFiles Options
 Property | Type | Description | Example (comma separated)
@@ -191,3 +193,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.3.6 | Multitarget support (.Net Standard 2.0 and .Net Framework 4.7.1 |
 | 1.3.8 | Added UseDefaultCredentials option. |
 | 1.3.9 | Added parameter ThrowExceptionOnErrorResponse, fixed issue: invalid credentials and unsuccessful upload threw no exception and added TestData for tests. | 
+| 1.4.0 | Added input parameter Canned Acl to change the ACL restriction of the uploaded object. Also Added boolean value enableing the cannedAcl |

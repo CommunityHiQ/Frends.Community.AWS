@@ -99,7 +99,7 @@ namespace Frends.Community.AWS
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        _ = await UploadFileToS3(cancellationToken, file, parameters, client, fullPath);
+                        _ = await UploadFileToS3(cancellationToken, file, parameters, client, fullPath, input);
                         result.Add(options.ReturnListOfObjectKeys ? fullPath : file.FullName);
                     }
                     else
@@ -118,7 +118,7 @@ namespace Frends.Community.AWS
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        _ = await UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name);
+                        _ = await UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name, input);
                         if (options.ReturnListOfObjectKeys) result.Add(s3Directory + file.Name);
                         else result.Add(file.FullName);
                     }
@@ -136,15 +136,18 @@ namespace Frends.Community.AWS
         /// <param name="parameters" />
         /// <param name="client" />
         /// <param name="path" />
+        /// <param name="input" />
         /// <returns></returns>
         private static async Task<PutObjectResponse> UploadFileToS3(
             CancellationToken cancellationToken,
             FileInfo file,
             Parameters parameters,
             AmazonS3Client client,
-            string path
+            string path,
+            UploadInput input
         )
         {
+
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -152,8 +155,9 @@ namespace Frends.Community.AWS
                 {
                     BucketName = parameters.BucketName,
                     Key = path,
-                    FilePath = file.FullName
-                };
+                    FilePath = file.FullName,
+                    CannedACL = (input.S3CannedACL) ? Utilities.GetS3CannedACL(input.CannedACL) : Amazon.S3.S3CannedACL.NoACL
+            };
                 var response = await client.PutObjectAsync(putObjectRequest, cancellationToken);
 
                 return response;

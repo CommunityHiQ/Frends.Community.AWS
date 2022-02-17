@@ -170,5 +170,33 @@ namespace Frends.Community.AWS
             //file is not locked
             return false;
         }
+
+        /// <summary>
+        /// Converts Frends.Community.AWS.S3CannedACL to Amazon.S3.S3CannedACL
+        /// </summary>
+        /// <param name="cannedACL"></param>
+        /// <returns></returns>
+        public static Amazon.S3.S3CannedACL GetS3CannedACL(S3CannedACLs cannedACL)
+        {
+            switch (cannedACL)
+            {
+                case S3CannedACLs.Private:
+                    return Amazon.S3.S3CannedACL.Private;
+                case S3CannedACLs.PublicRead:
+                    return Amazon.S3.S3CannedACL.PublicRead;
+                case S3CannedACLs.PublicReadWrite:
+                    return Amazon.S3.S3CannedACL.PublicReadWrite;
+                case S3CannedACLs.AuthenticatedRead:
+                    return Amazon.S3.S3CannedACL.AuthenticatedRead;
+                case S3CannedACLs.BucketOwnerRead:
+                    return Amazon.S3.S3CannedACL.BucketOwnerRead;
+                case S3CannedACLs.BucketOwnerFullControl:
+                    return Amazon.S3.S3CannedACL.BucketOwnerFullControl;
+                case S3CannedACLs.LogDeliveryWrite:
+                    return Amazon.S3.S3CannedACL.LogDeliveryWrite;
+                default:
+                    return Amazon.S3.S3CannedACL.NoACL;
+            }
+        }
     }
 }

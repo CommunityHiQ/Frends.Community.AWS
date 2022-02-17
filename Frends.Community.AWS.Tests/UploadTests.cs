@@ -88,7 +88,8 @@ namespace Frends.Community.AWS.Tests
             {
                 FileMask = "TestFile1.csv",
                 FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../TestData/"),
-                S3Directory = @"\"
+                S3Directory = @"\",
+                CannedACL = S3CannedACLs.Private
             };
 
             var options = new UploadOptions
