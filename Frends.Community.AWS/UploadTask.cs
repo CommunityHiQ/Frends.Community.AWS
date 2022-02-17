@@ -11,14 +11,14 @@ using Amazon.S3.Model;
 namespace Frends.Community.AWS
 {
     /// <summary>
-    ///     Filemask, eg. *.*, *file?.txt.
-    ///     Bucket Name without s3://-prefix.
+    /// Filemask, eg. *.*, *file?.txt.
+    /// Bucket Name without s3://-prefix.
     /// </summary>
     public class UploadTask
     {
         /// <summary>
-        ///     Filemask, eg. *.*, *file?.txt
-        ///     Bucketname without s3://-prefix.
+        /// Filemask, eg. *.*, *file?.txt
+        /// Bucketname without s3://-prefix.
         /// </summary>
         /// <param name="input" />
         /// <param name="parameters" />
@@ -32,17 +32,15 @@ namespace Frends.Community.AWS
             CancellationToken cancellationToken
         )
         {
-            // First check to see if this task gets performed at all.
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (!parameters.UseDefaultCredentials && parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
 
-            if (!Directory.Exists(input.FilePath))
-                throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
+            if (!Directory.Exists(input.FilePath)) throw new ArgumentException(@"Source path not found. ", nameof(input.FilePath));
 
             var localRoot = new DirectoryInfo(input.FilePath);
+
+            // If filemask is not set, get all files.
             var filesToCopy = localRoot.GetFiles(
-                input.FileMask ?? "*", // if filemask is not set, get all files.
+                input.FileMask ?? "*",
                 options.UploadFromCurrentDirectoryOnly
                     ? SearchOption.TopDirectoryOnly
                     : SearchOption.AllDirectories);
@@ -55,7 +53,7 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        ///     Prepare to file upload by checking options and file structures.
+        /// Prepare to file upload by checking options and file structures.
         /// </summary>
         /// <param name="filesToCopy" />
         /// <param name="s3Directory" />
@@ -76,10 +74,11 @@ namespace Frends.Community.AWS
             cancellationToken.ThrowIfCancellationRequested();
             var result = new List<string>();
 
-            using (var client = (AmazonS3Client)Utilities.GetS3Client(parameters, cancellationToken))
+            using (var client = (AmazonS3Client)Utilities.GetS3Client(parameters))
             {
                 foreach (var file in filesToCopy)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if ((file.FullName.Split(Path.DirectorySeparatorChar).Length > input.FilePath.Split(Path.DirectorySeparatorChar).Length && options.PreserveFolderStructure))
                     {
                         var subfolders = file.FullName.Replace(file.Name, "").Replace(input.FilePath.Replace(file.Name, ""), "").Replace(Path.DirectorySeparatorChar, '/');
@@ -94,7 +93,7 @@ namespace Frends.Community.AWS
                                     BucketName = parameters.BucketName,
                                     Key = fullPath
                                 };
-                                var _ = await client.GetObjectAsync(request, cancellationToken);
+                                await client.GetObjectAsync(request, cancellationToken);
                                 throw new ArgumentException($"File {file.Name} already exists in S3 at {fullPath}. Set Overwrite-option to true to overwrite the existing file.");
                             }
                             catch (AmazonS3Exception) { }
@@ -113,7 +112,7 @@ namespace Frends.Community.AWS
                                     BucketName = parameters.BucketName,
                                     Key = s3Directory + file.Name
                                 };
-                                var _ = await client.GetObjectAsync(request, cancellationToken);
+                                await client.GetObjectAsync(request, cancellationToken);
                                 throw new ArgumentException($"File {file.Name} already exists in S3 at {request.Key}. Set Overwrite-option to true to overwrite the existing file.");
                             }
                             catch (AmazonS3Exception) { }
@@ -129,7 +128,7 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        ///     Upload file(s) to S3.
+        /// Upload file(s) to S3.
         /// </summary>
         /// <param name="cancellationToken" />
         /// <param name="file" />
@@ -150,7 +149,6 @@ namespace Frends.Community.AWS
 
             try
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 var putObjectRequest = new PutObjectRequest
                 {
                     BucketName = parameters.BucketName,
@@ -168,9 +166,7 @@ namespace Frends.Community.AWS
                 {
                     if (amazonS3Exception.ErrorCode != null &&
                     (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") || amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
-                    {
                         throw new SecurityException("Invalid Amazon S3 Credentials - data was not uploaded.", amazonS3Exception);
-                    }
 
                     throw new Exception("Unspecified error attempting to upload data: " + amazonS3Exception.Message, amazonS3Exception);
                 }

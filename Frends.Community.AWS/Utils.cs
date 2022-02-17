@@ -7,12 +7,12 @@ using Amazon.S3.Model;
 namespace Frends.Community.AWS
 {
     /// <summary>
-    ///     Utility class.
+    /// Utility class.
     /// </summary>
     public class Utilities
     {
         /// <summary>
-        ///     To create dropdown box for task with enum through RegionEndpoint static list from SDK.
+        /// To create dropdown box for task with enum through RegionEndpoint static list from SDK.
         /// </summary>
         /// <param name="region">Region from enum list.</param>
         /// <returns>Amazon.RegionEndpoint static resource.</returns>
@@ -72,7 +72,7 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        ///     Appends ending slash to path if it's missing.
+        /// Appends ending slash to path if it's missing.
         /// </summary>
         /// <param name="input"></param>
         /// <returns>string</returns>
@@ -84,25 +84,19 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        ///     Returns S3 client.
+        /// Returns S3 client.
         /// </summary>
         /// <param name="parameters"></param>
-        /// <param name="cancellationToken"></param>
         /// <returns>AmazonS3Client</returns>
         public static IAmazonS3 GetS3Client(
-            Parameters parameters,
-            CancellationToken cancellationToken)
+            Parameters parameters)
         {
-            cancellationToken.ThrowIfCancellationRequested();
             var region = RegionSelection(parameters.Region);
 
-            // use the application's default configuration
-            if(parameters.UseDefaultCredentials)
-            {
-                return new AmazonS3Client(region);
-            }
+            // Use the application's default configuration.
+            if(parameters.UseDefaultCredentials) return new AmazonS3Client(region);
 
-            // optionally we can configure client, if the need arises.
+            // Optionally we can configure client, if the need arises.
             return parameters.AwsCredentials == null
                 ? new AmazonS3Client(
                     parameters.AwsAccessKeyId,
@@ -112,7 +106,7 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        ///     Delete source file from S3 or agent.
+        /// Delete source file from S3 or agent.
         /// </summary>
         /// <param name="s3Client"></param>
         /// <param name="cancellationToken"></param>
@@ -156,10 +150,10 @@ namespace Frends.Community.AWS
             }
             catch (IOException)
             {
-                //the file is unavailable because it is:
-                //still being written to
-                //or being processed by another thread
-                //or does not exist (has already been processed)
+                // The file is unavailable because it is:
+                // 1. Still being written to.
+                // 2. Being processed by another thread.
+                // 3. Does not exist (has already been processed).
                 return true;
             }
             finally
@@ -167,7 +161,7 @@ namespace Frends.Community.AWS
                 stream?.Close();
             }
 
-            //file is not locked
+            // File is not locked.
             return false;
         }
 

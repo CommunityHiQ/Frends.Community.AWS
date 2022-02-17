@@ -8,14 +8,14 @@ using Newtonsoft.Json.Linq;
 namespace Frends.Community.AWS
 {
     /// <summary>
-    ///     Lists objects in between prefix and delimiter.
+    /// Lists objects in between prefix and delimiter.
     /// </summary>
     public class ListTask
     {
         /// <summary>
-        ///     Lists keys from specified S3 Bucket.
-        ///     You can return full response from S3, or just keys.
-        ///     They're located in "S3Objects"-array in resulting JObject.
+        /// Lists keys from specified S3 Bucket.
+        /// You can return full response from S3, or just keys.
+        /// They're located in "S3Objects"-array in resulting JObject.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>
@@ -33,7 +33,7 @@ namespace Frends.Community.AWS
 
             ListObjectsV2Response response;
 
-            using (var client = Utilities.GetS3Client(parameters, cancellationToken))
+            using (var client = Utilities.GetS3Client(parameters))
             {
                 var request = new ListObjectsV2Request
                 {
@@ -42,19 +42,17 @@ namespace Frends.Community.AWS
                     Encoding = null,
                     FetchOwner = false,
                     MaxKeys = input.MaxKeys,
-                    // added ternary to account for frends not including null as parameter by default...
+
+                    // Added ternary to account for Frends not including null as parameter by default.
                     Prefix = string.IsNullOrWhiteSpace(input.Prefix) ? null : input.Prefix,
                     ContinuationToken =
                         string.IsNullOrWhiteSpace(input.ContinuationToken) ? null : input.ContinuationToken,
                     StartAfter = string.IsNullOrWhiteSpace(input.StartAfter) ? null : input.StartAfter
                 };
-
-                cancellationToken.ThrowIfCancellationRequested();
-
                 response = await client.ListObjectsV2Async(request, cancellationToken);
             }
 
-            // if option is true and array has no objects 
+            // If option is true and array has no objects.
             if (options.ThrowErrorIfNoFilesFound && response.S3Objects.Count == 0)
                 throw new ArgumentException(
                     $"No objects found with supplied parameters: {nameof(input.Prefix)}, {nameof(input.Delimiter)}, {nameof(input.StartAfter)}.");

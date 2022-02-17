@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using System.Collections.Generic;
-using Amazon.S3;
 using System.Security;
 
 namespace Frends.Community.AWS.Tests
@@ -100,8 +99,11 @@ namespace Frends.Community.AWS.Tests
 
             var param = new Parameters
             {
-                AwsAccessKeyId = "fnvfdvfkdjvn", // Invalid AwsAccesKeyId
-                AwsSecretAccessKey = "bvfjhbvdjhvbjdhf", // Invalid AwsSecretAccessKey
+                // Invalid AwsAccesKeyId.
+                AwsAccessKeyId = "fnvfdvfkdjvn",
+
+                // Invalid AwsSecretAccessKey.
+                AwsSecretAccessKey = "bvfjhbvdjhvbjdhf",
                 BucketName = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName"),
                 Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region")),
                 ThrowExceptionOnErrorResponse = true
@@ -119,7 +121,7 @@ namespace Frends.Community.AWS.Tests
         }
 
         [Test]
-        public void Error_IfCredentialsAreInvalidAndThrowExceptionOnErrorResponseIsFalse()
+        public async Task Error_IfCredentialsAreInvalidAndThrowExceptionOnErrorResponseIsFalse()
         {
             var input = new UploadInput
             {
@@ -136,8 +138,11 @@ namespace Frends.Community.AWS.Tests
 
             var param = new Parameters
             {
-                AwsAccessKeyId = "fnvfdvfkdjvn", // Invalid AwsAccesKeyId
-                AwsSecretAccessKey = "bvfjhbvdjhvbjdhf", // Invalid AwsSecretAccessKey
+                // Invalid AwsAccesKeyId.
+                AwsAccessKeyId = "fnvfdvfkdjvn",
+
+                // Invalid AwsSecretAccessKey.
+                AwsSecretAccessKey = "bvfjhbvdjhvbjdhf",
                 BucketName = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName"),
                 Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region")),
                 ThrowExceptionOnErrorResponse = false
@@ -151,7 +156,7 @@ namespace Frends.Community.AWS.Tests
 
             try
             {
-                _ = UploadThatThrows();
+                await UploadThatThrows();
 
             }
             catch (Exception ex)

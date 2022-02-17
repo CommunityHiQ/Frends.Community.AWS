@@ -12,12 +12,12 @@ using Amazon.S3.Model;
 namespace Frends.Community.AWS
 {
     /// <summary>
-    ///     Amazon AWS S3 File DownloadTask
+    /// Amazon AWS S3 File DownloadTask.
     /// </summary>
     public class DownloadTask
     {
         /// <summary>
-        ///     Amazon AWS S3 DownloadFiles task.
+        /// Amazon AWS S3 DownloadFiles task.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>
@@ -34,14 +34,13 @@ namespace Frends.Community.AWS
             cToken.ThrowIfCancellationRequested();
             if (!parameters.UseDefaultCredentials && parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
 
-            if (string.IsNullOrWhiteSpace(input.DestinationPath))
-                throw new ArgumentNullException(nameof(input.DestinationPath));
+            if (string.IsNullOrWhiteSpace(input.DestinationPath)) throw new ArgumentNullException(nameof(input.DestinationPath));
 
             return DownloadUtility(input, parameters, option, cToken).Result;
         }
 
         /// <summary>
-        ///     Prepare for download by checking options and finding files from S3.
+        /// Prepare for download by checking options and finding files from S3.
         /// </summary>
         /// <param name="input"></param>
         /// <param name="parameters"></param>
@@ -59,7 +58,7 @@ namespace Frends.Community.AWS
             var paths = new List<string>();
             var targetPath = input.S3Directory + input.SearchPattern;
             var mask = new Regex(input.SearchPattern.Replace(".", "[.]").Replace("*", ".*").Replace("?", "."));
-            using (var s3Client = (AmazonS3Client)Utilities.GetS3Client(parameters, cancellationToken))
+            using (var s3Client = (AmazonS3Client)Utilities.GetS3Client(parameters))
             {
                 var allObjectsResponse = await s3Client.ListObjectsAsync(parameters.BucketName, cancellationToken);
                 var allObjectsInDirectory = allObjectsResponse.S3Objects;
@@ -67,10 +66,7 @@ namespace Frends.Community.AWS
                 {
                     if (mask.IsMatch(fileObject.Key.Split('/').Last()) && (targetPath.Split('/').Length == fileObject.Key.Split('/').Length || !option.DownloadFromCurrentDirectoryOnly) && !fileObject.Key.EndsWith("/") && fileObject.Key.StartsWith(input.S3Directory))
                     {
-                        if (!input.DestinationPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                        {
-                            input.DestinationPath += Path.DirectorySeparatorChar.ToString();
-                        }
+                        if (!input.DestinationPath.EndsWith(Path.DirectorySeparatorChar.ToString())) input.DestinationPath += Path.DirectorySeparatorChar.ToString();
 
                         var fullPath = Path.Combine(input.DestinationPath, fileObject.Key.Split('/').Last());
                         if (File.Exists(fullPath) & !option.Overwrite) throw new IOException($"File {fileObject.Key.Split('/').Last()} already exists at {fullPath}. Set Overwrite to true from options to overwrite the file.");
@@ -84,7 +80,7 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        ///     Write files to desired destination path.
+        /// Write files to desired destination path.
         /// </summary>
         /// <param name="parameters"></param>
         /// <param name="fileObject"></param>
