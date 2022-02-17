@@ -99,7 +99,7 @@ namespace Frends.Community.AWS
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        _ = await UploadFileToS3(cancellationToken, file, parameters, client, fullPath, input);
+                        await UploadFileToS3(cancellationToken, file, parameters, client, fullPath, input);
                         result.Add(options.ReturnListOfObjectKeys ? fullPath : file.FullName);
                     }
                     else
@@ -118,7 +118,7 @@ namespace Frends.Community.AWS
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        _ = await UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name, input);
+                        await UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name, input);
                         if (options.ReturnListOfObjectKeys) result.Add(s3Directory + file.Name);
                         else result.Add(file.FullName);
                     }
