@@ -78,9 +78,7 @@ namespace Frends.Community.AWS
         /// <returns>string</returns>
         public static string GetFullPathWithEndingSlashes(string input)
         {
-            return Path.GetFullPath(input)
-                       .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-                   + Path.DirectorySeparatorChar;
+            return Path.GetFullPath(input).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
         }
 
         /// <summary>
@@ -88,13 +86,12 @@ namespace Frends.Community.AWS
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns>AmazonS3Client</returns>
-        public static IAmazonS3 GetS3Client(
-            Parameters parameters)
+        public static IAmazonS3 GetS3Client(Parameters parameters)
         {
             var region = RegionSelection(parameters.Region);
 
             // Use the application's default configuration.
-            if(parameters.UseDefaultCredentials) return new AmazonS3Client(region);
+            if (parameters.UseDefaultCredentials) return new AmazonS3Client(region);
 
             // Optionally we can configure client, if the need arises.
             return parameters.AwsCredentials == null
@@ -163,6 +160,34 @@ namespace Frends.Community.AWS
 
             // File is not locked.
             return false;
+        }
+
+        /// <summary>
+        /// Converts Frends.Community.AWS.S3CannedACL to Amazon.S3.S3CannedACL.
+        /// </summary>
+        /// <param name="cannedACL"></param>
+        /// <returns></returns>
+        public static S3CannedACL GetS3CannedACL(S3CannedACLs cannedACL)
+        {
+            switch (cannedACL)
+            {
+                case S3CannedACLs.Private:
+                    return S3CannedACL.Private;
+                case S3CannedACLs.PublicRead:
+                    return S3CannedACL.PublicRead;
+                case S3CannedACLs.PublicReadWrite:
+                    return S3CannedACL.PublicReadWrite;
+                case S3CannedACLs.AuthenticatedRead:
+                    return S3CannedACL.AuthenticatedRead;
+                case S3CannedACLs.BucketOwnerRead:
+                    return S3CannedACL.BucketOwnerRead;
+                case S3CannedACLs.BucketOwnerFullControl:
+                    return S3CannedACL.BucketOwnerFullControl;
+                case S3CannedACLs.LogDeliveryWrite:
+                    return S3CannedACL.LogDeliveryWrite;
+                default:
+                    return S3CannedACL.NoACL;
+            }
         }
     }
 }

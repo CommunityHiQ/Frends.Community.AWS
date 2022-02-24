@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -46,7 +46,6 @@ namespace Frends.Community.AWS.Tests
 
             // In case something was left behind.
             Cleanup();
-
             if (!CreateTestFiles(_root, Files)) throw new IOException("Could not create testfiles.");
         }
 
@@ -110,10 +109,7 @@ namespace Frends.Community.AWS.Tests
                 var path = Path.Combine(root, name);
                 var file = new FileInfo(path);
                 file.Directory?.Create();
-                File.WriteAllBytes(
-                    file.ToString(),
-                    new byte[bytes]
-                );
+                File.WriteAllBytes(file.ToString(), new byte[bytes]);
             }
 
             return true;
@@ -142,9 +138,7 @@ namespace Frends.Community.AWS.Tests
                 await ListTask.ListObjectsAsync(linput, _param, opt, new CancellationToken());
             }
 
-            Assert.That(TestDelegate,
-                Throws.TypeOf<ArgumentException>()
-                    .With.Message.StartsWith("No objects found with supplied parameters:"));
+            Assert.That(TestDelegate, Throws.TypeOf<ArgumentException>().With.Message.StartsWith("No objects found with supplied parameters:"));
         }
 
         [Test]
@@ -367,8 +361,7 @@ namespace Frends.Community.AWS.Tests
                 RoleArn = _tempCredRole
             };
 
-            var result = await GetTemporaryCredentialsTask.GetTemporaryCredentialsAsync(
-                tcinput, _assumerParam, new CancellationToken());
+            var result = await GetTemporaryCredentialsTask.GetTemporaryCredentialsAsync(tcinput, _assumerParam, new CancellationToken());
 
             Assert.IsInstanceOf(typeof(Credentials), result);
         }

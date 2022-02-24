@@ -48,9 +48,7 @@ namespace Frends.Community.AWS.Tests
                 return response;
             }
 
-            Assert.That(UploadThatThrows,
-                Throws.TypeOf<ArgumentException>()
-                    .With.Message.StartsWith("Source path not found."));
+            Assert.That(UploadThatThrows, Throws.TypeOf<ArgumentException>().With.Message.StartsWith("Source path not found."));
         }
 
         [Test]
@@ -75,9 +73,7 @@ namespace Frends.Community.AWS.Tests
                 return response;
             }
 
-            Assert.That(UploadThatThrows,
-                Throws.TypeOf<ArgumentException>()
-                    .With.Message.StartsWith("No files match the filemask within supplied path."));
+            Assert.That(UploadThatThrows, Throws.TypeOf<ArgumentException>().With.Message.StartsWith("No files match the filemask within supplied path."));
         }
 
         [Test]
@@ -87,7 +83,8 @@ namespace Frends.Community.AWS.Tests
             {
                 FileMask = "TestFile1.csv",
                 FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../TestData/"),
-                S3Directory = @"\"
+                S3Directory = @"\",
+                CannedACL = S3CannedACLs.Private
             };
 
             var options = new UploadOptions
@@ -114,9 +111,7 @@ namespace Frends.Community.AWS.Tests
                 return response;
             }
 
-            Assert.That(UploadThatThrows,
-                Throws.TypeOf<SecurityException>()
-                    .With.Message.StartsWith("Invalid Amazon S3 Credentials - data was not uploaded."));
+            Assert.That(UploadThatThrows, Throws.TypeOf<SecurityException>().With.Message.StartsWith("Invalid Amazon S3 Credentials - data was not uploaded."));
         }
 
         [Test]

@@ -81,6 +81,8 @@ Property | Type | Description | Example (comma separated)
 FilePath | string | Filepath to upload files from. | C:\upload, \\\\network\folder\
 FileMask | string | Filename or wildcards (eg. *.txt) | \*.\*, filename.csv
 S3Directory | string | Root directory in S3. | folder/{{DateTime.Now}}
+S3CannedACL | bool | Enable S3CannedACL selection | false
+CannedACL | Selector | Selection of S3CannedACL permissions, visible if S3CannedACL enabled | Private
 
 #### UploadFiles Options
 Property | Type | Description | Example (comma separated)
@@ -176,18 +178,19 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 
 # Changelog
 
-| Version             | Changes              |
-| --------------------| ---------------------|
-| pre 1.0 | pending |
-| 1.1.0 | Updated version as 1.0.0 has already been used in some environments. Fixed typos. |
-| 1.1.6 | Added feature to move files (deletes sources) to DownloadTask, better error messages. |
-| 1.1.7 | Removed Frends.Task.Attributes, using DataAnnotations instead. |
-| 1.1.8 | Proper tests. |
-| 1.2.0 | Rewrote Upload-task for additional features and increased ease of use. No more async.|
-| 1.2.7 | Added GetTemporaryCredentials task. Added Credentials-field to Parameters. It accepts the result of GetTemporaryCredentials task.|
-| 1.3.2 | Now it is possible to call GetTemporaryCredentials also without AwsSecretAccessKey and AwsAccessKeyId. GetTemporaryCrednetials returns now dynamic. |
-| 1.3.3 | Documentation update and relocating nuspec file. |
-| 1.3.4 | Added new and removed old RegionEndpoints. Updated SDK. |
-| 1.3.6 | Multitarget support (.Net Standard 2.0 and .Net Framework 4.7.1 |
-| 1.3.8 | Added UseDefaultCredentials option. |
-| 1.3.9 | Added parameter ThrowExceptionOnErrorResponse, fixed issue: invalid credentials and unsuccessful upload threw no exception and added TestData for tests. | 
+| Version | Changes                                                                                                                                                  |
+|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| pre 1.0 | pending                                                                                                                                                  |
+| 1.1.0   | Updated version as 1.0.0 has already been used in some environments. Fixed typos.                                                                        |
+| 1.1.6   | Added feature to move files (deletes sources) to DownloadTask, better error messages.                                                                    |
+| 1.1.7   | Removed Frends.Task.Attributes, using DataAnnotations instead.                                                                                           |
+| 1.1.8   | Proper tests.                                                                                                                                            |
+| 1.2.0   | Rewrote Upload-task for additional features and increased ease of use. No more async.                                                                    |
+| 1.2.7   | Added GetTemporaryCredentials task. Added Credentials-field to Parameters. It accepts the result of GetTemporaryCredentials task.                        |
+| 1.3.2   | Now it is possible to call GetTemporaryCredentials also without AwsSecretAccessKey and AwsAccessKeyId. GetTemporaryCrednetials returns now dynamic.      |
+| 1.3.3   | Documentation update and relocating nuspec file.                                                                                                         |
+| 1.3.4   | Added new and removed old RegionEndpoints. Updated SDK.                                                                                                  |
+| 1.3.6   | Multitarget support (.Net Standard 2.0 and .Net Framework 4.7.1                                                                                          |
+| 1.3.8   | Added UseDefaultCredentials option.                                                                                                                      |
+| 1.3.9   | Added parameter ThrowExceptionOnErrorResponse, fixed issue: invalid credentials and unsuccessful upload threw no exception and added TestData for tests. | 
+| 1.3.10  | Added input parameter Canned Acl to change the ACL restriction of the uploaded object. Also Added boolean value enabling the cannedAcl.                  |

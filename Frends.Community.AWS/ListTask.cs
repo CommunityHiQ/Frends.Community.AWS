@@ -45,8 +45,7 @@ namespace Frends.Community.AWS
 
                     // Added ternary to account for Frends not including null as parameter by default.
                     Prefix = string.IsNullOrWhiteSpace(input.Prefix) ? null : input.Prefix,
-                    ContinuationToken =
-                        string.IsNullOrWhiteSpace(input.ContinuationToken) ? null : input.ContinuationToken,
+                    ContinuationToken = string.IsNullOrWhiteSpace(input.ContinuationToken) ? null : input.ContinuationToken,
                     StartAfter = string.IsNullOrWhiteSpace(input.StartAfter) ? null : input.StartAfter
                 };
                 response = await client.ListObjectsV2Async(request, cancellationToken);
@@ -54,8 +53,7 @@ namespace Frends.Community.AWS
 
             // If option is true and array has no objects.
             if (options.ThrowErrorIfNoFilesFound && response.S3Objects.Count == 0)
-                throw new ArgumentException(
-                    $"No objects found with supplied parameters: {nameof(input.Prefix)}, {nameof(input.Delimiter)}, {nameof(input.StartAfter)}.");
+                throw new ArgumentException($"No objects found with supplied parameters: {nameof(input.Prefix)}, {nameof(input.Delimiter)}, {nameof(input.StartAfter)}.");
 
             return options.FullResponse ? JToken.FromObject(response) : JToken.FromObject(response)["S3Objects"];
         }
