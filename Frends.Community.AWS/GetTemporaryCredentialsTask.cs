@@ -28,8 +28,7 @@ namespace Frends.Community.AWS
             // Now, it is possible to call task without awsAcessKeyId and AwsSecretAccessKey.
             if (string.IsNullOrWhiteSpace(parameters.AwsAccessKeyId) && string.IsNullOrWhiteSpace(parameters.AwsSecretAccessKey))
             {
-                using (var stsClient = new AmazonSecurityTokenServiceClient(
-                    Utilities.RegionSelection(parameters.Region)))
+                using (var stsClient = new AmazonSecurityTokenServiceClient(Utilities.RegionSelection(parameters.Region)))
                 {
                     var assumeRoleRequest = new AssumeRoleRequest
                     {

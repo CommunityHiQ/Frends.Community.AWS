@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-#pragma warning disable CS1591
-
 namespace Frends.Community.AWS
 {
     #region DownloadTask
+    #pragma warning disable CS1591
 
     /// <summary>
     /// Input class, you can download whole directories or single files.
@@ -167,13 +166,13 @@ namespace Frends.Community.AWS
         public string S3Directory { get; set; }
 
         /// <summary>
-        ///     Enable/disable S3CannedACL selection, default value false
+        /// Enable/disable S3CannedACL selection, default value false.
         /// </summary>
         [DefaultValue("false")]
         public bool S3CannedACL { get; set; }
 
         /// <summary>
-        ///     S3CannedACL selection, default private
+        /// S3CannedACL selection, default private.
         /// </summary>
         [DisplayName("S3CannedACL")]
         [UIHint(nameof(S3CannedACL), "", true)]

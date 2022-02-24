@@ -28,9 +28,7 @@ namespace Frends.Community.AWS.Tests
                 await ListTask.ListObjectsAsync(linput, param, opt, new CancellationToken());
             }
 
-            Assert.That(TestDelegate,
-                Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.StartWith("Value cannot be null."));
+            Assert.That(TestDelegate, Throws.TypeOf<ArgumentNullException>().With.Message.StartWith("Value cannot be null."));
         }
 
         [Test]

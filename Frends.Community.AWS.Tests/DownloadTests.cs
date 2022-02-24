@@ -53,8 +53,7 @@ namespace Frends.Community.AWS.Tests
             }
 
             Assert.Throws<ArgumentNullException>(TestDelegate);
-            Assert.That(TestDelegate, Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.EndsWith($"{nameof(i.DestinationPath)}"));
+            Assert.That(TestDelegate, Throws.TypeOf<ArgumentNullException>().With.Message.EndsWith($"{nameof(i.DestinationPath)}"));
         }
 
         [Test]
@@ -80,9 +79,7 @@ namespace Frends.Community.AWS.Tests
                 DownloadTask.DownloadFiles(i, _param, o, new CancellationToken());
             }
 
-            Assert.That(TestDelegate,
-                Throws.TypeOf<ArgumentNullException>()
-                    .With.Message.EndsWith($"{nameof(i.DestinationPath)}"));
+            Assert.That(TestDelegate, Throws.TypeOf<ArgumentNullException>().With.Message.EndsWith($"{nameof(i.DestinationPath)}"));
         }
     }
 }

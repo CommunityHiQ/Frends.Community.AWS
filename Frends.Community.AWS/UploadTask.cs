@@ -17,7 +17,7 @@ namespace Frends.Community.AWS
     public class UploadTask
     {
         /// <summary>
-        /// Filemask, eg. *.*, *file?.txt
+        /// Filemask, eg. *.*, *file?.txt.
         /// Bucketname without s3://-prefix.
         /// </summary>
         /// <param name="input" />
@@ -46,8 +46,7 @@ namespace Frends.Community.AWS
                     : SearchOption.AllDirectories);
 
             if (options.ThrowErrorIfNoMatch && filesToCopy.Length < 1)
-                throw new ArgumentException(
-                    $"No files match the filemask within supplied path. {nameof(input.FileMask)}");
+                throw new ArgumentException($"No files match the filemask within supplied path. {nameof(input.FileMask)}");
 
             return await ExecuteUpload(filesToCopy, input.S3Directory, parameters, options, cancellationToken, input);
         }
@@ -71,7 +70,6 @@ namespace Frends.Community.AWS
             UploadInput input
         )
         {
-            cancellationToken.ThrowIfCancellationRequested();
             var result = new List<string>();
 
             using (var client = (AmazonS3Client)Utilities.GetS3Client(parameters))
@@ -146,7 +144,6 @@ namespace Frends.Community.AWS
             UploadInput input
         )
         {
-
             try
             {
                 var putObjectRequest = new PutObjectRequest
@@ -154,7 +151,7 @@ namespace Frends.Community.AWS
                     BucketName = parameters.BucketName,
                     Key = path,
                     FilePath = file.FullName,
-                    CannedACL = (input.S3CannedACL) ? Utilities.GetS3CannedACL(input.CannedACL) : Amazon.S3.S3CannedACL.NoACL
+                    CannedACL = (input.S3CannedACL) ? Utilities.GetS3CannedACL(input.CannedACL) : S3CannedACL.NoACL
             };
                 var response = await client.PutObjectAsync(putObjectRequest, cancellationToken);
 

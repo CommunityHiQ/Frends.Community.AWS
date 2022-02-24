@@ -11,9 +11,7 @@ namespace Frends.Community.AWS
         private const string StringSeparator = ", ";
 
         /// <summary>
-        /// Gets all string properties,
-        /// checks if there are nulls or empties as values,
-        /// forms an array from property names. Ordering to enable testing.
+        /// Gets all string properties, checks if there are nulls or empties as values, forms an array from property names. Ordering to enable testing.
         /// Error message contains ordered list of params.
         /// </summary>
         /// <param name="property"></param>

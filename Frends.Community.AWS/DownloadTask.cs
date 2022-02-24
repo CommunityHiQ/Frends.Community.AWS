@@ -31,11 +31,8 @@ namespace Frends.Community.AWS
             CancellationToken cToken
         )
         {
-            cToken.ThrowIfCancellationRequested();
             if (!parameters.UseDefaultCredentials && parameters.AwsCredentials == null) parameters.IsAnyNullOrWhiteSpaceThrow();
-
             if (string.IsNullOrWhiteSpace(input.DestinationPath)) throw new ArgumentNullException(nameof(input.DestinationPath));
-
             return DownloadUtility(input, parameters, option, cToken).Result;
         }
 
@@ -53,7 +50,6 @@ namespace Frends.Community.AWS
             DownloadOptions option,
             CancellationToken cancellationToken
         )
-
         {
             var paths = new List<string>();
             var targetPath = input.S3Directory + input.SearchPattern;
@@ -64,6 +60,7 @@ namespace Frends.Community.AWS
                 var allObjectsInDirectory = allObjectsResponse.S3Objects;
                 foreach (var fileObject in allObjectsInDirectory)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (mask.IsMatch(fileObject.Key.Split('/').Last()) && (targetPath.Split('/').Length == fileObject.Key.Split('/').Length || !option.DownloadFromCurrentDirectoryOnly) && !fileObject.Key.EndsWith("/") && fileObject.Key.StartsWith(input.S3Directory))
                     {
                         if (!input.DestinationPath.EndsWith(Path.DirectorySeparatorChar.ToString())) input.DestinationPath += Path.DirectorySeparatorChar.ToString();
@@ -94,7 +91,6 @@ namespace Frends.Community.AWS
             AmazonS3Client s3Client,
             string destinationFolder,
             string fullPath
-
         )
         {
             string responseBody;
@@ -106,10 +102,7 @@ namespace Frends.Community.AWS
 
             using (var response = await s3Client.GetObjectAsync(request))
             using (var responseStream = response.ResponseStream)
-            using (var reader = new StreamReader(responseStream))
-            {
-                responseBody = await reader.ReadToEndAsync();
-            }
+            using (var reader = new StreamReader(responseStream)) responseBody = await reader.ReadToEndAsync();
             if (File.Exists(fullPath))
             {
                 File.Delete(fullPath);
