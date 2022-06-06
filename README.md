@@ -194,3 +194,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.3.8   | Added UseDefaultCredentials option.                                                                                                                      |
 | 1.3.9   | Added parameter ThrowExceptionOnErrorResponse, fixed issue: invalid credentials and unsuccessful upload threw no exception and added TestData for tests. | 
 | 1.3.10  | Added input parameter Canned Acl to change the ACL restriction of the uploaded object. Also Added boolean value enabling the cannedAcl.                  |
+| 1.3.11  | SDK update.                  																															 |
