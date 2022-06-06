@@ -127,7 +127,7 @@ namespace Frends.Community.AWS.Tests
                 ContinuationToken = string.Empty,
                 Delimiter = "/",
                 MaxKeys = 100,
-                Prefix = null,
+                Prefix = "/nofileshere",
                 StartAfter = null
             };
 
