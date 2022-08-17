@@ -54,9 +54,21 @@ namespace Frends.Community.AWS
             var paths = new List<string>();
             var targetPath = input.S3Directory + input.SearchPattern;
             var mask = new Regex(input.SearchPattern.Replace(".", "[.]").Replace("*", ".*").Replace("?", "."));
+
+
+            var request = new ListObjectsV2Request
+            {
+                BucketName = parameters.BucketName,
+                Encoding = null,
+                FetchOwner = false,
+                // Added ternary to account for Frends not including null as parameter by default.
+                Prefix = input.S3Directory,
+            };
+
+
             using (var s3Client = (AmazonS3Client)Utilities.GetS3Client(parameters))
             {
-                var allObjectsResponse = await s3Client.ListObjectsAsync(parameters.BucketName, cancellationToken);
+                var allObjectsResponse = await s3Client.ListObjectsV2Async(request, cancellationToken);
                 var allObjectsInDirectory = allObjectsResponse.S3Objects;
                 foreach (var fileObject in allObjectsInDirectory)
                 {
