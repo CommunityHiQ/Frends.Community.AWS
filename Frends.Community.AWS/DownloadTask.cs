@@ -62,7 +62,7 @@ namespace Frends.Community.AWS
                 Encoding = null,
                 FetchOwner = false,
                 // Added ternary to account for Frends not including null as parameter by default.
-                Prefix = input.S3Directory,
+                Prefix = string.IsNullOrWhiteSpace(input.S3Directory) ? null : input.S3Directory,
             };
 
 
