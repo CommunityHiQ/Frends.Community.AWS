@@ -97,7 +97,8 @@ ReturnListOfObjectKeys | Boolean | You can choose to return the keys uploaded or
 #### UploadFiles Result
 Property | Type | Description | Example (comma separated)
 ---------|------|-------------|--------
-Result | List\<string\> | List of file keys or filepaths. | c:\upload\file.csv, object/prefix/file.csv
+UploadedFiles | List\<string\> | List of file keys or filepaths. | c:\upload\file.csv, object/prefix/file.csv
+DebugLog | string | Debug log of the file transfer. | Some log data
 ***
 ### ListObjectsAsync
 Lists files from S3. You can choose to return full response or just object keys.
@@ -195,3 +196,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.3.9   | Added parameter ThrowExceptionOnErrorResponse, fixed issue: invalid credentials and unsuccessful upload threw no exception and added TestData for tests. | 
 | 1.3.10  | Added input parameter Canned Acl to change the ACL restriction of the uploaded object. Also Added boolean value enabling the cannedAcl.                  |
 | 1.3.11  | SDK update.                  																															 |
+| 1.4.0   | UploadFiles: Task now returns an object instead of List. Added debug log of the transfer as a property to result object.                                 |

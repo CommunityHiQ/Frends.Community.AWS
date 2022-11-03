@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Security;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon;
 
 namespace Frends.Community.AWS.Tests
 {
@@ -45,7 +48,7 @@ namespace Frends.Community.AWS.Tests
             async Task<List<string>> UploadThatThrows()
             {
                 var response = await UploadTask.UploadFiles(input, _param, options, new CancellationToken());
-                return response;
+                return response.UploadedFiles;
             }
 
             Assert.That(UploadThatThrows, Throws.TypeOf<ArgumentException>().With.Message.StartsWith("Source path not found."));
@@ -70,7 +73,7 @@ namespace Frends.Community.AWS.Tests
             async Task<List<string>> UploadThatThrows()
             {
                 var response = await UploadTask.UploadFiles(input, _param, options, new CancellationToken());
-                return response;
+                return response.UploadedFiles;
             }
 
             Assert.That(UploadThatThrows, Throws.TypeOf<ArgumentException>().With.Message.StartsWith("No files match the filemask within supplied path."));
@@ -108,7 +111,7 @@ namespace Frends.Community.AWS.Tests
             async Task<List<string>> UploadThatThrows()
             {
                 var response = await UploadTask.UploadFiles(input, param, options, new CancellationToken());
-                return response;
+                return response.UploadedFiles;
             }
 
             Assert.That(UploadThatThrows, Throws.TypeOf<SecurityException>().With.Message.StartsWith("Invalid Amazon S3 Credentials - data was not uploaded."));
@@ -145,7 +148,7 @@ namespace Frends.Community.AWS.Tests
             async Task<List<string>> UploadThatThrows()
             {
                 var response = await UploadTask.UploadFiles(input, param, options, new CancellationToken());
-                return response;
+                return response.UploadedFiles;
             }
 
             try
@@ -156,6 +159,71 @@ namespace Frends.Community.AWS.Tests
             catch (Exception ex)
             {
                 Assert.Fail("Expected no exception, but got: " + ex.Message);
+            }
+        }
+
+        [Test]
+        public async Task SendFileToS3Bucket()
+        {
+            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../UploadTestData");
+            Directory.CreateDirectory(dir);
+            var filePath = Path.Combine(dir, "test.txt");
+            File.WriteAllText(filePath, "This is a Test file");
+
+            var input = new UploadInput
+            {
+                FileMask = "test.txt",
+                FilePath = dir,
+                S3Directory = "CommunityUploadTest/"
+            };
+
+            var options = new UploadOptions
+            {
+                ReturnListOfObjectKeys = true,
+                ThrowErrorIfNoMatch = true
+            };
+
+            var response = await UploadTask.UploadFiles(input, _param, options, new CancellationToken());
+            foreach(var key in response.UploadedFiles)
+            {
+                Assert.AreEqual("CommunityUploadTest/test.txt", key);
+                await DeleteFileFromBucket(key, _param.BucketName);
+            }
+            Directory.Delete(dir, true);
+        }
+
+        [Test]
+        public async Task SendFileToS3WritesDebugLog()
+        {
+            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../debugLog");
+            Directory.CreateDirectory(dir);
+            var filePath = Path.Combine(dir, "debugLog.txt");
+            File.WriteAllText(filePath, "This is a Test file");
+
+            var input = new UploadInput
+            {
+                FileMask = "debugLog.txt",
+                FilePath = dir,
+                S3Directory = ""
+            };
+
+            var options = new UploadOptions
+            {
+                ReturnListOfObjectKeys = true,
+                ThrowErrorIfNoMatch = true
+            };
+
+            var response = await UploadTask.UploadFiles(input, _param, options, new CancellationToken());
+            Assert.IsTrue(!string.IsNullOrEmpty(response.DebugLog));
+            Directory.Delete(dir, true);
+            await DeleteFileFromBucket("debugLog.txt", _param.BucketName);
+        }
+
+        private static async Task DeleteFileFromBucket(string key, string bucketName)
+        {
+            using (var client = new AmazonS3Client(_param.AwsAccessKeyId, _param.AwsSecretAccessKey, RegionEndpoint.EUCentral1))
+            {
+                await client.DeleteObjectAsync(new DeleteObjectRequest() { BucketName = bucketName, Key = key });
             }
         }
     }
