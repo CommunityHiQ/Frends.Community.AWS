@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Frends.Community.AWS
@@ -223,6 +224,20 @@ namespace Frends.Community.AWS
         /// </summary>
         [DefaultValue(false)]
         public bool ReturnListOfObjectKeys { get; set; }
+    }
+
+    public class UploadResult
+    {
+        /// <summary>
+        /// List of files which were uploaded.
+        /// If ReturnListOfObjectKeys is true, this list contains keys of the uploaded objects.
+        /// </summary>
+        public List<string> UploadedFiles { get; set; }
+
+        /// <summary>
+        /// Debug log of file upload.
+        /// </summary>
+        public string DebugLog { get; set; }
     }
 
     #endregion

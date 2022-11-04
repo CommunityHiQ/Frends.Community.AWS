@@ -164,7 +164,7 @@ namespace Frends.Community.AWS.Tests
 
             var result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
 
-            Assert.AreEqual(result.Count, 1);
+            Assert.AreEqual(result.UploadedFiles.Count, 1);
         }
 
         [Test]
@@ -190,7 +190,7 @@ namespace Frends.Community.AWS.Tests
 
             var result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
 
-            Assert.AreEqual(result.Count, 5);
+            Assert.AreEqual(result.UploadedFiles.Count, 5);
         }
 
         [Test]
