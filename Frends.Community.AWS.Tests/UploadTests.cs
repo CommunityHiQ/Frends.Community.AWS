@@ -4,11 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Security;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon;
-using System.Net.Mail;
 
 namespace Frends.Community.AWS.Tests
 {
