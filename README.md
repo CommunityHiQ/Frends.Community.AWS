@@ -197,3 +197,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.3.10  | Added input parameter Canned Acl to change the ACL restriction of the uploaded object. Also Added boolean value enabling the cannedAcl.                  |
 | 1.3.11  | SDK update.                  																															 |
 | 1.4.0   | UploadFiles: Task now returns an object instead of List. Added debug log of the transfer as a property to result object.                                 |
+| 1.4.1   | UploadFiles: Throw custom exception if upload fails to provide debug log in the exception.                                                               |
