@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Security;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon;
@@ -114,7 +113,7 @@ namespace Frends.Community.AWS.Tests
                 return response.UploadedFiles;
             }
 
-            Assert.That(UploadThatThrows, Throws.TypeOf<SecurityException>().With.Message.StartsWith("Invalid Amazon S3 Credentials - data was not uploaded."));
+            Assert.That(UploadThatThrows, Throws.TypeOf<UploadException>());
         }
 
         [Test]
@@ -217,6 +216,39 @@ namespace Frends.Community.AWS.Tests
             Assert.IsTrue(!string.IsNullOrEmpty(response.DebugLog));
             Directory.Delete(dir, true);
             await DeleteFileFromBucket("debugLog.txt", _param.BucketName);
+        }
+
+        [Test]
+        public void FailedUploadProvidesDebugLog()
+        {
+            var input = new UploadInput
+            {
+                FileMask = "TestFile1.csv",
+                FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../TestData/"),
+                S3Directory = @"\",
+                CannedACL = S3CannedACLs.Private
+            };
+
+            var options = new UploadOptions
+            {
+                ReturnListOfObjectKeys = true,
+                ThrowErrorIfNoMatch = true
+            };
+
+            var param = new Parameters
+            {
+                // Invalid AwsAccesKeyId.
+                AwsAccessKeyId = "fnvfdvfkdjvn",
+
+                // Invalid AwsSecretAccessKey.
+                AwsSecretAccessKey = "bvfjhbvdjhvbjdhf",
+                BucketName = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_BucketName"),
+                Region = (Regions)int.Parse(Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Region")),
+                ThrowExceptionOnErrorResponse = true
+            };
+
+            var response = Assert.ThrowsAsync<UploadException>(async () => await UploadTask.UploadFiles(input, param, options, new CancellationToken()));
+            Assert.IsFalse(string.IsNullOrEmpty(response.DebugLog));
         }
 
         private static async Task DeleteFileFromBucket(string key, string bucketName)

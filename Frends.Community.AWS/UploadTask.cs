@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
@@ -74,7 +73,6 @@ namespace Frends.Community.AWS
             var result = new List<string>();
 
             AWSConfigs.LoggingConfig.LogTo = LoggingOptions.Console;
-            var originalOut = Console.Out;
             var sw = new StringWriter();
             Console.SetOut(sw);
             using (var client = (AmazonS3Client)Utilities.GetS3Client(parameters))
@@ -101,7 +99,7 @@ namespace Frends.Community.AWS
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        await UploadFileToS3(cancellationToken, file, parameters, client, fullPath, input);
+                        await UploadFileToS3(cancellationToken, file, parameters, client, fullPath, input, sw);
                         result.Add(options.ReturnListOfObjectKeys ? fullPath : file.FullName);
                     }
                     else
@@ -120,7 +118,7 @@ namespace Frends.Community.AWS
                             }
                             catch (AmazonS3Exception) { }
                         }
-                        await UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name, input);
+                        await UploadFileToS3(cancellationToken, file, parameters, client, s3Directory + file.Name, input, sw);
                         if (options.ReturnListOfObjectKeys) result.Add(s3Directory + file.Name);
                         else result.Add(file.FullName);
                     }
@@ -128,7 +126,6 @@ namespace Frends.Community.AWS
                 }
             }
             var debugLog = sw.ToString();
-            Console.SetOut(originalOut);
             return new UploadResult { UploadedFiles = result, DebugLog = debugLog };
         }
 
@@ -141,6 +138,7 @@ namespace Frends.Community.AWS
         /// <param name="client" />
         /// <param name="path" />
         /// <param name="input" />
+        /// <param name="logger" />
         /// <returns></returns>
         private static async Task<PutObjectResponse> UploadFileToS3(
             CancellationToken cancellationToken,
@@ -148,7 +146,8 @@ namespace Frends.Community.AWS
             Parameters parameters,
             AmazonS3Client client,
             string path,
-            UploadInput input
+            UploadInput input,
+            StringWriter logger
         )
         {
             try
@@ -164,17 +163,13 @@ namespace Frends.Community.AWS
 
                 return response;
             }
-            catch (AmazonS3Exception amazonS3Exception)
+            catch ( Exception ex )
             {
                 if (parameters.ThrowExceptionOnErrorResponse)
                 {
-                    if (amazonS3Exception.ErrorCode != null &&
-                    (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") || amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
-                        throw new SecurityException("Invalid Amazon S3 Credentials - data was not uploaded.", amazonS3Exception);
-
-                    throw new Exception("Unspecified error attempting to upload data: " + amazonS3Exception.Message, amazonS3Exception);
+                    var debugLog = logger.ToString();
+                    throw new UploadException(debugLog, ex.Message, ex.InnerException);
                 }
-
                 return null;
                 
             }

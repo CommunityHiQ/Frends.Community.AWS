@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -238,6 +239,19 @@ namespace Frends.Community.AWS
         /// Debug log of file upload.
         /// </summary>
         public string DebugLog { get; set; }
+    }
+
+    public class UploadException : Exception
+    {
+        /// <summary>
+        /// Debug log of file upload.
+        /// </summary>
+        public string DebugLog { get; private set; }
+
+        public UploadException(string debugLog, string message, Exception innerException) : base(message, innerException)
+        {
+            DebugLog = debugLog;
+        }
     }
 
     #endregion
