@@ -39,7 +39,7 @@ namespace Frends.Community.AWS.Tests
                 BucketName = _param.BucketName,
                 Region = _param.Region
             };
-            _root = Environment.GetEnvironmentVariable("HiQ_AWS3Test_LocalTestFolder");
+            _root = $@"c:\temp\aws";
             _download = Path.Combine(_root, "download");
             _tempCredRole = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_Arn");
             _extId = Environment.GetEnvironmentVariable("HiQ_AWSS3Test_ExternalId");
