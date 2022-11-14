@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -111,7 +112,7 @@ namespace Frends.Community.AWS
         /// <param name="filePath"></param>
         /// <param name="sourceIsS3"></param>
         /// <returns></returns>
-        public static void DeleteSourceFile(
+        public static async Task DeleteSourceFile(
             AmazonS3Client s3Client,
             CancellationToken cancellationToken,
             string bucketName,
@@ -127,7 +128,7 @@ namespace Frends.Community.AWS
                     Key = filePath
                 };
 
-                s3Client.DeleteObjectAsync(deleteObjectRequest, cancellationToken);
+                await s3Client.DeleteObjectAsync(deleteObjectRequest, cancellationToken);
             }
             else
             {

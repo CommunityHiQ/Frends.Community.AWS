@@ -122,7 +122,7 @@ namespace Frends.Community.AWS
                         if (options.ReturnListOfObjectKeys) result.Add(s3Directory + file.Name);
                         else result.Add(file.FullName);
                     }
-                    if (options.DeleteSource) Utilities.DeleteSourceFile(client, cancellationToken, parameters.BucketName, file.FullName, false);
+                    if (options.DeleteSource) await Utilities.DeleteSourceFile(client, cancellationToken, parameters.BucketName, file.FullName, false);
                 }
             }
             var debugLog = sw.ToString();

@@ -198,3 +198,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.3.11  | SDK update.                  																															 |
 | 1.4.0   | UploadFiles: Task now returns an object instead of List. Added debug log of the transfer as a property to result object.                                 |
 | 1.4.1   | UploadFiles: Throw custom exception if upload fails to provide debug log in the exception.                                                               |
+| 1.4.2   | DownloadTask, UploadTask: Bug fix for "Options delete source file not working"                                                                           |

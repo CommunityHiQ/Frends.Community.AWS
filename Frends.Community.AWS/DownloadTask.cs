@@ -68,7 +68,7 @@ namespace Frends.Community.AWS
                         var fullPath = Path.Combine(input.DestinationPath, fileObject.Key.Split('/').Last());
                         if (File.Exists(fullPath) & !option.Overwrite) throw new IOException($"File {fileObject.Key.Split('/').Last()} already exists at {fullPath}. Set Overwrite to true from options to overwrite the file.");
                         paths.Add(await WriteToFile(parameters, fileObject, s3Client, input.DestinationPath, fullPath));
-                        if (option.DeleteSourceFile) Utilities.DeleteSourceFile(s3Client, cancellationToken, parameters.BucketName, fileObject.Key, true);
+                        if (option.DeleteSourceFile) await Utilities.DeleteSourceFile(s3Client, cancellationToken, parameters.BucketName, fileObject.Key, true);
                     }
                 }
             }
