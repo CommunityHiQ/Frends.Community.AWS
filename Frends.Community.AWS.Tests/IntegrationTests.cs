@@ -1,16 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.IO;
 using Amazon.SecurityToken.Model;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using System.Runtime.InteropServices;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Frends.Community.AWS.Tests
 {
@@ -58,7 +58,7 @@ namespace Frends.Community.AWS.Tests
             void DeleteRootFolder()
             {
                 using (var s3Client = new AmazonS3Client(_param.AwsAccessKeyId, _param.AwsSecretAccessKey,
-                    new AmazonS3Config {RegionEndpoint = Utilities.RegionSelection(_param.Region)}))
+                    new AmazonS3Config { RegionEndpoint = Utilities.RegionSelection(_param.Region) }))
                 {
                     var directoryToDelete = new S3DirectoryInfo(s3Client, _param.BucketName, Prefix.Replace("/", ""));
                     if (directoryToDelete.Exists) directoryToDelete.Delete(true);
@@ -132,7 +132,7 @@ namespace Frends.Community.AWS.Tests
                 StartAfter = null
             };
 
-            var opt = new ListOptions {FullResponse = false, ThrowErrorIfNoFilesFound = true};
+            var opt = new ListOptions { FullResponse = false, ThrowErrorIfNoFilesFound = true };
 
             async Task TestDelegate()
             {
@@ -165,7 +165,7 @@ namespace Frends.Community.AWS.Tests
 
             var result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
 
-            Assert.AreEqual(result.UploadedFiles.Count, 1);
+            Assert.AreEqual(1, result.UploadedFiles.Count);
         }
 
         [Test]
@@ -191,7 +191,7 @@ namespace Frends.Community.AWS.Tests
 
             var result = await UploadTask.UploadFiles(uinput, _param, opt, new CancellationToken());
 
-            Assert.AreEqual(result.UploadedFiles.Count, 5);
+            Assert.AreEqual(5, result.UploadedFiles.Count);
         }
 
         [Test]
