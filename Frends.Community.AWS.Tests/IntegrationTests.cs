@@ -350,8 +350,7 @@ namespace Frends.Community.AWS.Tests
             Assert.Throws<AggregateException>(DownloadThatThrows);
         }
 
-        // Removed from tests while working on issue30 quick bug fix. Didn't work before changes and have no idea what's the idea of this test.
-        [ExcludeFromCodeCoverage]
+        [Ignore("Ignore while working on issue30 quick bug fix. Didn't work before changes.")]
         public async Task Test_GetTemporaryCredentialsShouldReturnProper()
         {
             var tcinput = new TempCredInput
