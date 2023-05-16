@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using System.Collections.Generic;
-using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon;
 
 namespace Frends.Community.AWS.Tests
 {
@@ -183,7 +183,7 @@ namespace Frends.Community.AWS.Tests
             };
 
             var response = await UploadTask.UploadFiles(input, _param, options, new CancellationToken());
-            foreach(var key in response.UploadedFiles)
+            foreach (var key in response.UploadedFiles)
             {
                 Assert.AreEqual("CommunityUploadTest/test.txt", key);
                 await DeleteFileFromBucket(key, _param.BucketName);

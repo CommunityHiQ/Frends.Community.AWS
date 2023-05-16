@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
+﻿using Amazon.SecurityToken;
+using Amazon.SecurityToken.Model;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.SecurityToken;
-using Amazon.SecurityToken.Model;
 
 namespace Frends.Community.AWS
 {

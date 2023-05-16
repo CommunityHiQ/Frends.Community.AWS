@@ -1,9 +1,9 @@
-﻿using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Amazon;
+﻿using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Frends.Community.AWS
 {

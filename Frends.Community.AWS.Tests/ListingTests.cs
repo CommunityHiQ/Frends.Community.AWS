@@ -1,7 +1,7 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 namespace Frends.Community.AWS.Tests
 {
@@ -21,7 +21,7 @@ namespace Frends.Community.AWS.Tests
                 AwsSecretAccessKey = "bar",
                 BucketName = null
             };
-            var opt = new ListOptions {FullResponse = true};
+            var opt = new ListOptions { FullResponse = true };
 
             async Task TestDelegate()
             {
@@ -41,7 +41,7 @@ namespace Frends.Community.AWS.Tests
                 AwsSecretAccessKey = " ",
                 BucketName = string.Empty
             };
-            var opt = new ListOptions {FullResponse = true};
+            var opt = new ListOptions { FullResponse = true };
 
             async Task TestDelegate()
             {

@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using System.Linq;
-using Amazon.S3;
-using Amazon.S3.Model;
 
 namespace Frends.Community.AWS
 {

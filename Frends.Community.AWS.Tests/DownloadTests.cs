@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Threading;
-using NUnit.Framework;
 
 namespace Frends.Community.AWS.Tests
 {
