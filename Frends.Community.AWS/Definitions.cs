@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Frends.Community.AWS
 {
     #region DownloadTask
-    #pragma warning disable CS1591
+#pragma warning disable CS1591
 
     /// <summary>
     /// Input class, you can download whole directories or single files.

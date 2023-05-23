@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon;
-using Amazon.S3;
-using Amazon.S3.Model;
 
 namespace Frends.Community.AWS
 {
@@ -163,7 +163,7 @@ namespace Frends.Community.AWS
 
                 return response;
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
                 if (parameters.ThrowExceptionOnErrorResponse)
                 {
@@ -171,9 +171,9 @@ namespace Frends.Community.AWS
                     throw new UploadException(debugLog, ex.Message, ex.InnerException);
                 }
                 return null;
-                
+
             }
-            
+
         }
     }
 }

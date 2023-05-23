@@ -9,7 +9,7 @@
     <IncludeSource>true</IncludeSource>
     <PackageTags>Frends</PackageTags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>1.4.2</Version>
+    <Version>1.4.3</Version>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <AssemblyVersion>1.3.8.1211</AssemblyVersion>
     <FileVersion>1.3.8.1211</FileVersion>

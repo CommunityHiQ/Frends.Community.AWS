@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using System.Linq;
-using Amazon.S3;
-using Amazon.S3.Model;
 
 namespace Frends.Community.AWS
 {
@@ -93,7 +93,6 @@ namespace Frends.Community.AWS
             string fullPath
         )
         {
-            string responseBody;
             var request = new GetObjectRequest
             {
                 BucketName = parameters.BucketName,
@@ -101,20 +100,20 @@ namespace Frends.Community.AWS
             };
 
             using (var response = await s3Client.GetObjectAsync(request))
-            using (var responseStream = response.ResponseStream)
-            using (var reader = new StreamReader(responseStream)) responseBody = await reader.ReadToEndAsync();
-            if (File.Exists(fullPath))
             {
-                File.Delete(fullPath);
-                File.WriteAllText(fullPath, responseBody);
-                return fullPath;
+                if (File.Exists(fullPath))
+                    File.Delete(fullPath);
+
+                if (!Directory.Exists(destinationFolder))
+                    Directory.CreateDirectory(destinationFolder);
+
+                using (var stream = response.ResponseStream)
+                {
+                    using (var outFile = File.Create(fullPath))
+                        stream.CopyTo(outFile);
+                }
             }
-            else
-            {
-                if (!Directory.Exists(destinationFolder)) Directory.CreateDirectory(destinationFolder);
-                File.WriteAllText(fullPath, responseBody);
-                return fullPath;
-            }
+            return fullPath;
         }
     }
 }

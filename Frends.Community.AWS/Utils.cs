@@ -1,9 +1,9 @@
-﻿using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Amazon;
+﻿using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Frends.Community.AWS
 {
@@ -70,16 +70,6 @@ namespace Frends.Community.AWS
                 default:
                     return RegionEndpoint.EUWest1;
             }
-        }
-
-        /// <summary>
-        /// Appends ending slash to path if it's missing.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns>string</returns>
-        public static string GetFullPathWithEndingSlashes(string input)
-        {
-            return Path.GetFullPath(input).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
         }
 
         /// <summary>
