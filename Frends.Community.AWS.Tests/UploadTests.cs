@@ -213,7 +213,7 @@ namespace Frends.Community.AWS.Tests
             };
 
             var response = await UploadTask.UploadFiles(input, _param, options, new CancellationToken());
-            Assert.IsTrue(!string.IsNullOrEmpty(response.DebugLog));
+            Assert.IsFalse(string.IsNullOrEmpty(response.DebugLog));
             Directory.Delete(dir, true);
             await DeleteFileFromBucket("debugLog.txt", _param.BucketName);
         }

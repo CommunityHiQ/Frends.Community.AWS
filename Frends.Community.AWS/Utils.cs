@@ -73,16 +73,6 @@ namespace Frends.Community.AWS
         }
 
         /// <summary>
-        /// Appends ending slash to path if it's missing.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns>string</returns>
-        public static string GetFullPathWithEndingSlashes(string input)
-        {
-            return Path.GetFullPath(input).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
-        }
-
-        /// <summary>
         /// Returns S3 client.
         /// </summary>
         /// <param name="parameters"></param>
