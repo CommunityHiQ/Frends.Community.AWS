@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net471</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net471;net6.0;net8.0</TargetFrameworks>
     <description>Frends Task to execute operations on AWS S3.</description>
     <authors>HiQ Finland</authors>
     <copyright>HiQ Finland</copyright>
@@ -23,10 +23,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
-    <PackageReference Include="AWSSDK.Core" Version="3.7.11.11" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.9.11" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.1.160" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.400.70" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.410.12" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.401.19" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>
 </Project>
