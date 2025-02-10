@@ -200,3 +200,4 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 | 1.4.1   | UploadFiles: Throw custom exception if upload fails to provide debug log in the exception.                                                               |
 | 1.4.2   | DownloadTask, UploadTask: Bug fix for "Options delete source file not working"                                                                           | 
 | 1.4.3   | DownloadTask: Changed the way the Task handles downloaded objects to fix blank PDF files.                                                                         |
+| 1.5.0   | Added target frameworks net6 & net8. Updated dependencies: Newtonsoft.Json, AWSSDK.Core, AWSSDK.S3, AWSSDK.SecurityToken, System.ComponentModel.Annotations, NUnit3TestAdapter, Microsoft.NET.Test.Sdk.                                                                         |
